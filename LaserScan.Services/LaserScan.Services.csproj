@@ -1,0 +1,58 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <RootNamespace>Kogerent.Services</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile></DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="PirPoints.db" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="PirPoints.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.90" />
+    <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
+    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="5.0.9" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LaserScan.Core.NetStandart\LaserScan.Core.NetStandart.csproj" />
+    <ProjectReference Include="..\LaserScan.Core\LaserScan.Core.csproj" />
+    <ProjectReference Include="..\Laserscan.IServices\Laserscan.IServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Basler.Pylon">
+      <HintPath>..\LaserScan.Core.NetStandart\Libraries\Basler.Pylon.dll</HintPath>
+    </Reference>
+    <Reference Include="KUtilities">
+      <HintPath>..\LaserScan.Core\Libraries\KUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Logger">
+      <HintPath>..\LaserScan.Core\Libraries\Logger.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,78 @@
+﻿using System;
+using System.IO;
+
+using Kogerent.Core;
+using Kogerent.Services.Interfaces;
+
+using Prism.Commands;
+using Prism.Regions;
+
+namespace Defectoscope.Modules.Cameras.ViewModels
+{
+    public class CamerasRibbonViewModel : RegionViewModelBase
+    {
+        public string SettingsDir => Directory.CreateDirectory($"{Environment.CurrentDirectory}\\Settings").FullName;
+
+        #region Rising properties
+
+        #endregion
+
+        #region Delegate commands
+        private DelegateCommand _destroyCommand;
+        public DelegateCommand DestroyCommand => _destroyCommand ??= new DelegateCommand(ExecuteDestroyCommand);
+
+
+        private DelegateCommand _saveCamersSettings;
+        public DelegateCommand SaveCamerasSettings =>
+            _saveCamersSettings ?? (_saveCamersSettings = new DelegateCommand(ExecuteSaveCamerasSettings));
+
+
+        #endregion
+
+        public IFooterRepository FooterRepository { get; }
+        public IApplicationCommands ApplicationCommands { get; }
+        public IBaslerRepository BaslerRepository { get; }
+        public IXmlService XmlService { get; }
+
+        public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository, IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,
+            IXmlService xmlService) : base(regionManager)
+        {
+            FooterRepository = footerRepository;
+            ApplicationCommands = applicationCommands;
+            BaslerRepository = baslerRepository;
+            XmlService = xmlService;
+            ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
+        }
+
+        #region Execute methods delegates
+        private void ExecuteSaveCamerasSettings()
+        {
+            string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
+            XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
+        }
+
+        private void ExecuteDestroyCommand()
+        {
+
+            Destroy();
+        }
+        #endregion
+
+        public override void Destroy()
+        {
+            ApplicationCommands.Destroy.UnregisterCommand(DestroyCommand);
+            base.Destroy();
+        }
+
+        public override void OnNavigatedFrom(NavigationContext navigationContext)
+        {
+            base.OnNavigatedFrom(navigationContext);
+        }
+
+        public override void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            FooterRepository.Title = "Module1";
+            RegionManager.RequestNavigate(RegionNames.ContentRegion, RegionNames.CamerasContentKey);
+        }
+    }
+}

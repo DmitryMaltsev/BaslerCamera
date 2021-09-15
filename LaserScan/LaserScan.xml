@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LaserScan</name>
+    </assembly>
+    <members>
+        <member name="T:LaserScan.App">
+            <summary>
+            Логика взаимодействия с разметкой App.xaml
+            </summary>
+            <summary>
+            App
+            </summary>
+        </member>
+        <member name="M:LaserScan.App.CreateShell">
+            <summary>
+            Создает окно из контейнера
+            </summary>
+            <returns>Возвращает окно</returns>
+        </member>
+        <member name="M:LaserScan.App.RegisterTypes(Prism.Ioc.IContainerRegistry)">
+            <summary>
+            Регистрация сервисов на уровне всего приложения
+            </summary>
+            <param name="containerRegistry"></param>
+        </member>
+        <member name="M:LaserScan.App.ConfigureModuleCatalog(Prism.Modularity.IModuleCatalog)">
+            <summary>
+            Добавляет необходимые модули в приложение
+            </summary>
+            <param name="moduleCatalog">Каталог, куда будут добавлены модули</param>
+        </member>
+        <member name="M:LaserScan.App.OnInitialized">
+            <summary>
+            Загружает форму с логин-паролем для входа
+            </summary>
+        </member>
+        <member name="M:LaserScan.App.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="M:LaserScan.App.Main">
+            <summary>
+            Application Entry Point.
+            </summary>
+        </member>
+        <member name="T:LaserScan.Views.MainWindow">
+            <summary>
+            Interaction logic for MainWindow.xaml
+            </summary>
+            <summary>
+            MainWindow
+            </summary>
+        </member>
+        <member name="M:LaserScan.Views.MainWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+        <member name="T:Kogerent.LaserScan.Views.LoginWindow">
+            <summary>
+            Interaction logic for LoginWindow.xaml
+            </summary>
+            <summary>
+            LoginWindow
+            </summary>
+        </member>
+        <member name="M:Kogerent.LaserScan.Views.LoginWindow.InitializeComponent">
+            <summary>
+            InitializeComponent
+            </summary>
+        </member>
+    </members>
+</doc>

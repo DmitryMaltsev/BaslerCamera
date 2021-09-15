@@ -1,0 +1,11 @@
+﻿<UserControl x:Class="Defectoscope.Modules.Cameras.Views.OneCameraContent"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"             
+             xmlns:c="http://kogerent.org">
+    <Grid>
+        <!--<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Foreground="{StaticResource ControlForegroundWhite}" Text="{Binding CurrentCamera.ID}"/>-->
+        <Image Source="{Binding ImageSource}" Stretch="Fill"/>
+
+    </Grid>
+</UserControl>

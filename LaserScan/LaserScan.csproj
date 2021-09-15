@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>LaserScan</AssemblyName>
+    <StartupObject>LaserScan.App</StartupObject>
+    <Authors>Александр Никитин</Authors>
+    <Company>Когерент</Company>
+    <RootNamespace>Kogerent.LaserScan</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DocumentationFile></DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Images\chevron-pointing-to-the-left.png" />
+    <None Remove="Images\home.svg" />
+    <None Remove="Images\picture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Prism.Core" Version="8.1.97" />
+    <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Defectoscope.Modules.Cameras\Defectoscope.Modules.Cameras.csproj" />
+    <ProjectReference Include="..\LaserScan.Core.NetStandart\LaserScan.Core.NetStandart.csproj" />
+    <ProjectReference Include="..\LaserScan.Core\LaserScan.Core.csproj" />
+    <ProjectReference Include="..\Laserscan.IServices\Laserscan.IServices.csproj" />
+    <ProjectReference Include="..\LaserScan.Services\LaserScan.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="KUtilities">
+      <HintPath>..\LaserScan.Core\Libraries\KUtilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Logger">
+      <HintPath>..\LaserScan.Core\Libraries\Logger.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\chevron-pointing-to-the-left.png" />
+    <Resource Include="Images\home.svg" />
+    <Resource Include="Images\picture.png" />
+  </ItemGroup>
+</Project>

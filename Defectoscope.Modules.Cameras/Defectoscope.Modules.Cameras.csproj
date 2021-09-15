@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Defectoscope.Modules.Cameras</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Images\ImageSurce_cam.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Emgu.CV.Bitmap" Version="4.5.3.4721" />
+    <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
+    <PackageReference Include="Prism.Wpf" Version="8.1.97" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LaserScan.Core\LaserScan.Core.csproj" />
+    <ProjectReference Include="..\Laserscan.IServices\Laserscan.IServices.csproj" />
+    <ProjectReference Include="..\LaserScan.Services\LaserScan.Services.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ImageSurce_cam.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+</Project>

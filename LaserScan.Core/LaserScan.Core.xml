@@ -1,0 +1,1679 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>LaserScan.Core</name>
+    </assembly>
+    <members>
+        <member name="T:Kogerent.Core.ApplicationCommands">
+            <summary>
+            ApplicationCommands-команда видимая на уровне приложения
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ApplicationCommands.InitOneSensor">
+            <summary>
+            Инициализация одного датчика
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ApplicationCommands.InitAllSensors">
+            <summary>
+            Инициализация нескольких датчиков
+            </summary>
+        </member>
+        <member name="T:Kogerent.Core.DataBaseHelper">
+            <summary>
+            Помощник по работе с базой данных
+            </summary>
+        </member>
+        <member name="T:Kogerent.Core.CustomIEnumerableExtensions">
+            <summary>
+            Помощник по работе с IEnumerable
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.CustomIEnumerableExtensions.DequeueChunk``1(System.Collections.Generic.Queue{``0},System.Int32)">
+            <summary>
+            Dequeue chunkSize
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="queue"></param>
+            <param name="chunkSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.CustomIEnumerableExtensions.DequeueChunkConcurrent``1(System.Collections.Concurrent.ConcurrentQueue{``0},System.Int32)">
+            <summary>
+            Dequeue chunkSize
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="queue"></param>
+            <param name="chunkSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.CustomIEnumerableExtensions.GaranteedDequeue``1(System.Collections.Concurrent.ConcurrentQueue{``0},System.TimeSpan)">
+            <summary>
+            Dequeue chunkSize
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="queue"></param>
+            <returns>If not timed out returns T result, else returns default(T)</returns>
+        </member>
+        <member name="M:Kogerent.Core.CustomIEnumerableExtensions.SplitByCount``1(``0[],System.Int32)">
+            <summary>
+            Разделяет коллекцию на равномерные сегменты
+            </summary>
+            <typeparam name="T">Тип коллекции</typeparam>
+            <param name="collection">Коллекция</param>
+            <param name="chunksize">количество элементов в сегменте</param>
+            <returns>Коллекцию подколлекций</returns>
+        </member>
+        <member name="T:Kogerent.Core.SensorELibrary">
+            <summary>
+            Статический класс-обертка для импорта функций СенсорЕ
+            </summary>
+        </member>
+        <member name="T:Kogerent.Core.SensorELibrary.AutoExpDelegate">
+            <summary>
+                Делегат на функцию автоматической установки экспозиции.
+            </summary>
+            <param name="sender"></param>
+            <param name="exposition">Вычисленная автоматически экспозиция</param>
+        </member>
+        <member name="T:Kogerent.Core.SensorELibrary.ProfileDelegate">
+            <summary>
+                Делегат на функцию обработки профиля.
+            </summary>
+            <param name="sender"></param>
+            <param name="mode">Текущий режим работы датчика</param>
+            <param name="data">Передаваемые в делегат данные профилометра</param>
+            <param name="dataLength">Объем данных (плюс размер заголовка), выраженный в количестве данных типа float</param>
+        </member>
+        <member name="T:Kogerent.Core.SensorELibrary.VideoDelegate">
+            <summary>
+                Делегат на функцию обработки видео.
+            </summary>
+            <param name="sender"></param>
+            <param name="mode">Текущий режим работы датчика</param>
+            <param name="data">Передаваемые в делегат данные профилометра</param>
+            <param name="dataLength">Объем данных (плюс размер заголовка), выраженный в количестве байт</param>
+        </member>
+        <member name="F:Kogerent.Core.SensorELibrary.FileName">
+            <summary>
+                Имя файла библиотеки.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorELibrary.Convention">
+            <summary>
+                Соглашение о вызове функций dll.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorELibrary.FullName">
+            <summary>
+                Полное имя файла библиотеки (с путем).
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorELibrary.TypeObject">
+            <summary>
+                Тип объекта
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.#cctor">
+            <summary>
+                Подгружает необходимую библиотеку SensorE в зависимости от разрядности запускаемого приложения.
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.LoadLibrary(System.String)">
+            <summary>
+                Отображает заданный исполняемый модуль в адресное пространство вызывающего процесса.
+            </summary>
+            <param name="lpFileName">
+                Указатель на символьную строку с нулем в конце, которая именует исполняемый модуль (или  .dll или .exe файл).
+                Указанное имя - это имя файла модуля и оно не связано с именем самого сохраняемого в библиотеке модуля, как это
+                определено ключевым словом LIBRARY в (.def) файле определения модуля.
+                Если строка определяет путь, но файл не существует в указанном каталоге, функция завершается ошибкой.
+                Когда определяется путь, убедитесь, что использованы наклонные черты влево (обратные слэши (\)), а не прямые слэши
+                (/).
+                Если символьная строка не определяет путь, функция использует стандартную стратегию поиска файла.
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.VersionV2(System.IntPtr)">
+            <summary>
+                Прописывает массив символов char в виде «ver x.xx (20xx.xx.xx)» в память по указателю pointer. Вызывающая функцию
+                программа должна заранее выделить память под строку и передать указатель на её начало. Длина строки фиксирована и
+                составляет 22 байта.
+            </summary>
+            <param name="pointer">Указатель область памяти, выделенной для хранения строки с версией</param>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.DebugMode(System.Boolean)">
+            <summary>
+                Включает режим отладки dll, в котором ведётся файл журнала dll_log.txt (на английском языке). Файл хранится в том
+                же месте на жёстком диске, в котором находится exe-файл исполняемой программы. Функция не перезаписывает файл
+                журнала, а добавляет события в него. Рекомендуется включать режим отладки прежде, чем вызывать какие-либо другие
+                функции dll. Настоятельно рекомендуется использовать этот режим только для поиска и устранения неисправностей. В
+                нормальном режиме работы этот режим должен быть отключён. Следить за файлом журнала (вовремя удалять старые записи)
+                должен пользователь.
+            </summary>
+            <param name="en">Включение режима отладки? (по умолчанию режим выключен)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.DebugModeListener(System.Boolean)">
+            <summary>
+                Включает режим отладки потока приема данных, в котором ведутся файлы журналов N_dll_listener_log.txt (на английском
+                языке), где N – номер созданного потока. Файлы хранятся в том же месте на жёстком диске, в котором находится
+                exe-файл исполняемой программы. Функция не перезаписывает файлы журнала, а добавляет события в него. Рекомендуется
+                включать режим отладки перед запуском потоков. Настоятельно рекомендуется использовать этот режим только для поиска
+                и устранения неисправностей. В нормальном режиме работы этот режим должен быть отключён. Следить за файлами журнала
+                (вовремя удалять старые записи) должен пользователь.
+            </summary>
+            <param name="en">Включение режима отладки? (по умолчанию режим выключен)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Calculate(System.IntPtr,System.Single[],System.Int32,System.Single[],System.Int32)">
+            <summary>
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.EnhanceHeader(System.Boolean)">
+            <summary>
+                Позволяет использовать заголовок расширенного формата, длина которого является переменной.
+            </summary>
+            <param name="en">Использовать заголовок расширенного формата? (по умолчанию используется стандантный заголовок)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.VersionHwV2(System.IntPtr,System.IntPtr)">
+            <summary>
+                Чтение версии прошивки контроллера
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="versionPointer">Указатель на массив int из трех элементов с версией датчика</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetPortRange(System.UInt16,System.UInt16)">
+            <summary>
+                Позволяет задать диапазон портов, который будет использоваться на данном ПК для соединения с профилометрами. Для
+                каждого профилометра требуется два отдельных порта. Порты выбираются автоматически в указанном диапазоне в процессе
+                создания объекта датчика функцией <see cref="M:Kogerent.Core.SensorELibrary.CreateSensorV2(System.String,System.IntPtr@)" />. Если диапазон портов не указан, используется
+                диапазон портов по умолчанию от 34500 до 34699 включительно.
+            </summary>
+            <param name="firstPort">Номер порта, соответствующий началу диапазона (включительно)</param>
+            <param name="lastPort">Номер порта, соответствующий концу диапазона (включительно)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.CreateSensorV2(System.String,System.IntPtr@)">
+            <summary>
+                Создает объекта датчика и возвращает дескриптор этого объекта, по которому к нему можно обращаться в дальнейшем.
+                Кроме того, функция выполняет следующие действия:
+                <para>•	автоматически выбирает номера портов для передачи команд и передачи данных;</para>
+                <para>•	создает сокет для передачи команд и сокет для передачи данных;</para>
+                <para>•	выполняет команду Stop (Останов профилометра);</para>
+                <para>•	связывается с устройством и считывает его характеристики для обеспечения правильности работы с ним.</para>
+            </summary>
+            <param name="ip">IP-адрес датчика</param>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.CreateSensorV3(System.String,System.IntPtr@,System.Boolean,System.UInt16,System.IntPtr)">
+            <summary>
+                Создает объекта датчика и возвращает дескриптор этого объекта, по которому к нему можно обращаться в дальнейшем.
+                Кроме того, функция выполняет следующие действия:
+                <para>•	автоматически выбирает номера портов для передачи команд и передачи данных;</para>
+                <para>•	создает сокет для передачи команд и сокет для передачи данных;</para>
+                <para>•	выполняет команду Stop (Останов профилометра);</para>
+                <para>•	связывается с устройством и считывает его характеристики для обеспечения правильности работы с ним.</para>
+            </summary>
+            <param name="ip">IP-адрес датчика</param>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="manualPortMode">Режим установки фиксированных портов, иначе автиматическая привязка</param>
+            <param name="manualDataPort">
+                Фиксированный порт для передачи данных. Для передачи команд также необходим порт следующий
+                за этим (заняты оба)
+            </param>
+            <param name="versionHw">Указатель на память, куда пропишется версия прошивки датчика.</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.CreateVirtualSensor(System.String,System.IntPtr@)">
+            <summary>
+                Создает объект виртуального датчика и возвращает дескриптор этого объекта, по которому к нему можно обращаться в
+                дальнейшем. Данная функция позволяет создать объект датчика, если физически датчик отсутствует.
+                Параметры создаваемого датчика: матрица cmv2000_v3 (1088 х 2048). Кроме того, функция выполняет следующие действия:
+                <para>•	автоматически выбирает номера портов для передачи команд и передачи данных;</para>
+                <para>•	создает сокет для передачи команд и сокет для передачи данных.</para>
+            </summary>
+            <param name="ip">IP-адрес датчика</param>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.UncompletedData(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением передачи в ПК неполных данных (данных, полученных через протокол UDP по каким-либо причинам
+                неполностью).
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Разрешить передачу неполных данных? (по умолчанию передача неполных данных разрешена)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.StartListener(System.IntPtr,Kogerent.Core.SensorELibrary.VideoDelegate,Kogerent.Core.SensorELibrary.ProfileDelegate,Kogerent.Core.SensorELibrary.AutoExpDelegate)">
+            <summary>
+                Запускает поток получения данных от датчиков. Функция связывает события получения данных с делегатами
+                CALLBACK-функций, что приводит к вызову соответствующей функции в управляющем приложении. В момент запуска потока
+                создается сокет для получения данных от профилометра. Как правило, каждый объект датчика должен иметь рабочий поток
+                приема данных.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="callbackEventVideo">Делегат на функцию обработки видео</param>
+            <param name="callbackEventProfile">Делегат на функцию обработки профиля</param>
+            <param name="callbackEventAutoExp">Делегат на функцию автоматической установки экспозиции</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.LoadCalibrationV2(System.IntPtr,System.String)">
+            <summary>
+                Функция загружает файл калибровки, который необходим для пересчёта пикселей в миллиметры.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="calibrationFileName">Калибровочный файл с расширением «.bin» или с расширением «.fst»</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.CalibrationModeV2(System.IntPtr,System.Boolean)">
+            <summary>
+                Позволяет включить или выключить пересчёт профиля, выдаваемого в CallBack, из плоскости матрицы (пиксели) в
+                миллиметровую плоскость. Если профиль должен выдаваться в миллиметрах, необходимо предварительно загрузить
+                калибровочный файл. Если профиль должен выдаваться в пикселях, загружать файл калибровки при помощи функции
+                <see cref="M:Kogerent.Core.SensorELibrary.LoadCalibrationV2(System.IntPtr,System.String)" /> не обязательно.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="mmEn">
+                Единицы измерения координат точек профиля: true, если координаты точек профиля необходимо выдавать в
+                миллиметрах; false – если координаты точек профиля необходимо выдавать в пикселях.
+            </param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.DisposeSensor(System.IntPtr)">
+            <summary>
+                Уничтожает объект датчика, который был создан функцией <see cref="M:Kogerent.Core.SensorELibrary.CreateSensorV2(System.String,System.IntPtr@)" />, и все выделенные для него
+                ресурсы. После работы функции обращение к объекту датчика через дескриптор становится невозможным.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetRamValue(System.IntPtr,System.UInt16@,System.UInt32@)">
+            <summary>
+                Позволяет получить количество кадров, хранящихся в ОЗУ устройства. Режим сохранения данных в ОЗУ предназначен
+                только для видеоданных.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="frameCount">Количество кадров</param>
+            <param name="bufferSize">
+                Размер буфера. Данный параметр не является размером буфера и его можно не передавать и не
+                принимать.
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetRawRamDataV2(System.IntPtr,System.Byte[]@,System.Int32,System.Int32@,System.Int32@)">
+            <summary>
+                Передает все видеоданные, которые имеются в ОЗУ, в указанный пользователем буфер. Пользователь должен предоставить
+                буфер соответствующего (или максимального) размера, т.е. равного объему ОЗУ устройства. В процессе передачи новые
+                данные в буфере не накапливаются.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="buffer">Буфер для получения данных</param>
+            <param name="bufferSize">Размер буфера для получения данных (не используется и его значение функцией не учитывается)</param>
+            <param name="nFrameDownloaded">Количество полученных кадров</param>
+            <param name="error">Погрешность - количество байт, оставшихся в ОЗУ после завершения загрузки</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetWindow(System.IntPtr,System.UInt16,System.UInt16,System.UInt16,System.UInt16)">
+            <summary>
+                Передает в датчик размер рабочего окна. Пиксель с нулевыми координатами находится в верхнем левом углу матрицы, как
+                показано на рис. Пиксель с координатами (<paramref name="left" />, <paramref name="top" />) является верхним левым
+                пикселем
+                окна. Пиксель с координатами (<paramref name="left" /> + <paramref name="width" />, <paramref name="top" /> +
+                <paramref name="height" />) находится за пределами окна. Если необходимо работать по всей матрице, например, по
+                матрице
+                размером 2048x1088 следует задать окно с координатами: <paramref name="left" /> = 0, <paramref name="top" /> = 0,
+                <paramref name="width" /> = 2048, <paramref name="height" /> = 1088
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="left">
+                Координата левой границы окна на оси Х, выраженная в пикселях. Эта координата принадлежит рабочей
+                области окна.
+            </param>
+            <param name="top">
+                Координата верхней границы окна на оси Y, выраженная в пикселях. Эта координата принадлежит рабочей
+                области окна.
+            </param>
+            <param name="width">
+                Ширина окна. Последняя рабочая координата по оси Х определяется как <paramref name="left" /> +
+                <paramref name="width" /> - 1.
+            </param>
+            <param name="height">
+                Высота окна. Последняя рабочая координата по оси Y определяется как <paramref name="top" /> +
+                <paramref name="height" /> - 1.
+            </param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Laser(System.IntPtr,System.Byte)">
+            <summary>
+                Управляет включением лазера. Если работа лазера разрешена, лазер будет срабатывать в момент экспозиции кадра. Если
+                работа лазера запрещена, лазер не будет срабатывать в момент экспозиции кадра. Данная функция может быть аппаратно
+                отключена при изготовлении профилометра по заказу. В этом случае работа лазера всегда разрешена.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="state">0x01 - работа лазера разрешена. 0х00 - работа лазера запрещена</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetParameters(System.IntPtr,System.UInt16,System.UInt16,System.UInt16,System.UInt16)">
+            <summary>
+                Устанавливает параметры обработки пятен на изображении, полученном с фотоматрицы, с целью формирования данных
+                профиля. На режим передачи видео данная функция не оказывает влияния.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="maxSpotsCount">Максимальное количество точек на столбце (от 0 до 255)</param>
+            <param name="level">Пороговый уровень, сигнал ниже которого не является пятном (от 0 до 1023)</param>
+            <param name="minWidth">Минимальная ширина пятна (от 0 до 1087)</param>
+            <param name="maxWidth">Максимальная ширина пятна (от 0 до 1087)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.AscendingL(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением режима сортировки координат L. Если данная функция включена, массив точек, передаваемый в
+                управляющее ПО, будет отсортирован в порядке увеличения координат L, выраженных в миллиметрах. Это может облегчить
+                дальнейшую работу с профилем. Сортировка происходит непосредственно в момент формирования массива данных, поэтому
+                создает лишь незначительную дополнительную нагрузку на процессор.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="ascendingEn">Сортировка включена?</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetGlobalMathParam(System.IntPtr,System.Single[])">
+            <summary>
+                Устанавливает математические параметры, необходимые для формирования таблицы коэффициентов, которая затем
+                используется для прямого преобразования пикселей в миллиметры. Так как таблица коэффициентов нуждается в создании
+                только для bin-файлов, данная функция также необходима только при работе с bin-файлами. Файлы fst не требуют
+                установки математических параметров, так как они уже содержат в себе таблицу необходимых коэффициентов. Данная
+                функция требуется также для создания fst-файла по файлу bin.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="data">
+                массив с математическими параметрами в следующем формате (все значения запаса выражены в пикселях):
+                <para>[0] = порядок полинома (0 - полином 6-го порядка, 1 - полином 3-го порядка);</para>
+                <para>[1] = запас по высоте (Z) вверх;</para>
+                <para>[2] = запас по высоте (Z) вниз;</para>
+                <para>[3] = запас по ширине (W) вверх;</para>
+                <para>[4] = запас по ширине (W) вниз;</para>
+                <para>[5] = запас по ширине (W) влево;</para>
+                <para>[6] = запас по ширине (W) влево;</para>
+            </param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetDebounce(System.IntPtr,System.UInt32)">
+            <summary>
+                Управляет включением режима антидребезга сигнала внешней синхронизации. Если фронт сигнала синхронизации зашумлен,
+                данная функция может помочь избавиться от срабатывания фотоматрицы несколько раз подряд по одному фронту, задав
+                время задержки, в течение которого переходные процессы на фронте должны прекратиться. Время задержки задается в
+                периодах тактовой частоты:
+                <para>•	для режима «профиль» - тактовая частота равна 32 МГц;</para>
+                <para>•	для режима «видео» - тактовая частота равна 30 МГц.</para>
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="value">Время задержки. Значение ограничено величиной 2^24 – 1 (три байта).</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetGain(System.IntPtr,System.Byte@)">
+            <summary>
+                Считывает значение цифрового усиления видеосигнала.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="gain">Значение усиления</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetGain(System.IntPtr,System.Byte)">
+            <summary>
+                Задает значение цифрового усиления видеосигнала.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="gain">Значение усиления</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetAnalogGain(System.IntPtr,System.Byte@)">
+            <summary>
+                Считывает значение аналогового усиления видеосигнала.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="gain">Значение усиления (от 0 до 7)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetAnalogGain(System.IntPtr,System.Byte)">
+            <summary>
+                Задает значение аналогового усиления видеосигнала.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="gain">Значение усиления (от 0 до 7)</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetExposition(System.IntPtr,System.UInt32@)">
+            <summary>
+                Считывает значение времени экспозиции в условных единицах, одна условная единица приблизительно равна 4 мкс.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="exposition">Значение экспозиции</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetExposition(System.IntPtr,System.UInt32)">
+            <summary>
+                Задает значение времени экспозиции в условных единицах, одна условная единица приблизительно равна 4 мкс.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="exposition">Значение экспозиции</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetNumFrames(System.IntPtr,System.UInt16)">
+            <summary>
+            Установка количества кадров, выполняемых камерой на один строб (любой, внутренний, внешний или программный)
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="numberFrames">Количество кадров</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.PipelineModeEn(System.IntPtr,System.Boolean)">
+            <summary>
+            Управляет включением конвейерного (pipeline) режима формирования кадров.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Разрешение pipeline-режима</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.BlackReferenceEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Коррекция опорного уровня черного
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Разрешение коррекции</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SubsamplingProfile(System.IntPtr,System.Byte)">
+            <summary>
+                Устанавливает коэффициент прореживания, который применяется к колонкам в процессе вычисления профиля.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="subsampling">Коэффициент прореживания профиля</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SubsamplingMatrix(System.IntPtr,System.Byte,System.Boolean)">
+            <summary>
+                Устанавливает коэффициент прореживания, который применяется к строкам матрицы в процессе вычисления профиля.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="subsampling">Количество пропускаемых строк матрицы</param>
+            <param name="advMode">
+                Используется расширенный режим работы матрицы с учетом паттерна Байера? (по умолчанию
+                используется обычный режим работы матрицы)
+            </param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetTemper(System.IntPtr,System.Single@)">
+            <summary>
+                Считывает значение температуры, измеренной датчиком, встроенным в модуль цифровой обработки видеризображения
+                АВШБ.467469.003 (ЦСП профилометра). Полученное значение выражено в градусах Цельсия.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="temper">Значение температуры</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Correction(System.IntPtr,System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean,System.Boolean)">
+            <summary>
+                Задает параметры коррекции профиля. При помощи этих коэффициентов можно настроить профилометр таким образом, чтобы
+                измеренные им координаты совпадали с выбранной пользователем физической системой координат. Функция справедлива
+                только в том случае, если профиль измеряется в миллиметрах. Коэффициенты коррекции, поворот и смещения применяются
+                к нулевой точке датчика (точка с координатами 0;0 [мм]) в локальной системе координат датчика.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="angleCorrection">Угол поворота профиля, заданный в градусах</param>
+            <param name="ratioLCorrection">
+                Коэффициент коррекции по ширине. Координата L [мм] умножается на этот коэффициент, что позволяет сжать
+                или растянуть профиль вдоль оси L (значение по умолчанию: 1)
+            </param>
+            <param name="ratioDCorrection">
+                Коэффициент коррекции по дальности. Координата D [мм] умножается на этот коэффициент, что позволяет
+                сжать или растянуть профиль вдоль оси D (значение по умолчанию: 1)
+            </param>
+            <param name="shiftLCorrection">
+                Величина смещения, выраженная в миллиметрах, позволяющая сместить весь профиль сторону увеличения
+                (+) или уменьшения (-) координаты L (значение по умолчанию: 0)
+            </param>
+            <param name="shiftDCorrection">
+                Величина смещения, выраженная в миллиметрах, позволяющая сместить весь профиль сторону увеличения
+                (+) или уменьшения (-) координаты D (значение по умолчанию: 0)
+            </param>
+            <param name="hFlipCorrection">Отражение профиля по горизонтали (относительно вертикальной оси). По умолчанию отключено.</param>
+            <param name="cFlipCorrection">Отражение профиля по вертикали (относительно горизонтальной оси). По умолчанию отключено.</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.CorrectionEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением коррекции профиля, не изменяя уже заданные значения.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">
+                Разрешение применения коррекции. Если коррекция запрещена (false), коэффициенты коррекции не будут
+                применены к профилю даже в том случае, если они заданы.
+            </param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Borders(System.IntPtr,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+                Устанавливает границы рабочей зоны для профиля. Если точка итогового профиля (после применения коррекции) выйдет за
+                указанные границы, она будет исключена из передаваемого в управляющее ПО массива. Значения границ не входят в
+                рабочий диапазон. Другими словами, число, точно равное границе, не будет включено в массив передаваемых данных.
+                Значения границ задаются в миллиметрах.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="left">Горизонтальная граница рабочей зоны слева</param>
+            <param name="right">Горизонтальная граница рабочей зоны справа</param>
+            <param name="top">Вертикальная граница рабочей зоны сверху</param>
+            <param name="bottom">Вертикальная граница рабочей зоны снизу</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.BordersEn(System.IntPtr,System.Boolean,System.Boolean)">
+            <summary>
+                Управляет применением установленных границ.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="latEn">Применение границ по горизонтали?</param>
+            <param name="distEn">Применение границ по вертикали?</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Tracking(System.IntPtr,System.Int32,System.Byte)">
+            <summary>
+                Устанавливает параметры для режима слежения.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="minPoints">Минимальное количество точек объекта</param>
+            <param name="mode">Режим слежения</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.TrackingEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением режима слежения.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Включить режим слежения?</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.PiecewizeLinearModeEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Кусочная экспозиция.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Необходимо использовать?</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.PiecewizeLinearMode(System.IntPtr,System.Byte,System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+                Задает параметры кусочной экспозиции.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="nSlopes">Количество точек излома кусочной экспозиции</param>
+            <param name="xKp1">Положение первой точки излома на оси времени, в процентах, где 0 - крайнее левое положение</param>
+            <param name="xKp2">Положение второй точки излома на оси времени, в процентах, где 0 - крайнее левое положение</param>
+            <param name="slopeKp1">Наклон характеристики после первой точки излома, в процентах, где 0 - минимальный наклон</param>
+            <param name="slopeKp2">Наклон характеристики после второй точки излома, в процентах, где 0 - минимальный наклон</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.LaserInversion(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением инверсии лазера.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Включить инверсию лазера?</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SpotsNoAckColumn(System.IntPtr)">
+            <summary>
+                Переводит датчик в режим измерения профиля, когда объектом обработки (колонкой) на изображении является строка. В
+                процессе получения данных с профилометра не осуществляется контроль доставки пакетов (без подтверждения).
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SpotsNoAckRow(System.IntPtr)">
+            <summary>
+                Переводит датчик в режиме измерения профиля, когда объектом обработки (колонкой) на изображении является столбец. В
+                процессе получения данных с профилометра не осуществляется контроль доставки пакетов (без подтверждения).
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Video(System.IntPtr)">
+            <summary>
+                Переключает профилометр в режим выдачи видеокадров и выделяет в памяти буфер, необходимый для временного хранения
+                полученного кадра, в соответствии с размером матрицы + заголовок 64 байта.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.VideoToRam(System.IntPtr)">
+            <summary>
+                Включает режим сохранения видеокадра в ОЗУ устройства. При этом при получении кадра вызов Callback-функций
+                происходить не будет. Вместо этого видеокадр будет сохраняться в ОЗУ устройства. Считать содержимое ОЗУ можно
+                отдельной командой. Включение режима сбрасывает работу фотоматрицы, т.е. приводит к сбросу установленной ранее
+                экспозиции и усиления. Данная команда также сбрасывает указатель текущего кадра, хранящегося в ОЗУ.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetRegisterValue(System.IntPtr,System.Byte,System.UInt16)">
+            <summary>
+                Записывает значение в произвольный регистр по указанному адресу. Данная функция не является безопасной, поэтому
+                использовать ее не рекомендуется. В процессе записи необходимо понимать, к какому регистру осуществляется обращение
+                и как этот регистр влияет на режим работы. Запись неверных значений может повлиять на работу устройства, вплоть до
+                выхода его из строя. В общем случае использовать данную функцию не требуется, так как все необходимые действия
+                можно выполнить при помощи других, специально предназначенных для этого функций.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="reg">Адрес регистра</param>
+            <param name="value">Значение, записываемое в регистр</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SyncCmd(System.IntPtr)">
+            <summary>
+                Переводит датчик в режим однократного срабатывания по команде. Одна команда - одно срабатывание. Командой,
+                запускающей срабатывание датчика, является функция SendSync. Установка режима синхронизации по команде может
+                использоваться также для останова работы датчика.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.GetRegisterValue(System.IntPtr,System.Byte,System.UInt16@)">
+            <summary>
+                Считывает значение из произвольного регистра по указанному адресу. В процессе чтения необходимо понимать, к какому
+                регистру осуществляется обращение и как его информация может быть интерпретирована. В общем случае использовать
+                данную функцию не требуется, так как все необходимые действия можно выполнить при помощи других, специально
+                предназначенных для этого функций.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="reg">Адрес регистра</param>
+            <param name="value">Значение, записываемое в регистр</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SyncNone(System.IntPtr,System.Int32)">
+            <summary>
+                Переводит датчик в режим срабатывания по внутреннему таймеру. При этом профилометр начинает выполнять измерения с
+                указанной частотой, которая не является синхронной с другими профилометрами в системе.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="frameRate">Частота кадров, выраженная в [Гц]</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SyncExt(System.IntPtr)">
+            <summary>
+                Переводит датчик в особый режим синхронизации по внешнему импульсу. Данный тип синхронизации используется, если
+                профилометр аппаратно настроен на передачу импульса запуска непосредственно на фотоматрицу, что обеспечивает
+                максимально быструю реакцию.  Это стандартный режим внешней синхронизации. Аппаратная настройка выполнятся в
+                процессе изготовления профилометра.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SyncFromStrobe(System.IntPtr,System.Int32)">
+            <summary>
+                Переводит датчик в режим синхронизации по внешнему импульсу, поступающему на один из входов Q0-Q7. Данный тип
+                внешней синхронизации следует выключать, если профилометр аппаратно настроен для передачи импульса запуска через
+                центральный сигнальный процессор (ЦСП), что позволяет контролировать запуск микропрограммой процессора. Это
+                нестандартный режим, для работы в котором профилометр настраивается по отдельному заказу. Аппаратная настройка
+                выполнятся в процессе изготовления профилометра.
+            </summary>
+            <param name="handle">Дескриптор объекта датчика</param>
+            <param name="strobeMode">
+                Выбор аппаратного входа синхронизации и фронта срабатывания. Возможные значения:
+                <para>0x00: аппаратный вход Q0, срабатывание по положительному фронту;</para>
+                <para>0x01: аппаратный вход Q0, срабатывание по отрицательному фронту;</para>
+                <para>0x02: аппаратный вход Q1, срабатывание по положительному фронту;</para>
+                <para>0x03: аппаратный вход Q1, срабатывание по отрицательному фронту;</para>
+                <para>0x04: аппаратный вход Q2, срабатывание по положительному фронту;</para>
+                <para>0x05: аппаратный вход Q2, срабатывание по отрицательному фронту;</para>
+                <para>0x06: аппаратный вход Q3, срабатывание по положительному фронту;</para>
+                <para>0x07: аппаратный вход Q3, срабатывание по отрицательному фронту;</para>
+                <para>0x08: аппаратный вход Q4, срабатывание по положительному фронту;</para>
+                <para>0x09: аппаратный вход Q4, срабатывание по отрицательному фронту;</para>
+                <para>0x0А: аппаратный вход Q5, срабатывание по положительному фронту;</para>
+                <para>0x0B: аппаратный вход Q5, срабатывание по отрицательному фронту;</para>
+                <para>0x0C: аппаратный вход Q6, срабатывание по положительному фронту;</para>
+                <para>0x0D: аппаратный вход Q6, срабатывание по отрицательному фронту;</para>
+                <para>0x0E: аппаратный вход Q7, срабатывание по положительному фронту;</para>
+                <para>0x0F: аппаратный вход Q7, срабатывание по отрицательному фронту.</para>
+            </param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SendSync(System.IntPtr)">
+            <summary>
+                Вызывает однократное срабатывание датчика, при условии, что тот находится в режиме «Синхронизация по команде».
+                Получив данные, библиотека вызывает соответствующую Callback-функцию.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Stop(System.IntPtr)">
+            <summary>
+                Отправка на профилометр команды «стоп». При этом оборудование профилометра перестаёт посылать данные (останова
+                потока получения данных при этом не происходит). Функция не возвращает управление до тех пор, пока профилометр не
+                прекратит передачу данных или не произойдет ошибка таймаута (1 секунда).
+                Данная функция необходима для гарантированного успешного изменения параметров профилометра, если тот занят
+                передачей больших массивов данных в потоке. В противном случае возможно аппаратное зависание профилометра, которое
+                можно будет устранить только пересбросом питания.
+                <para>
+                    Приводит к сбросу следующих параметров в значения по умолчанию:
+                    <para>Усиление (функция SetGain) в значение 40;</para>
+                </para>
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Код ошибки</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.CreateFastTable(System.IntPtr,System.String,System.String,System.Int32)">
+            <summary>
+                Создает калибровочный файл в виде таблицы быстрого пересчета (.fst) по исходному калибровочному файлу (.bin). В
+                процессе работы для каждой точки матрицы вычисляется соответствующее ей значение, выраженное в миллиметрах. Набор
+                значений в миллиметрах представляет собой таблицу быстрого пересчета. Попутно создаются текстовые служебные файлы
+                fast_table_width.txt и fast_table_dist.txt.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="binFileName">Путь и имя исходного бинарного калибровочного файла (.bin)</param>
+            <param name="fastTableFileName">Путь и имя полученного в результате файла с таблицей быстрого пересчета (.fst)</param>
+            <param name="typeMatrix">
+                Тип фотоматрицы:
+                <para>0: матрица размером 1088 точек по шкале дальности и 2048 точек по шкале ширины;</para>
+                <para>1: матрица размером 2048 х 2048;</para>
+                <para>2: матрица размером 2048 точек по шкале дальности и 1088 точек по шкале ширины.</para>
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.StatusGen(System.IntPtr)">
+            <summary>
+                Считывает текущие параметры объекта датчика общего характера, представленные в виде структуры типа
+                <see cref="T:Kogerent.Core.GeneralParamsSet" />. Функция возвращает указатель на структуру.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Указатель на структуру</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.StatusCorr(System.IntPtr)">
+            <summary>
+                Считывает текущие параметры коррекции профиля, представленные в виде структуры типа
+                <see cref="T:Kogerent.Core.CorrectionParamsSet" />
+                . Функция возвращает указатель на структуру.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Указатель на структуру</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.StatusBord(System.IntPtr)">
+            <summary>
+                Считывает текущие границы рабочей области, представленные в виде структуры типа <see cref="T:Kogerent.Core.BordersParamsSet" />.
+                Функция возвращает указатель на структуру.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Указатель на структуру</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.StatusMatrix(System.IntPtr)">
+            <summary>
+                Считывает текущие параметры видеоматрицы, представленные в виде структуры типа <see cref="T:Kogerent.Core.MatrixParamsSet" />.
+                Функция возвращает указатель на структуру.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <returns>Указатель на структуру</returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.OnePointToMm(System.IntPtr,System.Int32,System.Single,System.Single@,System.Single@)">
+            <summary>
+                Пересчитывает одну точку, представленную в виде координат на матрице (x и y в пикселях) в точку на реальной
+                миллиметровой плоскости,
+                представленную в виде координат по дальности и ширине, по загруженной в объект датчика калибровочной таблице.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="x">Координата X точки на матрице, в пикселях</param>
+            <param name="y">Координата Y точки на матрице, в пикселях</param>
+            <param name="latitude">Координата по ширине, в миллиметрах</param>
+            <param name="distance">Координата по дальности, в миллиметрах</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.NoiseRemoverEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением удаления отдельных шумовых точек методом окна.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Разрешение работы функции</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.NoiseFloatRemover(System.IntPtr,System.Int32,System.Int32,System.Int32)">
+            <summary>
+                Задает параметры удаления шумовых точек методом плавучего окна.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="vertical">Размер окна по вертикали (поперек строк матрицы), в пикселях</param>
+            <param name="horizontal">Размер окна по горизонтали (вдоль строк матрицы), в пикселях</param>
+            <param name="nInArea">
+                Минимальное количество точек в пределах окна матрицы, не считая текущей,
+                при котором принимается решение "Точка является полезной"
+            </param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.NoiseFloatRemoverEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением удаления шумовых точек методом плавучего окна.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Разрешение работы функции</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.Discretize(System.IntPtr,System.Single,System.Byte,System.Byte)">
+            <summary>
+                Задает параметры дискретизации, позволяющие получить линейный массив в формате "y[i]",
+                данные в котором следуют строго с заданным шагом дискретизации.
+                Длина такого массива известна и определяется левой и правой границей рабочей зоны датчика.
+                Если в текущую ячейку массива в процессе дискретизации профиля не попадает ни одной точки, значение в ячейке равно
+                0.
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="step">Шаг передискретизации, в миллиметрах</param>
+            <param name="mode">
+                Режим усреднения точек, попадающих в одну ячейку массива: 0 - математическое усреднение, 1 -
+                приоритет максимуму, 2 - приоритет минимуму
+            </param>
+            <param name="nearValue">Режим заполнения пустот ближайшим значением: 0 - заполнение не выполняется</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.SetMissingDesignator(System.IntPtr,System.Single)">
+            <summary>
+                Установка значения-заменителя отсутствующих значений в массиве дискретизированных данных
+            </summary>
+            <param name="sensorHandle"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.ZeroDC(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением вычитания постоянной составляющей, измеренной медианой
+            </summary>
+            <param name="sensorHandle"></param>
+            <param name="en">Разрешение режима</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.SensorELibrary.DiscretizeEn(System.IntPtr,System.Boolean)">
+            <summary>
+                Управляет включением передискретизации профиля в линейный массив
+            </summary>
+            <param name="sensorHandle">Дескриптор объекта датчика</param>
+            <param name="en">Разрешение передискретизации</param>
+            <returns></returns>
+        </member>
+        <member name="T:Kogerent.Core.IntXFloatYPoint">
+            <summary>
+            Точка, у которой Х - целочисленное, а Y - дробное число
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.IntXFloatYPoint.X">
+            <summary>
+            Х-координата точки
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.IntXFloatYPoint.Y">
+            <summary>
+            Y-координата точки
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.IntXFloatYPoint.#ctor(System.Int32,System.Single)">
+            <summary>
+            Конструктор, создающий экземпляр точки
+            </summary>
+            <param name="x">Координата Х</param>
+            <param name="y">Координата У</param>
+        </member>
+        <member name="T:Kogerent.Core.SensorPair">
+            <summary>
+            Модель пар профилометров
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.Index">
+            <summary>
+            Индекс пары
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.TopSensor">
+            <summary>
+            Верхний профилометр
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.BottomSensor">
+            <summary>
+            Нижний профилометр
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.UpDisretized">
+            <summary>
+            Дискретизированный массив точек верхнего профилометра
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.LeftBorder">
+            <summary>
+            Левая граница для дискретизации
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.RightBorder">
+            <summary>
+            Правая граница для дискретизации
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.DnDiscretized">
+            <summary>
+            Дискретизированный массив нижнего профилометра
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.SumPoints">
+            <summary>
+            Разность высот верхнего и нижнего массивов точек
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.SensorPair.ConsumerTask">
+            <summary>
+            Поток-потребитель
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.DistanceBorder">
+            <summary>
+                Разрешение границ в миллиметрах по дальности?
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.LatitudeBorder">
+            <summary>
+                Разрешение границ в миллиметрах по ширине?
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.MmBottom">
+            <summary>
+                Нижняя граница рабочей области в миллиметрах.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.MmLeft">
+            <summary>
+                Левая граница рабочей области в миллиметрах.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.MmRight">
+            <summary>
+                Правая граница рабочей области в миллиметрах.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.MmTop">
+            <summary>
+                Верхняя граница рабочей области в миллиметрах.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.WinX1">
+            <summary>
+                Левая граница окна на матрице в пикселях.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.WinX2">
+            <summary>
+                Правая граница окна на матрице в пикселях.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.WinY1">
+            <summary>
+                Верхняя граница окна на матрице в пикселях.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.BordersParamsSet.WinY2">
+            <summary>
+                Нижняя граница окна на матрице в пикселях.
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.CallbackData.#ctor(System.Boolean)">
+            <summary>
+                Создает данные, приходящие от Callback из библиотеки SensorE.dll.
+            </summary>
+            <param name="fromVideoCallback">Данные были получены из библиотеки SensorE.dll через Callback видео (иначе профиля)?</param>
+        </member>
+        <member name="M:Kogerent.Core.CallbackData.#ctor(System.Boolean,System.IntPtr,System.Int32)">
+            <summary>
+                Считывает данные, пришедшие от Callback из библиотеки SensorE.dll, в новый объект.
+            </summary>
+            <param name="fromVideoCallback">Данные были получены из библиотеки SensorE.dll через Callback видео (иначе профиля)?</param>
+            <param name="data">Указатель на массив данных.</param>
+            <param name="dataLength">Длина данных.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.FromVideoCallback">
+            <summary>
+            Данные были получены из библиотеки SensorE.dll через Callback видео (иначе профиля)?
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.NRemovedPoints">
+            <summary>
+                Общее количество удаленных из профиля точек различными фильтрами. Используется в режиме профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.AverageWidth">
+            <summary>
+                Средняя ширина пятна. Используется в режиме профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.NData">
+            <summary>
+                Номер кадра, полученный от ЦПС. Используется в режимах видео и профиля.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.IO">
+            <summary>
+                Состояние дискретных входов (от 0 до 0x0F). Используется в режиме профиля.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.NPoints">
+            <summary>
+                Количество точек, полученных профилометром в результате обнаружения фотоматрицы (может отличаться от объема данных,
+                получаемых callback'ом, которые могут подвергаться постобработке). Используется в режиме профиля.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.NStrobe">
+            <summary>
+                Номер строба. Используется в режиме профиля.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.CurrentExposition">
+            <summary>
+                Текущая экспозиция. Используется в режиме профиля.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.OverflowsBuffer">
+            <summary>
+                Ошибка переполнения входного буфера? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.UncompletedData">
+            <summary>
+                Ошибка получения полных данных? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.SkipStrobe">
+            <summary>
+                Обнаружен пропуск строба? Используется в режиме профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.InVideo">
+            <summary>
+                Режим работы видео (иначе профиль)?
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.Stopped">
+            <summary>
+                Переход в состояние останова (иначе работа)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.RowProcessingDirection">
+            <summary>
+                Обработка матрицы по строкам (иначе по столбцам)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.ConfirmDataTransmission">
+            <summary>
+                Передача данных с подтверждением (иначе без подтверждения)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.WritingInRAM">
+            <summary>
+                Запись данных в ОЗУ включена (иначе отключена)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.InMm">
+            <summary>
+                Данные в миллиметрах (иначе в пикселях)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.Correction">
+            <summary>
+                Коррекция включена (иначе отключена)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.Borders">
+            <summary>
+                Границы по вертикали или горизонтали включены (иначе отключены)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.Tracking">
+            <summary>
+                Режим слежения включен (иначе отключен)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.SyncSource">
+            <summary>
+                Источник синхронизации. Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.SubsamplingMatrix">
+            <summary>
+                Прореживание по строкам включено (иначе отключено)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.SubsamplingProfile">
+            <summary>
+                Прореживание по столбцам включено (иначе отключено)? Используется в режимах видео и профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.HeaderLength">
+            <summary>
+                Размер заголовка. Стандартный заголовок имеет фиксированный размер, равный 64 байтам.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.SubWindows">
+            <summary>
+                Вложенные окна. Используется в режиме профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.Discretize">
+            <summary>
+                Данные в передискретизированном формате. Иначе в формате xyzw. Используется в режиме профиля.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.FrameData">
+            <summary>
+                Данные кадра. Если <see cref="P:Kogerent.Core.CallbackData.InVideo" /> = false, то данное поле будет равно null.
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.CallbackData.ProfileData">
+            <summary>
+                Данные профиля. Если <see cref="P:Kogerent.Core.CallbackData.InVideo" /> = true, то данное поле будет равно null.
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.CallbackData.ReadData(System.IntPtr,System.Int32)">
+            <summary>
+                Считывает данные, пришедшие от Callback из библиотеки SensorE.dll.
+            </summary>
+            <param name="data">Указатель на массив данных.</param>
+            <param name="dataLength">Количество данных.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.Angle">
+            <summary>
+                Угол корректирования.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.HorizontalFlip">
+            <summary>
+                Горизонтальное отражение.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.IsEnabled">
+            <summary>
+                Коррекция включена?
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.KDistance">
+            <summary>
+                Коэффициент по дальности.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.KLatitude">
+            <summary>
+                Коэффициент по ширине.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.ShiftDistance">
+            <summary>
+                Смещение по дальности.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.ShiftLatitude">
+            <summary>
+                Смещение по ширине.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.CorrectionParamsSet.VerticalFlip">
+            <summary>
+                Вертикальное отражение.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.GeneralParamsSet.InMm">
+            <summary>
+                Работа в миллиметрах?
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.GeneralParamsSet.IpAddress">
+            <summary>
+                IP адрес контроллера.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.GeneralParamsSet.PortCmd">
+            <summary>
+                Порт команд.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.GeneralParamsSet.PortData">
+            <summary>
+                Порт данных.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.MatrixParamsSet.HorizontalResolution">
+            <summary>
+                Горизонтальное разрешение.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.MatrixParamsSet.TypeMatrix">
+            <summary>
+                Тип матрицы.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.MatrixParamsSet.VerticalResolution">
+            <summary>
+                Вертикальное разрешение.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ReadPostprocessinger`1._buffer">
+            <summary>
+                Сам буфер чтения/записи
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ReadPostprocessinger`1._readIndex">
+            <summary>
+                Индекс чтения
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ReadPostprocessinger`1._writeIndex">
+            <summary>
+                Индекс записи
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ReadPostprocessinger`1.Capacity">
+            <summary>
+                Емкость буфера
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ReadPostprocessinger`1.Overflow">
+            <summary>
+                Режим с переполнением?
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ReadPostprocessinger`1.SkippedData">
+            <summary>
+                Количество пропущенных данных (из-за переполнения)
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ReadPostprocessinger`1.Count">
+            <summary>
+                Количество элементов в буфере
+            </summary>
+        </member>
+        <member name="P:Kogerent.Core.ReadPostprocessinger`1.Length">
+            <summary>
+                Количество элементов в буфере
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.#ctor(System.Int32,System.Boolean)">
+            <summary>
+                Конструктор буфера
+            </summary>
+            <param name="capacity">Емкость буфера</param>
+            <param name="overflow">С переполнением? (исключение или же пропуск данных при записи)</param>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.Read(System.Int32,System.Boolean)">
+            <summary>
+                Читает данные
+            </summary>
+            <param name="lengthData">Количество элементов</param>
+            <param name="holdData">Удерживать данные?</param>
+            <returns>Массив элементов</returns>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.Read(System.Boolean)">
+            <summary>
+                Считывает один элемент данных
+            </summary>
+            <param name="holdData">Удерживать данные?</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.Write(`0[])">
+            <summary>
+                Записывает массив данных в буфер
+            </summary>
+            <param name="data">Записываемый массив данных</param>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.Write(`0)">
+            <summary>
+                Записывает данные в буфер
+            </summary>
+            <param name="data">Записываемый элемент данных</param>
+        </member>
+        <member name="P:Kogerent.Core.ReadPostprocessinger`1.Item(System.Int32)">
+            <summary>
+                Возвращает элемент в буфере
+            </summary>
+            <param name="index">Индекс элемента</param>
+            <returns></returns>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.GetData">
+            <summary>
+                Считывает все элементы буфера по одному (для foreach)
+            </summary>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.GetData(System.Int32)">
+            <summary>
+                Считывает заданное число элементов буфера по одному (для foreach)
+            </summary>
+            <param name="count">Количество считываемых элементов</param>
+        </member>
+        <member name="M:Kogerent.Core.ReadPostprocessinger`1.Clear">
+            <summary>
+            Производит очистку буфера
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SubWindow.X1">
+            <summary>
+                Левая граница окна.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SubWindow.X2">
+            <summary>
+                Правая граница окна.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SubWindow.Y1">
+            <summary>
+                Верхняя граница окна.
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SubWindow.Y2">
+            <summary>
+                Нижняя граница окна.
+            </summary>
+        </member>
+        <member name="T:Kogerent.Core.AnalogGain">
+            <summary>
+            Перечисление для аналогового усиления
+            </summary>
+            <remarks>
+            аналаговое усиление отличается от цифрового
+            </remarks>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X1dot0">
+            <summary>
+                Усиление X1
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X1dot2">
+            <summary>
+                Усиление X1.2
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X1dot4">
+            <summary>
+                Усиление X1.4
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X1dot6">
+            <summary>
+                Усиление X1.6
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X2dot0">
+            <summary>
+                Усиление X2
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X2dot4">
+            <summary>
+                Усиление X2.4
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X2dot8">
+            <summary>
+                Усиление X2.8
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.AnalogGain.X3dot2">
+            <summary>
+                Усиление X3.2
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.DiscretizeMode.Mean">
+            <summary>
+                Усреднение совпадающих показаний
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.DiscretizeMode.Maximum">
+            <summary>
+                Максимум
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.DiscretizeMode.Minimum">
+            <summary>
+                Минимум
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.DiscretizeMode.LinearReference">
+            <summary>
+                Близость к опорному профилю, представляющему собой результат линейной аппроксимации
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.DiscretizeMode.LinearReferenceDerivate">
+            <summary>
+                LinearReference + антиблик методом производной
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.DiscretizeMode.LinearReferenceWidth">
+            <summary>
+                LinearReference + антиблие методом ширины пятна
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.Success">
+            <summary>
+                Успешное выполнение (нет ошибок)
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.UnknownFileType">
+            <summary>
+                Неизвестный тип файла
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.CreatingSocket">
+            <summary>
+                Ошибка создания сокета для обмена данными с датчиком
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.ReadWriteData">
+            <summary>
+                Ошибка чтения/записи данных из внешнего оборудования
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.OutOfMemory">
+            <summary>
+                Нехватка памяти
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.SensorNotInitialized">
+            <summary>
+                Датчик не инициализирован
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.InvalidInputParameter">
+            <summary>
+                Неверный входной параметр
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.Matrix">
+            <summary>
+                Ошибка фотоматрицы
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.FailedEnableMode">
+            <summary>
+                Не удалось включить режим
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.LowLevel">
+            <summary>
+                Ошибка в функции более низкого уровня
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.StopStream">
+            <summary>
+                Ошибка останова потока
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.StartingThread">
+            <summary>
+                Ошибка запуска потока
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.TimeOut">
+            <summary>
+                Превышено время ожидания
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.WritingDataToFile">
+            <summary>
+                Ошибка записи данных в файл
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.Unknown">
+            <summary>
+                Неизвестная ошибка или исключение
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.ReadingDataToFile">
+            <summary>
+                Ошибка чтения данных из файла
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.FileNotExist">
+            <summary>
+                Файл не существует
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.Calculate">
+            <summary>
+                Вычислительная ошибка
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.FailedStopSensor">
+            <summary>
+                Не удалось остановить датчик
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.SensorNotCreated">
+            <summary>
+                Датчик не создан
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.SameDataPorts">
+            <summary>
+                Одинаковые порты у разных датчиков
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.ErrorCode.MatrixSizeMismatch">
+            <summary>
+                Несоответствие размеру матрицы
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorMode.ProfileColumn">
+            <summary>
+                Режим профилей по столбцам
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorMode.ProfileRow">
+            <summary>
+                Режим профилей по строкам
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorMode.Video">
+            <summary>
+                Режим видео
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SensorMode.VideoRam">
+            <summary>
+                Режим видео через ОЗУ
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncMode.SyncExt">
+            <summary>
+                Режим внешней синхронизации
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncMode.SyncNone">
+            <summary>
+                Режим непрерывной работы с заданной частотой
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncMode.SyncCmd">
+            <summary>
+                Режим синхронизации по команде
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncMode.SyncFromStrobe">
+            <summary>
+                Режим синхронизации от аппаратных выходов Q0-7
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncSource.PC">
+            <summary>
+                Команды с ПК
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncSource.Internal">
+            <summary>
+                Внутренний генератор
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncSource.External">
+            <summary>
+                Внешний генератор
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.SyncSource.Special">
+            <summary>
+                Специализированный внешний сигнал
+            </summary>
+        </member>
+        <member name="T:Kogerent.Core.SensorSettings">
+            <summary>
+            Объект датчика со всеми настройками
+            </summary>
+        </member>
+        <member name="T:Kogerent.Core.RegionNames">
+            <summary>
+            Хранит имена регионов
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.ContentRegion">
+            <summary>
+            Центральный регион интерфейса. Отображает основное содержимое
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.RibbonRegion">
+            <summary>
+            Панель управления интерфейса (лента). Содержит набор элементов для управления
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.FooterRegion">
+            <summary>
+            Регион для отображения лога интерфейса
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.LaserscanTabRegion">
+            <summary>
+            Суб-регион для отображения коллекции вкладок. 
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.SettingsTabRegion">
+            <summary>
+            Субрегион для отображения настроек
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.RibbonSubRegion">
+            <summary>
+            Субрегион для отображения вариантов ленты
+            </summary>
+        </member>
+        <member name="F:Kogerent.Core.RegionNames.ContentTablesRegion">
+            <summary>
+            Субрегион для отображения вариантов настроек.
+            </summary>
+        </member>
+    </members>
+</doc>

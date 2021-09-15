@@ -1,0 +1,56 @@
+﻿<Window x:Class="Kogerent.LaserScan.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Kogerent.LaserScan.Views"
+        mc:Ignorable="d"
+        Title="LoginWindow" Height="200" Width="450"
+        WindowStartupLocation="CenterScreen" 
+        WindowStyle="None" 
+        ResizeMode="NoResize"
+        Background="#333">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" MouseDown="TextBlock_MouseDown">
+            <!--close button-->
+            <Button Margin="1" Name="close" Width="30" Height="30" DockPanel.Dock="Right"  Click="logFailedButton_Click"
+                    Style="{StaticResource ToolBarButtonBaseStyle}">
+                <Path Width="15" Height="15"  Stretch="Fill" Fill="{StaticResource FillPath}" Data="{StaticResource closeStyle0}" />
+            </Button>
+            <TextBlock  VerticalAlignment="Center" HorizontalAlignment="Center"
+                        FontSize="22" Foreground="{StaticResource ControlForegroundWhite}" 
+                        Text="Вход в систему" />
+        </DockPanel>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Text="Логин:"  Foreground="{StaticResource ControlForegroundWhite}"
+                   FontSize="20"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Name="loginText"   Text="Введите свой логин..." Width="250" Foreground="{StaticResource DisabledBrush}"/>
+
+            <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Text="Пароль:"   Foreground="{StaticResource ControlForegroundWhite}" FontSize="20"/>
+            <PasswordBox Grid.Row="1" Grid.Column="1" Name="loginPassword"   Width="250" Foreground="{StaticResource DisabledBrush}" Password="Kogerent2012"/>
+
+            <DockPanel Grid.ColumnSpan="2" Grid.Row="2" VerticalAlignment="Center"  LastChildFill="false">
+                <Button Margin="3" DockPanel.Dock="Right"  Width="100" Height="30" Name="logFailedButton" Click="logFailedButton_Click" >Отмена</Button>
+                <Button Margin="3" DockPanel.Dock="Right"   Width="100" Height="30" Name="logInButton" Click="logInButton_Click" >Войти</Button>
+
+            </DockPanel>
+        </Grid>
+
+
+    </Grid>
+</Window>

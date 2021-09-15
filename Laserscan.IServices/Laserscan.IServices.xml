@@ -1,0 +1,1169 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Laserscan.IServices</name>
+    </assembly>
+    <members>
+        <member name="T:Kogerent.Services.Interfaces.ISqlDataService">
+            <summary>
+            Описание службы по работе с базой данных
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISqlDataService.GetConnectionString(System.String)">
+            <summary>
+            Получает строку для связи с базой по ключу
+            </summary>
+            <param name="key">Ключ</param>
+            <returns>Строка для связи</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISqlDataService.InsertData(System.Collections.Generic.List{Kogerent.Core.IntXFloatYPoint},System.String,System.String)">
+            <summary>
+            Вставляет ряд точек в соответствующую таблицу
+            </summary>
+            <param name="points">Точки</param>
+            <param name="tableName">Имя таблицы</param>
+            <param name="name">Ключ</param>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IDiscretizeService.DiscretizeWithSubstitution(System.Collections.Generic.List{System.Drawing.PointF},System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Дискретизирует массив от левой границы до правой с подстановкой значений
+            </summary>
+            <remarks>
+            Значение подстанавливаются по формуле линейной регрессии k*x+b. Кооэффициенты получаются методом вписывания точек в прямую.
+            </remarks>
+            <param name="source">Исходная коллекция точек</param>
+            <param name="discrete">Шаг дискретизации</param>
+            <param name="leftBorder">Левая граница</param>
+            <param name="rightBorder">правая граница</param>
+            <param name="substitute">флаг заполнения пустого дискрета (по умолчанию=true)</param>
+            <list>
+            <exception cref="T:System.ArgumentNullException">Входящий массив не может быть нулл</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Дискрет не может быть меньше нуля</exception>
+            <exception cref="T:System.ArgumentException">"Правая граница должна быть больше левой границы хотя бы на один дискрет"</exception>
+            </list>
+            <returns>Массив дискретизированных точек</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IDiscretizeService.DiscretizeWithSubstitutionAndCorrection(System.Collections.Generic.List{System.Drawing.PointF},System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+             Дискретизирует массив от левой границы до правой с подстановкой значений и коррекцией высоты на величину отклонения
+             <para>Значение подстанавливаются по формуле линейной регрессии k*x+b. Кооэффициенты получаются методом вписывания точек в прямую.</para>
+             <para>Отклонения рассчитываются по формуле линейной регрессии k*x+b.</para>
+            </summary>
+            <param name="source">Исходная коллекция точек</param>
+            <param name="discrete">Шаг дискретизации</param>
+            <param name="leftBorder">Левая граница</param>
+            <param name="rightBorder">правая граница</param>
+            <param name="kCoef">коэффициент наклона</param>
+            <param name="bCoef">коэффициент смещения прямой</param>
+            <param name="substitute">флаг заполнения пустого дискрета (по умолчанию=true)</param>
+             /// <example>
+            Пример вызова кода
+            <code>
+            double[] xs = new double[] { 20d, 30d, 100d, 120d, 180d };
+            double[] ys = new double[] { 0.38, 0.37, 0.02, -0.15, -0.55 };
+            
+            //Вписываем точки в прямую, чтоб получить коэффициенты.
+            Tuple&lt;double, double&gt; t = Fit.Line(xs, ys);
+            _k = (float) t.Item2;
+            _b = (float) t.Item1;
+            
+            float leftBorder = 0;
+            if (CurrentSensor == SensorRepository.Sensors[0] ||
+                CurrentSensor == SensorRepository.Sensors[1])
+                leftBorder = Math.Max(CurrentSensor.LeftBorder, profile[0].X);
+            else
+                leftBorder = CurrentSensor.LeftBorder;
+            List&lt;PointF&gt; discretized = DiscretizeWithSubstitutionAndCorrection(profile, CurrentSensor.DiscretizeStep, leftBorder, CurrentSensor.RightBorder, _k, _b);
+            </code>
+            </example>
+            <list>
+            <exception cref="T:System.ArgumentNullException">Входящий массив не может быть нулл</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Дискрет не может быть меньше нуля</exception>
+            <exception cref="T:System.ArgumentException">"Правая граница должна быть больше левой границы хотя бы на один дискрет"</exception>
+            </list>
+            <returns>массив дискретезированных точек</returns>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.IMathService">
+            <summary>
+            Контракт на создание экземпляров сервиса мат обработки
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.AnalyzeDefectsAsync(Emgu.CV.Image{Emgu.CV.Structure.Gray,System.Byte},Emgu.CV.Image{Emgu.CV.Structure.Gray,System.Byte},System.Single,System.Single,System.Single,System.Single,System.Int32)">
+            <summary>
+            Анализирует дефекты на изображении
+            </summary>
+            <param name="imgUp">Изображение с выпуклыми дефектами</param>
+            <param name="imgDn">Изображение со впуклыми дефектами</param>
+            <param name="widthThreshold">Порог дефектования по ширине</param>
+            <param name="heightThreshold">Порог дефектования по длине</param>
+            <param name="widthDiscrete">Количество мм. в одном пикселе по ширине</param>
+            <param name="heightDiscrete">Количество мм. в одном пикселе по длине</param>
+            <param name="strobe">Номер строба</param>
+            <returns>Кортеж с изображением дефектов и коллекцией дуфектов</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.BitmapToImageSource(System.Drawing.Bitmap)">
+            <summary>
+            Конвертирует Bitmap в BitmapImage
+            </summary>
+            <param name="bitmap">Картинка, которую надо сконвертировать</param>
+            <returns>BitmapImage</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.FillImageDnThreshold(System.Single,System.Collections.Generic.List{System.Collections.Generic.List{System.Drawing.PointF}},System.Int32,System.Int32)">
+            <summary>
+            Создает бинарное изображение из коллекции коллекций точек
+            </summary>
+            <param name="dn">Порог бинаризации вниз</param>
+            <param name="sourceList">Коллекция коллекций точек</param>
+            <param name="width">Ширина выходного изображения</param>
+            <param name="height">Высота выходного изображения</param>
+            <returns>Объект типа Image с байтовой глубиной</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.FillImageUpThreshold(System.Single,System.Collections.Generic.List{System.Collections.Generic.List{System.Drawing.PointF}},System.Int32,System.Int32)">
+            <summary>
+            Создает бинарное изображение из коллекции коллекций точек
+            </summary>
+            <param name="up">Порог бинаризации вверх</param>
+            <param name="sourceList">Коллекция коллекций точек</param>
+            <param name="width">Ширина выходного изображения</param>
+            <param name="height">Высота выходного изображения</param>
+            <returns>Объект типа Image с байтовой глубиной</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.ProfilesToImageDn(System.Single,System.Collections.Generic.List{System.Collections.Generic.IEnumerable{System.Drawing.PointF}},System.Int32,System.Int32)">
+            <summary>
+            Создает бинарное изображение из коллекции коллекций точек
+            </summary>
+            <param name="dn">Порог бинаризации вниз</param>
+            <param name="sourceList">Коллекция коллекций точек</param>
+            <param name="width">Ширина выходного изображения</param>
+            <param name="height">Высота выходного изображения</param>
+            <returns>Объект типа Image с флотовой глубиной</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.ProfilesToImageUp(System.Single,System.Collections.Generic.List{System.Collections.Generic.IEnumerable{System.Drawing.PointF}},System.Int32,System.Int32)">
+            <summary>
+            Создает бинарное изображение из коллекции коллекций точек
+            </summary>
+            <param name="up">Порог бинаризации вверх</param>
+            <param name="sourceList">Коллекция коллекций точек</param>
+            <param name="width">Ширина выходного изображения</param>
+            <param name="height">Высота выходного изображения</param>
+            <returns>Объект типа Image с флотовой глубиной</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.Sum(System.Collections.Generic.IEnumerable{System.Drawing.PointF},System.Collections.Generic.IEnumerable{System.Drawing.PointF})">
+            <summary>
+            Поэлементно вычитает игрики верхних точек из игриков нижних точек
+            </summary>
+            <param name="first">Коллекция верхних точек</param>
+            <param name="second">Коллекция нижних точек</param>
+            <returns>Коллекция точек или нулл</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.XyzwToPointFAsync(System.Single[])">
+            <summary>
+            Конвертирует xyzw массив в коллекцию точек
+            </summary>
+            <param name="xyzw">xyzw массив</param>
+            <returns>Задачу с коллекцией точек</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.XyzwToPointFList(System.Span{System.Single})">
+            <summary>
+            Конвертирует Span в коллекцию точек
+            </summary>
+            <param name="xyzw">Span массив</param>
+            <returns>Коллекцию точек</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.XyzwToPointFSpan(System.Span{System.Single})">
+            <summary>
+            Конвертирует Span xyzw в Span точек
+            </summary>
+            <param name="xyzw">Span массив</param>
+            <returns>Span точек</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.XyzwToPointFSimple(System.Single[])">
+            <summary>
+            Конвертирует xyzw массив в коллекцию точек
+            </summary>
+            <param name="xyzw">xyzw массив</param>
+            <returns>Коллекцию точек</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.DiscretizeWithSubstitution(System.Collections.Generic.List{System.Drawing.PointF},System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Дискретизирует массив от левой границы до правой с подстановкой значений
+            </summary>
+            <remarks>
+            Значение подстанавливаются по формуле линейной регрессии k*x+b. Кооэффициенты получаются методом вписывания точек в прямую.
+            </remarks>    
+            <param name="source">Исходная коллекция точек</param>
+            <param name="discrete">Шаг дискретизации</param>
+            <param name="leftBorder">Левая граница</param>
+            <param name="rightBorder">правая граница</param>
+            <param name="substitute">флаг заполнения пустого дискрета (по умолчанию=true)</param>
+            <example>
+            Пример вызова кода
+            <code>
+            float leftBorder = 0;
+            if (CurrentSensor == SensorRepository.Sensors[0] ||
+                CurrentSensor == SensorRepository.Sensors[1])
+                leftBorder = Math.Max(CurrentSensor.LeftBorder, profile[0].X);
+            else
+                leftBorder = CurrentSensor.LeftBorder;
+            List&lt;PointF&gt; discretized = DiscretizeWithSubstitution(profile, CurrentSensor.DiscretizeStep, leftBorder, CurrentSensor.RightBorder);
+            </code>
+            </example>
+            <list>
+            <exception cref="T:System.ArgumentNullException">Входящий массив не может быть нулл</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Дискрет не может быть меньше нуля</exception>
+            <exception cref="T:System.ArgumentException">"Правая граница должна быть больше левой границы хотя бы на один дискрет"</exception>
+            </list>
+            <returns>Массив дискретизированных точек</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IMathService.DiscretizeWithSubstitutionAndCorrection(System.Collections.Generic.List{System.Drawing.PointF},System.Single,System.Single,System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+             Дискретизирует массив от левой границы до правой с подстановкой значений и коррекцией высоты на величину отклонения
+             <para>Значение подстанавливаются по формуле линейной регрессии k*x+b. Кооэффициенты получаются методом вписывания точек в прямую.</para>
+             <para>Отклонения рассчитываются по формуле линейной регрессии k*x+b.</para>
+            </summary>
+            <param name="source">Исходная коллекция точек</param>
+            <param name="discrete">Шаг дискретизации</param>
+            <param name="leftBorder">Левая граница</param>
+            <param name="rightBorder">правая граница</param>
+            <param name="kCoef">коэффициент наклона</param>
+            <param name="bCoef">коэффициент смещения прямой</param>
+            <param name="substitute">флаг заполнения пустого дискрета (по умолчанию=true)</param>
+             /// <example>
+            Пример вызова кода
+            <code>
+            double[] xs = new double[] { 20d, 30d, 100d, 120d, 180d };
+            double[] ys = new double[] { 0.38, 0.37, 0.02, -0.15, -0.55 };
+            
+            //Вписываем точки в прямую, чтоб получить коэффициенты.
+            Tuple&lt;double, double&gt; t = Fit.Line(xs, ys);
+            _k = (float) t.Item2;
+            _b = (float) t.Item1;
+            
+            float leftBorder = 0;
+            if (CurrentSensor == SensorRepository.Sensors[0] ||
+                CurrentSensor == SensorRepository.Sensors[1])
+                leftBorder = Math.Max(CurrentSensor.LeftBorder, profile[0].X);
+            else
+                leftBorder = CurrentSensor.LeftBorder;
+            List&lt;PointF&gt; discretized = DiscretizeWithSubstitutionAndCorrection(profile, CurrentSensor.DiscretizeStep, leftBorder, CurrentSensor.RightBorder, _k, _b);
+            </code>
+            </example>
+            <list>
+            <exception cref="T:System.ArgumentNullException">Входящий массив не может быть нулл</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Дискрет не может быть меньше нуля</exception>
+            <exception cref="T:System.ArgumentException">"Правая граница должна быть больше левой границы хотя бы на один дискрет"</exception>
+            </list>
+            <returns>массив дискретезированных точек</returns>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.IProcessingService">
+            <summary>
+            Контракт на создание обработчика данных со всех датчиков
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IProcessingService.GenericBufferCount">
+            <summary>
+            Общее количество обработанных профилей
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IProcessingService.LastProfile">
+            <summary>
+            Последний общий профиль
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IProcessingService.Bmp">
+            <summary>
+            Картинка для вывода найденых дефектов
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IProcessingService.Defects">
+            <summary>
+            Коллекция найденных дефектов
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IProcessingService.DefectsAnalyzed">
+            <summary>
+            Пора добавлять дефекты в таблицу?
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IProcessingService.FillCount">
+            <summary>
+            Счетчик заполнения карты
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IProcessingService.Dispose">
+            <summary>
+            Уничтожает объект и освобождает все используемые ресурсы
+            </summary>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.IDefectRepository">
+            <summary>
+            Контракт на создание экзепляров репозитория дефектов
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IDefectRepository.DefectsCollection">
+            <summary>
+            Коллекция найденных дефектов
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IDefectRepository.DefectsPool">
+            <summary>
+            Пул объектов дефектов
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IDefectRepository.ListPool">
+            <summary>
+            Пул объектов профилей
+            </summary>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.IFooterRepository">
+            <summary>
+            Контракт на создание экземпляров сервиса для логгирования в лог интерфейса и установки названия модуля
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IFooterRepository.Text">
+            <summary>
+            Текст сообщения
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IFooterRepository.HeaderText">
+            <summary>
+            Название модуля, написавшего лог
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.IFooterRepository.Title">
+            <summary>
+            Название модуля
+            </summary>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.INonControlZonesRepository">
+            <summary>
+            Сервис хранящий данные о зонах неконтроля
+            </summary>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.ISensorRepository">
+            <summary>
+            Контракт на создания сервиса, хранящего свойства профилометров
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.CurrentSensor">
+            <summary>
+            выбраннык объект профилометра
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.Sensors">
+            <summary>
+            Коллекция объектов профилометров
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.SystemSettings">
+            <summary>
+            Коллекция системных настроек
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.CurrentSystem">
+            <summary>
+            Выбранная системная настройка
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.UpperThreshold">
+            <summary>
+            Верхний порог дефектования
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.DownThreshold">
+            <summary>
+            Нижний порог дефектования
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.TotalSumsPoints">
+            <summary>
+            Коллекция точек ширины
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.WidthThreshold">
+            <summary>
+            Порог дефектования по ширине
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.HeightThreshold">
+            <summary>
+            Порог дефектования по длине
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.GenericCounter">
+            <summary>
+            Общий счетчик
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.QueueCount">
+            <summary>
+            Количество необработанных элементов в очереди
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.SensorPairs">
+            <summary>
+            Пары верхних и нижних профилометров
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.DefectBufferCounter">
+            <summary>
+            Количество найденных дефектов
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.PipelineLimit">
+            <summary>
+            Лимит на добавление профилей в очередь
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.Elapsed">
+            <summary>
+            Время обработки
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.ListPool">
+            <summary>
+            Пул коллекций точек
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.DataCounter">
+            <summary>
+            Счетчик данных
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorRepository.ConveyerSpeed">
+            <summary>
+            Скорость конвейерв
+            </summary>
+        </member>
+        <member name="E:Kogerent.Services.Interfaces.ISensorRepository.PropertyChanged">
+            <summary>
+            Событие изменения свойств
+            </summary>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.ISensorService">
+            <summary>
+            Контракт на создание службы работы с профилометром
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.DataRecieved">
+            <summary>
+            Флаг получения данных
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.FileName">
+            <summary>
+            Название файла библиотеки СенсорЕ
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.FooterRepository">
+            <summary>
+            Сервис для записей в лог интерфейса
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.GetLastErrorCode">
+            <summary>
+            Код ошибок
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.LastCallbackData">
+            <summary>
+            Коллбэки, приходящие от профилометра
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.CallbackPool">
+            <summary>
+            Пул для создания коллбэков
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.LastErrorCode">
+            <summary>
+            Код последней ошибки
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.Logger">
+            <summary>
+            Логгер для дебага
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.NFrameDownloadedFromRam">
+            <summary>
+            Номер кадра из азу
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.RamFrameCount">
+            <summary>
+            Количество кадров в азу
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.RawRamDataBuffer">
+            <summary>
+            размер азу буфера
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.RemainingBytesInRam">
+            <summary>
+            сколько осталось в азу
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.SensorSettings">
+            <summary>
+            Объект настроек профилометра
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.StatusBordersParamsSet">
+            <summary>
+            Стректура параметров границ
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.StatusCorrectionParamsSet">
+            <summary>
+            Структура параметров для коррекции
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.StatusGeneralParamsSet">
+            <summary>
+            Структура общих параметров
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.StatusMatrixParamsSet">
+            <summary>
+            Структура параметров для матрицы
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.SyncFromStrobeMode">
+            <summary>
+            Режим синхронизации по стробу
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.SystemSettings">
+            <summary>
+            Объект настроек системы
+            </summary>
+        </member>
+        <member name="P:Kogerent.Services.Interfaces.ISensorService.DataCounter">
+            <summary>
+            Счетчик пришедших данных
+            </summary>
+        </member>
+        <member name="E:Kogerent.Services.Interfaces.ISensorService.CallbackDataReceived">
+            <summary>
+            Событие прихода данных
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowBlackReference">
+            <summary>
+            Включает или выключает коррекцию уровня черного в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowBorders">
+            <summary>
+            Включает или выключает применение границ рабочей зоны для профиля в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowCalibration">
+            <summary>
+            Включает или выключает пересчет выдаваемого профиля из пикселей в миллиметры, в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowCorrection">
+            <summary>
+            Включает или выключает коррекцию профиля в соответствие с настройками, не изменяя уже заданные значения.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowDiscretize">
+            <summary>
+            Включает или выключает передискретизацию профиля в линейный массив в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowNoiseFixedWindowRemover">
+            <summary>
+            Включает или выключает удаление отдельных шумовых точек методом окна (аппаратно) в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowNoiseFloatWindowRemover">
+            <summary>
+            Включает или выключает удаление отдельных шумовых точек методом плавучего окна в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowPiecewiseLinear">
+            <summary>
+            Включает или выключает кусочную экспозицию в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.AllowTracking">
+            <summary>
+            Включает или выключает режим слежения в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.Call(System.Func{System.Int32},System.String)">
+            <summary>
+            Универсальный метод для вызова функций с записью в лог
+            </summary>
+            <param name="method"></param>
+            <param name="methodName"></param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentNullException">Метода не существует</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.CallbackEvent(System.IntPtr,System.IntPtr,System.Int32,System.Boolean)">
+            <summary>
+                Считывает данные, пришедшие от Callback из библиотеки SensorE.dll и пробрасывает эти данные слушателям.
+            </summary>
+            <param name="sender">Дескриптор объекта датчика.</param>
+            <param name="data">Массив данных.</param>
+            <param name="dataLength">Количество данных.</param>
+            <param name="inVideo">Режим видео? (иначе профиль)</param>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.CreateSensor">
+            <summary>
+            Создает объект датчика в библиотеке SensorE.dll в соответствие с настройками и возвращает его дескриптор.
+            Помимо этого, выбирает порты для передачи данных с датчиков,
+            устанавливает соединение с датчиком, выполняет команду останова <see cref="M:Kogerent.Services.Interfaces.ISensorService.Stop"/>,
+            и считывает необходимые характеристики (например, версия прошивки) датчиков для правильной работы с ним.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.CreateVirtualSensor">
+            <summary>
+            Создает объект виртуального датчика в библиотеке SensorE.dll в соответствие с настройками и возвращает его дескриптор.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.Destroy">
+            <summary>
+            Вызвать при удалении датчика из коллекции
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.DisposeSensor">
+            <summary>
+                Уничтожает объект датчика, который был создан методом <see cref="M:Kogerent.Services.Interfaces.ISensorService.CreateSensor"/> или <see cref="M:Kogerent.Services.Interfaces.ISensorService.CreateVirtualSensor"/>.
+            Если объект датчика не был создан ранее, то ничего не произойдет.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableProfileColumnsMode">
+            <summary>
+            Переводит датчик в режим измерения профиля, когда объектом обработки (колонкой) на изображении является строка.
+            В процессе получения данных с профилометра не осуществляется контроль доставки пакетов (без подтверждения).
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableProfileRowsMode">
+            <summary>
+            Переводит датчик в режиме измерения профиля, когда объектом обработки (колонкой) на изображении является столбец.
+            В процессе получения данных с профилометра не осуществляется контроль доставки пакетов (без подтверждения).
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableSyncCmdMode">
+            <summary>
+                Переводит датчик в режим однократного срабатывания по команде. Одна команда - одно срабатывание.
+                Командой, запускающей срабатывание датчика, является функция SendSync.
+                Установка режима синхронизации по команде может использоваться также для останова работы датчика.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableSyncExtMode">
+            <summary>
+            Переводит датчик в особый режим синхронизации по внешнему импульсу.
+            Данный тип синхронизации используется, если профилометр аппаратно настроен на передачу импульса запуска непосредственно на фотоматрицу,
+            что обеспечивает максимально быструю реакцию.
+            Это стандартный режим внешней синхронизации. Аппаратная настройка выполнятся в процессе изготовления профилометра.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableSyncNoneMode">
+            <summary>
+            Переводит датчик в режим срабатывания по внутреннему таймеру с частотой <see cref="P:Kogerent.Core.SensorSettings.SyncNoneHz"/> Гц.
+            При этом профилометр начинает выполнять измерения с указанной частотой, которая не является синхронной с другими профилометрами в системе.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableVideoMode">
+            <summary>
+            Переключает профилометр в режим выдачи видеокадров и выделяет в памяти буфер,
+            необходимый для временного хранения полученного кадра, в соответствии с размером матрицы + заголовок 64 байта.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.EnableVideoToRamMode">
+            <summary>
+                Включает режим сохранения видеокадра в ОЗУ устройства.
+                При этом при получении кадра вызов Callback-функций происходить не будет.
+                Вместо этого видеокадр будет сохраняться в ОЗУ устройства.
+                Считать содержимое ОЗУ можно отдельной командой.
+                Включение режима сбрасывает работу фотоматрицы,
+                т.е. приводит к сбросу установленной ранее экспозиции и усиления.
+                Данная команда также сбрасывает указатель текущего кадра, хранящегося в ОЗУ.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetAnalogGain">
+            <summary>
+            Считывает значение аналогового усиления видеосигнала в настройки.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetDigitalGain">
+            <summary>
+            Считывает значение цифрового усиления видеосигнала в настройки.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetExposition">
+            <summary>
+            Считывает значение времени экспозиции в условных единицах в настройки.
+            Одна условная единица приблизительно равна 4 мкс.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetFirmwareVersion">
+            <summary>
+            Считывает версию прошивки датчика в <see cref="P:Kogerent.Core.SensorSettings.HWVersion"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetRamFramesCount">
+            <summary>
+            Считывает количество кадров, хранящихся в ОЗУ датчика, в <see cref="P:Kogerent.Services.Interfaces.ISensorService.RamFrameCount"/>.
+            Режим сохранения данных в ОЗУ предназначен только для видеоданных.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetRawRamData">
+            <summary>
+            Считывает все видеоданные, которые имеются в ОЗУ,
+            в <see cref="P:Kogerent.Services.Interfaces.ISensorService.RawRamDataBuffer"/>, <see cref="P:Kogerent.Services.Interfaces.ISensorService.NFrameDownloadedFromRam"/> и <see cref="P:Kogerent.Services.Interfaces.ISensorService.RemainingBytesInRam"/>.
+            В процессе передачи, новые данные в буфере не накапливаются.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetRegisterValue(System.Byte,System.UInt16@)">
+            <summary>
+                Считывает значение из регистра датчика по указанному адресу.
+            ВНИМАНИЕ! Не рекомендуется использовать данный метод! Только для низкоуровневой отладки.
+            [Безопасный вызов аналогичный вызову <see cref="M:Kogerent.Services.Interfaces.ISensorService.Call(System.Func{System.Int32},System.String)"/>]
+            </summary>
+            <param name="nReg">Номер регистра датчика, значение которого необходимо считать.</param>
+            <param name="value">Считанное значение из регистра датчика.</param>
+            <returns>Успешное выполнение?</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetSensorEVersion">
+            <summary>
+                Считывает версию используемой библиотеки SensorE.dll в <see cref="P:Kogerent.Core.SystemSettings.DllVersion"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetStatusBordersParamsSet">
+            <summary>
+            Считывает текущие границы рабочей области в <see cref="P:Kogerent.Services.Interfaces.ISensorService.StatusBordersParamsSet"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetStatusCorrectionParamsSet">
+            <summary>
+            Считывает текущие параметры коррекции профиля в <see cref="P:Kogerent.Services.Interfaces.ISensorService.StatusCorrectionParamsSet"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetStatusGeneralParamsSet">
+            <summary>
+            Считывает текущие параметры объекта датчика общего характера в <see cref="P:Kogerent.Services.Interfaces.ISensorService.StatusGeneralParamsSet"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetStatusMatrixParamsSet">
+            <summary>
+            Считывает текущие параметры видеоматрицы в <see cref="P:Kogerent.Services.Interfaces.ISensorService.StatusMatrixParamsSet"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.GetTemper">
+            <summary>
+            Считывает значение температуры, измеренной датчиком, в <see cref="P:Kogerent.Core.SensorSettings.Temperature"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.Init">
+            <summary>
+                Инициализация датчика.
+            Если идентификатор датчика существует, то будет произведена частичная инициализация, иначе полная.
+            Частичная инициализация подразумевает под собой пропуск "тяжелых" функций, которые делаются один раз после включения питания.
+            Таким образом, частичная инициализация - это в основном изменение настроек и режима работы.
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.InitDllStage">
+            <summary>
+                Инициализирует уровень библиотеки SensorE.dll (версия, отладка, режим заголовка и диапазон портов при создании датчиков).
+            [Безопасный вызов через <see cref="M:Kogerent.Services.Interfaces.ISensorService.Call(System.Func{System.Int32},System.String)"/>]
+            </summary>
+            <returns>Успешное выполнение?</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.LoadCalibration">
+            <summary>
+            Загружает файл калибровки в датчик, который необходим для пересчета пикселей в миллиметры, в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.Log(System.String)">
+            <summary>
+            Пишет в сообщение в лог интерфейса
+            </summary>
+            <param name="message">Сообщение</param>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.OnePointToMm(System.Int32,System.Single,System.Single@,System.Single@)">
+            <summary>
+                Пересчитывает одну точку, представленную в виде координат на матрице (x и y в пикселях) в точку на реальной
+                миллиметровой плоскости,
+                представленную в виде координат по дальности и ширине, по загруженной в объект датчика калибровочной таблице.
+            [Безопасный вызов аналогичный вызову <see cref="M:Kogerent.Services.Interfaces.ISensorService.Call(System.Func{System.Int32},System.String)"/>]
+            </summary>
+            <param name="x">Координата X точки на матрице, в пикселях</param>
+            <param name="y">Координата Y точки на матрице, в пикселях</param>
+            <param name="latitude">Координата по ширине, в миллиметрах</param>
+            <param name="distance">Координата по дальности, в миллиметрах</param>
+            <returns>Успешное выполнение?</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SendSync">
+            <summary>
+            Вызывает однократное срабатывание датчика, при условии, что тот находится в режиме «Синхронизация по команде».
+                Получив данные, библиотека вызывает соответствующую Callback-функцию.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetAnalogGain">
+            <summary>
+            Задает значение аналогового усиления видеосигнала в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetAscendingL">
+            <summary>
+            Включает или выключает режим сортировки координат по L в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetBorders">
+            <summary>
+            Задает границы рабочей зоны для профиля в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetCorrection">
+            <summary>
+            Задает параметры коррекции профиля в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetDebounce">
+            <summary>
+            Задает режим антидребезга сигнала внешней синхронизации в соответствие с настройками.
+            Если фронт сигнала синхронизации зашумлен,
+                данная функция может помочь избавиться от срабатывания фотоматрицы несколько раз подряд по одному фронту, задав
+                время задержки, в течение которого переходные процессы на фронте должны прекратиться. Время задержки задается в
+                периодах тактовой частоты:
+                <para>1. для режима «профиль» - тактовая частота равна 32 МГц;</para>
+                <para>2. для режима «видео» - тактовая частота равна 30 МГц.</para>
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetDebugMode">
+            <summary>
+            Включает или выключает режим отладки в библиотеке SensorE.dll в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetDebugModeListener">
+            <summary>
+            Включает или выключает режим отладки потока приема данных в библиотеке SensorE.dll в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetDigitalGain">
+            <summary>
+            Задает значение цифрового усиления видеосигнала в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetDiscretizeMode">
+            <summary>
+            Задает параметры дискретизации в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetEnhanceHeader">
+            <summary>
+            Включает или выключает расширенный формат заголовка принимаемых данных из библиотеки SensorE.dll в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetExposition">
+            <summary>
+            Задает значение времени экспозиции в условных единицах в соответствие с настройками.
+            Одна условная единица приблизительно равна 4 мкс.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetLaser">
+            <summary>
+            Включает или выключает срабатывание лазера в момент экспозиции кадра, в соответствие с настройками.
+            Данная функция может быть аппаратно отключена при изготовлении профилометра по заказу,
+            в этом случае работа лазера всегда будет разрешена.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetLaserInversion">
+            <summary>
+            Включает или нет инверсию лазера, в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetMissingDesignator">
+            <summary>
+            Задает значение-заменитель для отсутствуюших значений в массиве дискретизированных данных в соответствие с настройками.
+            Имеет смысл только в режиме включенной дискретизации.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetMode">
+            <summary>
+                Переводит датчик в какой-то из режимов измерения в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Режим работы датчика в настройках имеет недопустимое значение.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetNoiseFloatWindowRemoverMode">
+            <summary>
+            Задает параметры удаления шумовых точек методом плавучего окна в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetNumFramesPerStrobe">
+            <summary>
+            Задает количество кадров, получаемых на один строб.
+            </summary>
+            <returns>Код ошибки</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetParameters">
+            <summary>
+            Задает параметры обработки пятен на изображении датчиком, с целью формирования данных профиля, в соответствие с настройками.
+            На режим передачи видео данный метод не оказывает влияния.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetPiecewiseLinearMode">
+            <summary>
+            Задает параметры кусочной экспозиции в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetPipeline">
+            <summary>
+            Управляет включением конвейерного (pipeline) режима формирования кадров.
+            </summary>
+            <returns>Код ошибки</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetPortRange">
+            <summary>
+            Задает диапазон портов, который будет использоваться в запускаемом приложении для соединения с датчиками, в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetRegisterValue(System.Byte,System.UInt16)">
+            <summary>
+            Создает объект датчика в библиотеке SensorE.dll в соответствие с настройками и возвращает его дескриптор.
+            Помимо этого, выбирает порты для передачи данных с датчиков,
+            устанавливает соединение с датчиком, выполняет команду останова <see cref="M:Kogerent.Services.Interfaces.ISensorService.Stop"/>,
+            и считывает необходимые характеристики (например, версия прошивки) датчиков для правильной работы с ним.
+            </summary>
+            <returns>Код ошибки.</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetSubsamplingMatrix">
+            <summary>
+            Задает коэффициент прореживания, который применяется к строкам матрицы, в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetSubsamplingProfile">
+            <summary>
+            Задает коэффициент прореживания, который применяется к колонкам в процессе вычисления профиля, в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetSyncMode">
+            <summary>
+                Переводит датчик в какой-то из режимов синхронизации в соответствие с <see cref="T:Kogerent.Core.SyncMode"/>.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Режим синхронизации датчика в поле данных имеет недопустимое значение.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetTracking">
+            <summary>
+            Задает параметры для режима слежения в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetUncompletedData">
+            <summary>
+            Включает или выключает режим передачи в ПК неполных данных в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetWindow">
+            <summary>
+            Задает размер рабочего окна датчика в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SetZeroDC">
+            <summary>
+            Включает или выключает вычитание постоянной составляющей (измеренной медианой) в соответствие с настройками.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.StartListener">
+            <summary>
+            Запускает поток получения данных от датчика.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.Stop">
+            <summary>
+            Отправка на профилометр команды «стоп».
+            При этом оборудование профилометра перестаёт посылать данные (останова потока получения данных при этом не происходит).
+            Функция не возвращает управление до тех пор, пока профилометр не прекратит передачу данных или не произойдет ошибка таймаута (1 секунда).
+            Данная функция необходима для гарантированного успешного изменения параметров профилометра,
+            если тот занят передачей больших массивов данных в потоке.
+            В противном случае возможно аппаратное зависание профилометра, которое можно будет устранить только пересбросом питания.
+                <para>
+                    Приводит к сбросу следующих параметров в значения по умолчанию:
+                    <para>Усиление (функция SetGain) в значение 40;</para>
+                </para>
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.ISensorService.SyncFromStrobe">
+            <summary>
+            Переводит датчик в режим синхронизации по внешнему импульсу, поступающему на один из входов Q0-Q7.
+            Данный тип внешней синхронизации следует выключать,
+            если профилометр аппаратно настроен для передачи импульса запуска через центральный сигнальный процессор (ЦСП),
+            что позволяет контролировать запуск микропрограммой процессора.
+            Это нестандартный режим, для работы в котором профилометр настраивается по отдельному заказу.
+            Аппаратная настройка выполнятся в процессе изготовления профилометра.
+            </summary>
+            <returns>Код ошибки.</returns>
+            <exception cref="T:System.ObjectDisposedException">Объект датчика не был создан.</exception>
+        </member>
+        <member name="T:Kogerent.Services.Interfaces.IXmlService">
+            <summary>
+            Контракт на создание сервиса сериализации и десериализации
+            </summary>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IXmlService.ReadAs``1(System.String@,``0,System.String)">
+            <summary>
+            Десериализует xml-файл в объект и сохраняет путь
+            </summary>
+            <typeparam name="T">Тип объекта для десериализации</typeparam>
+            <param name="filePath">Строка, куда сохранится путь к файлу</param>
+            <param name="settingsModel">Объект для десериализации</param>
+            <param name="filter">Фильтр</param>
+            <returns>Десериализованный объект</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IXmlService.Read``1(System.String,``0)">
+            <summary>
+            Десериализует xml-файл в объект
+            </summary>
+            <typeparam name="T">Тип объекта для десериализации</typeparam>
+            <param name="filePath">Путь к файлу</param>
+            <param name="settingsModel">Объект для десериализации</param>
+            <returns>Десериализованный объект</returns>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IXmlService.Write``1(System.String,``0)">
+            <summary>
+            Сериализует объект в xml-файл
+            </summary>
+            <typeparam name="T">Тип объекта для сериализации</typeparam>
+            <param name="filePath">Куда сохранить</param>
+            <param name="settingsModel">Объект для сериализации</param>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IXmlService.WriteAs``1(``0,System.String)">
+            <summary>
+            Сериализует объект в xml-файл
+            </summary>
+            <typeparam name="T">Тип объекта для сериализации</typeparam>
+            <param name="settingsModel">Объект для сериализации</param>
+            <param name="filter">Фильтр</param>
+        </member>
+        <member name="M:Kogerent.Services.Interfaces.IXmlService.WriteJS``1(System.String,``0)">
+            <summary>
+            Сериализует объект в json-файл
+            </summary>
+            <typeparam name="T">Тип объекта для сериализации</typeparam>
+            <param name="filePath">Куда сохранить</param>
+            <param name="settingsModel">Объект для сериализации</param>
+        </member>
+    </members>
+</doc>
