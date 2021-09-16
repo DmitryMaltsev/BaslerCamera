@@ -58,6 +58,7 @@ namespace LaserScan
             _ = containerRegistry.RegisterSingleton<ISynchronizer, Synchronizer>();
             _ = containerRegistry.RegisterSingleton<IBaslerRepository, BaslerRepository>();
             _ = containerRegistry.RegisterSingleton<IBaslerService, BaslerService>();
+            _ = containerRegistry.RegisterSingleton<IBenchmarkRepository, BenchmarkRepository>();
         }
 
         /// <summary>

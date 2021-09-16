@@ -40,7 +40,8 @@ namespace Kogerent.Core
             for (int i = 0; i < chunkSize && queue.Count > 0; i++)
             {
                 T result;
-                while (!queue.TryDequeue(out result)) { }
+                queue.TryDequeue(out result);
+                //while (!queue.TryDequeue(out result)) { }
                 yield return result;
             }
         }

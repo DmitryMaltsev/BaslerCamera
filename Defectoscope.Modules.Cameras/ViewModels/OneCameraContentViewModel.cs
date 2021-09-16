@@ -17,7 +17,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -62,6 +64,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private object _locker = new();
         private Bgr _red = new Bgr(0, 0, 255);
         private Bgr _blue = new Bgr(255, 0, 0);
+        private Stopwatch imgProcessingStopWatch = new();
+        Image<Gray, byte> img = new Image<Gray, byte>(6144, 1000);
+        private byte[] deltas = new byte[6144];
 
         public int Shift { get; set; }
 
@@ -93,6 +98,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _calibrate ?? (_calibrate = new DelegateCommand(ExecuteCalibrate));
 
         private DelegateCommand _clearDefects;
+        private int _cnt = 0;
+
         public DelegateCommand ClearDefects =>
             _clearDefects ?? (_clearDefects = new DelegateCommand(ExecuteClearDefects));
 
@@ -106,11 +113,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IBaslerRepository BaslerRepository { get; }
         public ILogger Logger { get; }
         public IFooterRepository FooterRepository { get; }
+        public IBenchmarkRepository BenchmarkRepository { get; }
 
         public OneCameraContentViewModel(IRegionManager regionManager, IApplicationCommands applicationCommands,
                                          IImageProcessingService imageProcessing, IDefectRepository defectRepository,
                                          IMathService mathService, IXmlService xmlService, IBaslerRepository baslerRepository,
-                                         ILogger logger, IFooterRepository footerRepository) : base(regionManager)
+                                         ILogger logger, IFooterRepository footerRepository, IBenchmarkRepository benchmarkRepository) : base(regionManager)
         {
             ApplicationCommands = applicationCommands;
             ApplicationCommands.Calibrate.RegisterCommand(Calibrate);
@@ -123,6 +131,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BaslerRepository = baslerRepository;
             Logger = logger;
             FooterRepository = footerRepository;
+            BenchmarkRepository = benchmarkRepository;
             //CurrentCamera.CameraImageEvent += ImageGrabbed;
             var uriSource = new Uri(@"/Defectoscope.Modules.Cameras;component/Images/ImageSurce_cam.png", UriKind.Relative);
             ImageSource = new BitmapImage(uriSource);
@@ -139,17 +148,29 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void _drawingTimer_Tick(object sender, EventArgs e)
         {
-            if (_resImage != null)
+            try
             {
-                ImageSource = MathService.BitmapToImageSource(_resImage.ToBitmap());
+                if (_resImage != null)
+                {
+                    ImageSource = MathService.BitmapToImageSource(_resImage.ToBitmap());
 
+                }
+                if (_defects != null && _needToDrawDefects)
+                {
+                    DefectRepository.DefectsCollection.AddRange(_defects);
+                    _needToDrawDefects = false;
+                }
+                BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
+                BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
             }
-            if (_defects != null && _needToDrawDefects)
+            catch (Exception ex)
             {
-                DefectRepository.DefectsCollection.AddRange(_defects);
-                _needToDrawDefects = false;
+                string msg = $"{ex.Message}";
+                Logger?.Error(msg);
+                FooterRepository.Text = msg;
+                ExecuteStopCamera();
             }
-            BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
+
         }
 
         private void ImageGrabbed(object sender, BufferData e)
@@ -184,6 +205,15 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     CurrentCamera.P = p;
                 }
+
+                for (int i = 0; i < deltas.Length; i++)
+                {
+                    double p0 = CurrentCamera.P[0];
+                    double p1 = CurrentCamera.P[1] * i;
+                    double p2 = CurrentCamera.P[2] * Math.Pow(i, 2);
+                    double p3 = CurrentCamera.P[3] * Math.Pow(i, 3);
+                    deltas[i] = (byte)(p0 + p1 + p2 + p3);
+                }
             }
         }
 
@@ -202,42 +232,52 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             //Span<List<byte>> lines = bufferData.Data.SplitByCount(bufferData.Width).ToArray();
                             Span<byte> lines = bufferData.Data;
 
-                            for (int n = 0, offset = 0; n < bufferData.Height; n++, offset += bufferData.Width)
-                            {
-                                Span<byte> slice = lines.Slice(offset, bufferData.Width);
+                            //for (int n = 0, offset = 0; n < bufferData.Height; n++, offset += bufferData.Width)
+                            //{
+                            //    Span<byte> slice = lines.Slice(offset, bufferData.Width);
 
-                                for (int j = 0; j < slice.Length; j++)
-                                {
-                                    double p0 = CurrentCamera.P[0];
-                                    double p1 = CurrentCamera.P[1] * j;
-                                    double p2 = CurrentCamera.P[2] * Math.Pow(j, 2);
-                                    double p3 = CurrentCamera.P[3] * Math.Pow(j, 3);
-                                    double y = p0 + p1 + p2 + p3;
-                                    byte newY = (byte)(slice[j] + y);
-                                    slice[j] = newY;
-                                }
-                                //Parallel.For(0, line.Count, (j) => 
-                                //{
-                                //    double p0 = CurrentCamera.P[0];
-                                //    double p1 = CurrentCamera.P[1] * j;
-                                //    double p2 = CurrentCamera.P[2] * Math.Pow(j, 2);
-                                //    double p3 = CurrentCamera.P[3] * Math.Pow(j, 3);
-                                //    double y = p0 + p1 + p2 + p3;
-                                //    byte newY = (byte)(line[j] + y);
-                                //    line[j] = newY;
-                                //});
-                                _videoBuffer.Enqueue(slice.ToArray());
-                                _strobe++;
-                                if (_videoBuffer.Count % 1000 == 0)
-                                {
-                                    ProcessImage();
-                                }
+                            //    for (int j = 0; j < slice.Length; j++)
+                            //    {
+                            //        double p0 = CurrentCamera.P[0];
+                            //        double p1 = CurrentCamera.P[1] * j;
+                            //        double p2 = CurrentCamera.P[2] * Math.Pow(j, 2);
+                            //        double p3 = CurrentCamera.P[3] * Math.Pow(j, 3);
+                            //        double y = p0 + p1 + p2 + p3;
+                            //        byte newY = (byte)(slice[j] + y);
+                            //        slice[j] = newY;
+                            //    }
+                            //    //Parallel.For(0, line.Count, (j) => 
+                            //    //{
+                            //    //    double p0 = CurrentCamera.P[0];
+                            //    //    double p1 = CurrentCamera.P[1] * j;
+                            //    //    double p2 = CurrentCamera.P[2] * Math.Pow(j, 2);
+                            //    //    double p3 = CurrentCamera.P[3] * Math.Pow(j, 3);
+                            //    //    double y = p0 + p1 + p2 + p3;
+                            //    //    byte newY = (byte)(line[j] + y);
+                            //    //    line[j] = newY;
+                            //    //});
+                            //    //_videoBuffer.Enqueue(slice.ToArray());
+                            //    Buffer.BlockCopy(slice.ToArray(), 0, img.Data, offset * _cnt, slice.Length);
+                            //    _strobe++;
+                            //    if (_cnt == 200)
+                            //    {
+                            //        _cnt = 1;
+                            //        ProcessImage();
+                            //    }
+                            //}
+                            Buffer.BlockCopy(bufferData.Data, 0, img.Data, _cnt * _width, bufferData.Data.Length);
+                            _cnt += bufferData.Height;
+                            if (_cnt == 1000)
+                            {
+                                _cnt = 0;
+                                ProcessImage();
                             }
                         }
                     }
                 }
 
                 //await Task.Delay(TimeSpan.FromTicks(1_000));
+                Thread.Sleep(TimeSpan.FromTicks(1000));
             }
         }
 
@@ -245,30 +285,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             try
             {
-                var imgUp = new Image<Gray, byte>(_width, 1000);
-                var imgDn = new Image<Gray, byte>(_width, 1000);
-                var imgTotal = new Image<Bgr, byte>(_width, 1000);
-                var chunk = _videoBuffer.DequeueChunk(1000).ToList();
-                var imgTotalData = imgTotal.Data;
-                for (int y = 0; y < chunk.Count; y++)
+                imgProcessingStopWatch.Restart();
+                for (int y = 0; y < 1000; y++)
                 {
-                    Span<byte> line = chunk[y];
-                    for (int x = 0; x < line.Length; x++)
-                    {
-                        byte b = line[x];
-                        if (b >= CurrentCamera.UpThreshold)
-                        {
-                            //imgUp.Data[y, x, 0] = 255;
-                            imgTotalData[y, x, 2] = 255;
-                        }
-
-                        if (b <= CurrentCamera.DownThreshold)
-                        {
-                            //imgDn.Data[y, x, 0] = 255;
-                            imgTotalData[y, x, 0] = 255;
-                        }
-
-                        //imgUp.Data[y, x, 0] = b;
+                    for (int x = 0; x < _width; x++)
+                    { 
+                        img.Data[y, x, 0] += deltas[x];
                     }
                 }
 
@@ -281,10 +303,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 //    defect.X += Shift;
                 //}
                 //_resImage = img.Clone(); /*imgUp.Convert<Bgr, byte>();*/
+                //var imgTotal = new Image<Gray, byte>(imgTotalData);
+                _resImage = img.Convert<Bgr, byte>();
                 //if (defects.Any()) _needToDrawDefects = true;
                 //_defects = defects;
 
-                _resImage = imgTotal.Clone();
+                //_resImage = imgTotal.Clone();
+                imgProcessingStopWatch.Stop();
             }
             catch (Exception ex)
             {

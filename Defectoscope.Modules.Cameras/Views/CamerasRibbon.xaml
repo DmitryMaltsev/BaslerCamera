@@ -101,9 +101,13 @@
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Padding="5" Content="Очистить" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
                             <TextBlock  Grid.Column="1" Text="{Binding BaslerRepository.TotalCount}" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center"
+                                        FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock Grid.Row="1"  Grid.Column="0" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=IS: {0:n3}}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center"
                                         FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
                         </Grid>

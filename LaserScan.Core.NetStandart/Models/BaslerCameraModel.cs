@@ -125,11 +125,12 @@ namespace LaserScan.Core.NetStandart.Models
 
                 // Параметр MaxNumBuffer можно использовать для управления количеством буферов, выделенных для захвата. 
                 // Значение по умолчанию для этого параметра - 10.
-                Camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(700);
+                //Camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(700);
                 Camera.Parameters[PLCamera.Height].SetValue(5);
                 //Camera.Parameters[PLCamera.AcquisitionFrameRate].SetValue(10000);
-                Camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(94.5);
-
+               // Camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(94.5);
+                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
+                Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
                 //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
 
                 //Camera.Parameters[PLCamera.TriggerSelector].SetValue(PLCamera.TriggerSelector.FrameStart);
