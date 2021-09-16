@@ -60,6 +60,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private IOrderedEnumerable<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
         private object _locker = new();
+        private Bgr _red = new Bgr(0, 0, 255);
+        private Bgr _blue = new Bgr(255, 0, 0);
 
         public int Shift { get; set; }
 
@@ -94,7 +96,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand ClearDefects =>
             _clearDefects ?? (_clearDefects = new DelegateCommand(ExecuteClearDefects));
 
-       
+
 
         public IApplicationCommands ApplicationCommands { get; }
         public IImageProcessingService ImageProcessing { get; }
@@ -133,8 +135,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _drawingTimer.Start();
         }
 
-        
-        
+
+
         private void _drawingTimer_Tick(object sender, EventArgs e)
         {
             if (_resImage != null)
@@ -197,21 +199,22 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         var res = _concurentVideoBuffer.TryDequeue(out var bufferData);
                         if (res && bufferData != default)
                         {
-                            Span<List<byte>> lines = bufferData.Data.SplitByCount(bufferData.Width).ToArray();
-                            
-                            for (int n = 0; n < lines.Length; n++)
-                            { 
-                                Span<byte> span = lines[n].ToArray();
+                            //Span<List<byte>> lines = bufferData.Data.SplitByCount(bufferData.Width).ToArray();
+                            Span<byte> lines = bufferData.Data;
 
-                                for (int j = 0; j < span.Length; j++)
+                            for (int n = 0, offset = 0; n < bufferData.Height; n++, offset += bufferData.Width)
+                            {
+                                Span<byte> slice = lines.Slice(offset, bufferData.Width);
+
+                                for (int j = 0; j < slice.Length; j++)
                                 {
                                     double p0 = CurrentCamera.P[0];
                                     double p1 = CurrentCamera.P[1] * j;
                                     double p2 = CurrentCamera.P[2] * Math.Pow(j, 2);
                                     double p3 = CurrentCamera.P[3] * Math.Pow(j, 3);
                                     double y = p0 + p1 + p2 + p3;
-                                    byte newY = (byte)(span[j] + y);
-                                    span[j] = newY;
+                                    byte newY = (byte)(slice[j] + y);
+                                    slice[j] = newY;
                                 }
                                 //Parallel.For(0, line.Count, (j) => 
                                 //{
@@ -223,7 +226,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 //    byte newY = (byte)(line[j] + y);
                                 //    line[j] = newY;
                                 //});
-                                _videoBuffer.Enqueue(span.ToArray());
+                                _videoBuffer.Enqueue(slice.ToArray());
                                 _strobe++;
                                 if (_videoBuffer.Count % 1000 == 0)
                                 {
@@ -244,7 +247,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 var imgUp = new Image<Gray, byte>(_width, 1000);
                 var imgDn = new Image<Gray, byte>(_width, 1000);
+                var imgTotal = new Image<Bgr, byte>(_width, 1000);
                 var chunk = _videoBuffer.DequeueChunk(1000).ToList();
+                var imgTotalData = imgTotal.Data;
                 for (int y = 0; y < chunk.Count; y++)
                 {
                     Span<byte> line = chunk[y];
@@ -253,29 +258,33 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         byte b = line[x];
                         if (b >= CurrentCamera.UpThreshold)
                         {
-                            imgUp.Data[y, x, 0] = 255;
+                            //imgUp.Data[y, x, 0] = 255;
+                            imgTotalData[y, x, 2] = 255;
                         }
 
                         if (b <= CurrentCamera.DownThreshold)
                         {
-                            imgDn.Data[y, x, 0] = 255;
+                            //imgDn.Data[y, x, 0] = 255;
+                            imgTotalData[y, x, 0] = 255;
                         }
 
                         //imgUp.Data[y, x, 0] = b;
                     }
                 }
 
-                (Image<Bgr, byte> img, var defects) = ImageProcessing.AnalyzeDefects(imgUp, imgDn, CurrentCamera.WidthThreshold,
-                                                                        CurrentCamera.HeightThreshold,
-                                                                        CurrentCamera.WidthDescrete,
-                                                                        CurrentCamera.HeightDescrete, _strobe);
-                foreach (var defect in defects)
-                {
-                    defect.X += Shift;
-                }
-                _resImage = img.Clone(); /*imgUp.Convert<Bgr, byte>();*/
-                if (defects.Any()) _needToDrawDefects = true;
-                _defects = defects;
+                //(Image<Bgr, byte> img, var defects) = ImageProcessing.AnalyzeDefects(imgUp, imgDn, CurrentCamera.WidthThreshold,
+                //                                                        CurrentCamera.HeightThreshold,
+                //                                                        CurrentCamera.WidthDescrete,
+                //                                                        CurrentCamera.HeightDescrete, _strobe);
+                //foreach (var defect in defects)
+                //{
+                //    defect.X += Shift;
+                //}
+                //_resImage = img.Clone(); /*imgUp.Convert<Bgr, byte>();*/
+                //if (defects.Any()) _needToDrawDefects = true;
+                //_defects = defects;
+
+                _resImage = imgTotal.Clone();
             }
             catch (Exception ex)
             {
