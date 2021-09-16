@@ -19,6 +19,7 @@ namespace LaserScan.Core.NetStandart.Models
         public int LeftBorder { get; set; }
         public int RightBorder { get; set; }
         public double[] P { get; set; } = new double[4];
+        public sbyte[] Deltas { get; set; }
 
         private string _ip;
         public string Ip
@@ -201,7 +202,6 @@ namespace LaserScan.Core.NetStandart.Models
             if (Camera != null)
             {
                 // Одиночный захват
-
                 Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.SingleFrame);
                 Camera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }

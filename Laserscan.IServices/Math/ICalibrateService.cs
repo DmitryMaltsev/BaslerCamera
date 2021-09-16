@@ -2,7 +2,8 @@
 {
     public interface ICalibrateService
     {
-        (double[], byte[]) Calibrate(byte[] data);
-        byte[] DefaultCalibration(double[] p, int count);
+        (double[], int[]) Calibrate(byte[] data);
+        sbyte[] CalibrateRaw(byte[] data);
+        sbyte[] DefaultCalibration(double[] p, int count);
     }
 }

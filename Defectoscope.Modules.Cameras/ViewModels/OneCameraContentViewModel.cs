@@ -47,7 +47,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
 
             IsActiveChanged?.Invoke(this, new EventArgs());
-        } 
+        }
         #endregion
 
 
@@ -65,7 +65,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private Bgr _blue = new Bgr(255, 0, 0);
         private Stopwatch imgProcessingStopWatch = new();
         Image<Gray, byte> img;
-        private byte[] deltas;
+        private sbyte[] deltas;
+        private int[] intDeltas;
         private Gray _white = new Gray(255);
         private Gray upThreshold;
 
@@ -181,6 +182,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ImageGrabbed(object sender, BufferData e)
         {
+            if (CurrentCamera.Deltas == null)
+            {
+                FooterRepository.Text = "Cameras aren't calibrated";
+                return;
+            }
             if (!CurrentCamera.CalibrationMode)
             {
                 _concurentVideoBuffer.Enqueue(e);
@@ -195,11 +201,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private void PerformCalibration(BufferData e)
         {
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
-            int index = lines.Count>=5?3:0;
-            (CurrentCamera.P, deltas) = CalibrateService.Calibrate(lines[index].ToArray());
+            int index = lines.Count >= 5 ? 4 : 0;
+            //(CurrentCamera.P, deltas) = CalibrateService.Calibrate(lines[index].ToArray());
+            CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
         }
 
-        private  void ProcessImageAction()
+        private void ProcessImageAction()
         {
             while (true)
             {
@@ -235,7 +242,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     {
                         for (int x = 0; x < _width; x++)
                         {
-                            img.Data[y, x, 0] += deltas[x];
+                            //img.Data[y, x, 0] += deltas[x];
+                            img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
                         }
                     }
                 }
@@ -286,6 +294,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             try
             {
+               
                 CurrentCamera.CameraInit();
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
@@ -349,7 +358,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             _width = CurrentCamera.RightBorder - CurrentCamera.LeftBorder;
-            deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
+            //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
+           
             img = new Image<Gray, byte>(_width, 1000);
         }
         #endregion
