@@ -2,6 +2,7 @@
 using Emgu.CV.Structure;
 
 using Kogerent.Core;
+using Kogerent.Logger;
 using Kogerent.Services.Interfaces;
 
 using LaserScan.Core.NetStandart.Models;
@@ -101,10 +102,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IMathService MathService { get; }
         public IXmlService XmlService { get; }
         public IBaslerRepository BaslerRepository { get; }
+        public ILogger Logger { get; }
+        public IFooterRepository FooterRepository { get; }
 
         public OneCameraContentViewModel(IRegionManager regionManager, IApplicationCommands applicationCommands,
                                          IImageProcessingService imageProcessing, IDefectRepository defectRepository,
-                                         IMathService mathService, IXmlService xmlService, IBaslerRepository baslerRepository) : base(regionManager)
+                                         IMathService mathService, IXmlService xmlService, IBaslerRepository baslerRepository,
+                                         ILogger logger, IFooterRepository footerRepository) : base(regionManager)
         {
             ApplicationCommands = applicationCommands;
             ApplicationCommands.Calibrate.RegisterCommand(Calibrate);
@@ -115,6 +119,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             MathService = mathService;
             XmlService = xmlService;
             BaslerRepository = baslerRepository;
+            Logger = logger;
+            FooterRepository = footerRepository;
             //CurrentCamera.CameraImageEvent += ImageGrabbed;
             var uriSource = new Uri(@"/Defectoscope.Modules.Cameras;component/Images/ImageSurce_cam.png", UriKind.Relative);
             ImageSource = new BitmapImage(uriSource);
@@ -273,6 +279,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             catch (Exception ex)
             {
+                string msg = $"{ex.Message}";
+                Logger?.Error(msg);
+                FooterRepository.Text = msg;
                 ExecuteStopCamera();
             }
         }
