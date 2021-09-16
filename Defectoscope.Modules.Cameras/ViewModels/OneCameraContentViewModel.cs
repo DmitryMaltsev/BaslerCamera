@@ -195,11 +195,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private void PerformCalibration(BufferData e)
         {
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
-            (CurrentCamera.P, deltas) = CalibrateService.Calibrate(lines[0].ToArray());
-
+            int index = lines.Count>=5?3:0;
+            (CurrentCamera.P, deltas) = CalibrateService.Calibrate(lines[index].ToArray());
         }
 
-        private /*async*/ void ProcessImageAction()
+        private  void ProcessImageAction()
         {
             while (true)
             {
@@ -221,9 +221,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         }
                     }
                 }
-
-                //await Task.Delay(TimeSpan.FromTicks(1_000));
-                // Thread.Sleep(TimeSpan.FromTicks(1000));
             }
         }
 
