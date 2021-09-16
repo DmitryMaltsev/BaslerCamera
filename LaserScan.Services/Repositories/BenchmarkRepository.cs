@@ -14,5 +14,12 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _imageProcessingSpeedCounter, value); }
         }
 
+        private bool _rawIamage;
+        public bool RawImage
+        {
+            get { return _rawIamage; }
+            set { SetProperty(ref _rawIamage, value); }
+        }
+
     }
 }

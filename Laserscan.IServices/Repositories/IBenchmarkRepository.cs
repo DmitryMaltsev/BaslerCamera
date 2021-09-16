@@ -3,5 +3,6 @@
     public interface IBenchmarkRepository
     {
         double ImageProcessingSpeedCounter { get; set; }
+        bool RawImage { get; set; }
     }
 }

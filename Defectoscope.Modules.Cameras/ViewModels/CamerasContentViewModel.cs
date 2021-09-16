@@ -56,28 +56,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             DefectRepository = defectRepository;
             XmlService = xmlService;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
-            ApplicationCommands.InitAllSensors.RegisterCommand(InitCameras);
+            //ApplicationCommands.InitAllSensors.RegisterCommand(InitCameras);
             //ApplicationCommands.StartAllSensors.RegisterCommand(StartAllCameras);
-            ApplicationCommands.StopAllSensors.RegisterCommand(StopAllCameras);
+            //ApplicationCommands.StopAllSensors.RegisterCommand(StopAllCameras);
             DefectRepository.DefectsCollection = new();
-            //for (int i = 0; i < 20; i++)
-            //{
-            //    DefectRepository.DefectsCollection.Add(new DefectProperties
-            //    {
-            //        Время = DateTime.Now.AddMinutes(i),
-            //        X = i,
-            //        Y = i,
-            //        Высота = i * i,
-            //        Ширина = i - i,
-            //        Тип = i % 2 == 0 ? "вдав" : "выпуклость"
-            //    }); ;
-            //}
         }
 
         public override void Destroy()
         {
             ApplicationCommands.Destroy.UnregisterCommand(DestroyCommand);
-            ApplicationCommands.InitAllSensors.UnregisterCommand(InitCameras);
+            //ApplicationCommands.InitAllSensors.UnregisterCommand(InitCameras);
             ApplicationCommands.StartAllSensors.UnregisterCommand(StartAllCameras);
             ApplicationCommands.StopAllSensors.UnregisterCommand(StopAllCameras);
             base.Destroy();

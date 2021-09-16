@@ -41,7 +41,7 @@ namespace LaserScan
             _ = containerRegistry.RegisterSingleton<IFooterRepository, FooterRepository>();
             _ = containerRegistry.Register<ISensorService, SensorService>();
             _ = containerRegistry.RegisterSingleton<IXmlService, XmlService>();
-           // _ = containerRegistry.RegisterSingleton<ILaserscanUIService, LaserscanUIService>();
+            // _ = containerRegistry.RegisterSingleton<ILaserscanUIService, LaserscanUIService>();
             _ = containerRegistry.RegisterSingleton<IApplicationCommands, ApplicationCommands>();
             _ = containerRegistry.RegisterSingleton<IMathService, MathService>();
             _ = containerRegistry.RegisterSingleton<IDefectRepository, DefectRepository>();
@@ -59,6 +59,7 @@ namespace LaserScan
             _ = containerRegistry.RegisterSingleton<IBaslerRepository, BaslerRepository>();
             _ = containerRegistry.RegisterSingleton<IBaslerService, BaslerService>();
             _ = containerRegistry.RegisterSingleton<IBenchmarkRepository, BenchmarkRepository>();
+            _ = containerRegistry.RegisterSingleton<ICalibrateService, CalibrateService>();
         }
 
         /// <summary>

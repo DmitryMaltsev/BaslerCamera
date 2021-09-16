@@ -20,7 +20,6 @@ namespace LaserScan.Core.NetStandart.Models
         public int RightBorder { get; set; }
         public double[] P { get; set; } = new double[4];
 
-
         private string _ip;
         public string Ip
         {
@@ -82,81 +81,74 @@ namespace LaserScan.Core.NetStandart.Models
         // Инициализация камеры
         public void CameraInit()
         {
+            List<ICameraInfo> allCameras = CameraFinder.Enumerate();
 
-            try
+            ICameraInfo currentInfo = allCameras.FirstOrDefault(ci => ci["SerialNumber"] == SerialNumber);
+
+            if (currentInfo == default)
             {
-                List<ICameraInfo> allCameras = CameraFinder.Enumerate();
-
-                ICameraInfo currentInfo = allCameras.FirstOrDefault(ci => ci["SerialNumber"] == SerialNumber);
-
-                if (currentInfo == default)
-                {
-                    return;
-                }
-
-                if (Camera != null)
-                {
-                    StopAndKill();
-                    return;
-                }
-
-
-
-                Camera = new Camera(currentInfo);
-
-
-                // режим сбора данных на свободный непрерывный сбор данных
-                Camera.CameraOpened += Configuration.AcquireContinuous;
-
-                // Событие потери соединения
-                Camera.ConnectionLost += Camera_ConnectionLost;
-
-                // Собитие старта захвата
-                Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
-
-                // Событие захвата изображения
-                Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
-
-                // Событие остановки захвата 
-                Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
-
-                //Открываем камеру
-                Camera.Open();
-
-                // Параметр MaxNumBuffer можно использовать для управления количеством буферов, выделенных для захвата. 
-                // Значение по умолчанию для этого параметра - 10.
-                //Camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(700);
-                Camera.Parameters[PLCamera.Height].SetValue(5);
-                //Camera.Parameters[PLCamera.AcquisitionFrameRate].SetValue(10000);
-               // Camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(94.5);
-                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
-                Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
-                //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
-
-                //Camera.Parameters[PLCamera.TriggerSelector].SetValue(PLCamera.TriggerSelector.FrameStart);
-                //Camera.Parameters[PLCamera.TriggerMode].SetValue(PLCamera.TriggerMode.On);
-                //Camera.Parameters[PLCamera.TriggerSource].SetValue(PLCamera.TriggerSource.Line1);
-                ////Camera.Parameters[PLCamera.LineTermination].SetValue(true); 
-                //Camera.Parameters[PLCamera.TriggerActivation].SetValue(PLCamera.TriggerActivation.RisingEdge);
-                //Camera.Parameters[PLCamera.AcquisitionFrameCount].SetValue(1000);
-
-                //Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);-------
-
-                //// Select the acquisition start trigger
-                //Camera.TriggerSelector.SetValue(TriggerSelector_AcquisitionStart);
-                //// Set the mode for the selected trigger
-                //Camera.TriggerMode.SetValue(TriggerMode_On);
-                //// Set the source for the selected trigger
-                //Camera.TriggerSource.SetValue(TriggerSource_Software);
-                //// Set the acquisition frame count
-                //Camera.AcquisitionFrameCount.SetValue(5);
-
-                Initialized = true; // успешная инициализация
+                return;
             }
-            catch (Exception ex)
+
+            if (Camera != null)
             {
                 StopAndKill();
+                return;
             }
+
+
+
+            Camera = new Camera(currentInfo);
+
+
+            // режим сбора данных на свободный непрерывный сбор данных
+            Camera.CameraOpened += Configuration.AcquireContinuous;
+
+            // Событие потери соединения
+            Camera.ConnectionLost += Camera_ConnectionLost;
+
+            // Собитие старта захвата
+            Camera.StreamGrabber.GrabStarted += StreamGrabber_GrabStarted;
+
+            // Событие захвата изображения
+            Camera.StreamGrabber.ImageGrabbed += StreamGrabber_ImageGrabbed;
+
+            // Событие остановки захвата 
+            Camera.StreamGrabber.GrabStopped += StreamGrabber_GrabStopped;
+
+            //Открываем камеру
+            Camera.Open();
+
+            // Параметр MaxNumBuffer можно использовать для управления количеством буферов, выделенных для захвата. 
+            // Значение по умолчанию для этого параметра - 10.
+            //Camera.Parameters[PLCameraInstance.MaxNumBuffer].SetValue(700);
+            Camera.Parameters[PLCamera.Height].SetValue(5);
+            //Camera.Parameters[PLCamera.AcquisitionFrameRate].SetValue(10000);
+            // Camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(94.5);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
+            Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
+            //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
+
+            //Camera.Parameters[PLCamera.TriggerSelector].SetValue(PLCamera.TriggerSelector.FrameStart);
+            //Camera.Parameters[PLCamera.TriggerMode].SetValue(PLCamera.TriggerMode.On);
+            //Camera.Parameters[PLCamera.TriggerSource].SetValue(PLCamera.TriggerSource.Line1);
+            ////Camera.Parameters[PLCamera.LineTermination].SetValue(true); 
+            //Camera.Parameters[PLCamera.TriggerActivation].SetValue(PLCamera.TriggerActivation.RisingEdge);
+            //Camera.Parameters[PLCamera.AcquisitionFrameCount].SetValue(1000);
+
+            //Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);-------
+
+            //// Select the acquisition start trigger
+            //Camera.TriggerSelector.SetValue(TriggerSelector_AcquisitionStart);
+            //// Set the mode for the selected trigger
+            //Camera.TriggerMode.SetValue(TriggerMode_On);
+            //// Set the source for the selected trigger
+            //Camera.TriggerSource.SetValue(TriggerSource_Software);
+            //// Set the acquisition frame count
+            //Camera.AcquisitionFrameCount.SetValue(5);
+
+            Initialized = true; // успешная инициализация
+
         }
 
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)
@@ -209,7 +201,7 @@ namespace LaserScan.Core.NetStandart.Models
             if (Camera != null)
             {
                 // Одиночный захват
-                
+
                 Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.SingleFrame);
                 Camera.StreamGrabber.Start(1, GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }

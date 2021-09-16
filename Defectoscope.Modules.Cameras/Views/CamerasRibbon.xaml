@@ -20,7 +20,8 @@
                                 <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="0" Content="Инит"  Command="{Binding ApplicationCommands.InitAllSensors}"/>
-                            <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="0" Content="Старт"  Command="{Binding ApplicationCommands.StartAllSensors}" IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
+                            <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="0" Content="Старт"  Command="{Binding ApplicationCommands.StartAllSensors}" 
+                                    IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="1" Content="Стоп"  Command="{Binding ApplicationCommands.StopAllSensors}"/>
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="Запас"  Command="{Binding ApplicationCommands.InitAllSensors}"/>
                         </Grid>
@@ -110,6 +111,8 @@
                             <TextBlock Grid.Row="1"  Grid.Column="0" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=IS: {0:n3}}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center"
                                         FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <CheckBox Grid.Row="1" Grid.Column="1" Content="Raw" IsChecked="{Binding BenchmarkRepository.RawImage}"
+                                      VerticalAlignment="Center"/>
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
