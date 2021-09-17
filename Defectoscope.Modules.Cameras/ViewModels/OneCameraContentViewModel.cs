@@ -50,28 +50,28 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
         #endregion
 
-
+        #region Private Fields
         private bool _needToDrawDefects;
         private Queue<byte[]> _videoBuffer;
         private ConcurrentQueue<BufferData> _concurentVideoBuffer;
+        private ConcurrentQueue<byte[,,]> _imageDataBuffer;
         private int _width;
         private int _strobe;
         private readonly Task _processVideoWork;
+        private readonly Task _processImageTask;
+        private bool _needToProcessImage;
         private Image<Bgr, byte> _resImage;
         private IOrderedEnumerable<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
-        private object _locker = new();
-        private Bgr _red = new Bgr(0, 0, 255);
-        private Bgr _blue = new Bgr(255, 0, 0);
         private Stopwatch imgProcessingStopWatch = new();
-        Image<Gray, byte> img;
-        private sbyte[] deltas;
-        private int[] intDeltas;
-        private Gray _white = new Gray(255);
-        private Gray upThreshold;
+        private Image<Gray, byte> img;
+        private Image<Gray, byte> tempImage;
+        private byte[,,] imgData;
+        private bool _needToSave = true;
+        private int _cnt;
+        #endregion
 
-        public int Shift { get; set; }
-
+        #region Delegate Commands
         private BaslerCameraModel _currentCamera;
         public BaslerCameraModel CurrentCamera
         {
@@ -100,13 +100,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _calibrate ?? (_calibrate = new DelegateCommand(ExecuteCalibrate));
 
         private DelegateCommand _clearDefects;
-        private int _cnt = 0;
 
         public DelegateCommand ClearDefects =>
             _clearDefects ?? (_clearDefects = new DelegateCommand(ExecuteClearDefects));
+        #endregion
 
-
-
+        #region Properties
         public IApplicationCommands ApplicationCommands { get; }
         public IImageProcessingService ImageProcessing { get; }
         public IDefectRepository DefectRepository { get; }
@@ -117,6 +116,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IFooterRepository FooterRepository { get; }
         public IBenchmarkRepository BenchmarkRepository { get; }
         public ICalibrateService CalibrateService { get; }
+        public int Shift { get; set; }
+        #endregion
 
         public OneCameraContentViewModel(IRegionManager regionManager, IApplicationCommands applicationCommands,
                                          IImageProcessingService imageProcessing, IDefectRepository defectRepository,
@@ -144,14 +145,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ImageSource = new BitmapImage(uriSource);
             _videoBuffer = new();
             _concurentVideoBuffer = new();
-            _processVideoWork = new Task(() => ProcessImageAction());
+            _imageDataBuffer = new();
+
+            _processVideoWork = new Task(() => ProceesBuffersAction());
             _processVideoWork.Start();
+
+            _processImageTask = new Task(() => ProcessImageAction());
+            _processImageTask.Start();
+
             _drawingTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             _drawingTimer.Tick += _drawingTimer_Tick;
             _drawingTimer.Start();
 
         }
-
 
 
         private void _drawingTimer_Tick(object sender, EventArgs e)
@@ -160,7 +166,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 if (_resImage != null)
                 {
-                    ImageSource = MathService.BitmapToImageSource(_resImage.ToBitmap());
+                    var bmp = _resImage.ToBitmap();
+                    ImageSource = MathService.BitmapToImageSource(bmp);
 
                 }
                 if (_defects != null && _needToDrawDefects)
@@ -170,6 +177,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 }
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
+                BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
             }
             catch (Exception ex)
             {
@@ -206,7 +214,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
         }
 
-        private void ProcessImageAction()
+        private async void ProceesBuffersAction()
         {
             while (true)
             {
@@ -218,68 +226,102 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         var res = _concurentVideoBuffer.TryDequeue(out var bufferData);
                         if (res && bufferData != default)
                         {
-                            Buffer.BlockCopy(bufferData.Data, 0, img.Data, _cnt * _width, bufferData.Data.Length);
+                            Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
                             _cnt += bufferData.Height;
+                            _strobe += bufferData.Height;
+                            bufferData.Dispose();
+                            //GC.Collect();
                             if (_cnt == 1000)
                             {
+                                byte[,,] data3Darray = new byte[1000, _width, 1];
+                                Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
+                                _imageDataBuffer.Enqueue(data3Darray);
                                 _cnt = 0;
-                                ProcessImage();
+                                _needToProcessImage = true;
                             }
                         }
                     }
                 }
+                await Task.Delay(1);
             }
         }
 
-        private void ProcessImage()
+        private void ProcessImageAction()
         {
-            try
+            while (true)
             {
-                imgProcessingStopWatch.Restart();
-                if (!BenchmarkRepository.RawImage)
+                if (_needToProcessImage)
                 {
-                    for (int y = 0; y < 1000; y++)
+                    try
                     {
-                        for (int x = 0; x < _width; x++)
+                        if (_imageDataBuffer.TryDequeue(out var dataBuffer))
                         {
-                            //img.Data[y, x, 0] += deltas[x];
-                            img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                            _imageDataBuffer.Clear();
+                            imgProcessingStopWatch.Restart();
+                            img.Data = dataBuffer;
+
+
+                            if (!BenchmarkRepository.RawImage)
+                            {
+                                for (int y = 0; y < img.Height; y++)
+                                {
+                                    for (int x = 0; x < _width; x++)
+                                    {
+                                        //img.Data[y, x, 0] += deltas[x];
+                                        img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                                    }
+                                }
+                            }
+                            using (var upImg = img.CopyBlank())
+                            using (var dnImg = img.CopyBlank())
+                            {
+                                CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
+                                CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
+
+                                //if (_needToSave)
+                                //{
+                                //    var dir = Directory.CreateDirectory($"{Environment.CurrentDirectory}\\ResultImages").FullName;
+                                //    var path = Path.Combine(dir, $"result_{CurrentCamera.ID}_Up.png");
+                                //    var path2 = Path.Combine(dir, $"result_{CurrentCamera.ID}_Dn.png");
+                                //    upImg.ToBitmap().Save(path, System.Drawing.Imaging.ImageFormat.Png);
+                                //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
+                                //    _needToSave = false;
+                                //}
+
+
+                                (Image<Bgr, byte> img2, var defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
+                                                                                                      CurrentCamera.WidthThreshold,
+                                                                                                      CurrentCamera.HeightThreshold,
+                                                                                                      CurrentCamera.WidthDescrete,
+                                                                                                      CurrentCamera.HeightDescrete,
+                                                                                                      _strobe);
+                                foreach (var defect in defects)
+                                {
+                                    defect.X += Shift;
+                                }
+
+                                //_resImage = img2.Clone();
+                                _resImage = img.Convert<Bgr, byte>();
+
+                                if (defects.Any()) _needToDrawDefects = true;
+                                _defects = defects;
+                            }
+                            imgProcessingStopWatch.Stop();
+                            _needToProcessImage = false;
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        string msg = $"{ex.Message}";
+                        Logger?.Error(msg);
+                        FooterRepository.Text = msg;
+                        ExecuteStopCamera();
+                    }
+                    finally
+                    {
+                        GC.Collect();
+                    }
                 }
-                var upImg = img.CopyBlank();
-
-                CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
-
-                var dnImg = img.CopyBlank();
-
-                CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
-
-                (Image<Bgr, byte> img2, var defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
-                                                                                      CurrentCamera.WidthThreshold,
-                                                                                      CurrentCamera.HeightThreshold,
-                                                                                      CurrentCamera.WidthDescrete,
-                                                                                      CurrentCamera.HeightDescrete,
-                                                                                      _strobe);
-                foreach (var defect in defects)
-                {
-                    defect.X += Shift;
-                }
-
-                //_resImage = img2.Clone();
-                _resImage = img.Convert<Bgr, byte>();
-
-                if (defects.Any()) _needToDrawDefects = true;
-                _defects = defects;
-
-                imgProcessingStopWatch.Stop();
-            }
-            catch (Exception ex)
-            {
-                string msg = $"{ex.Message}";
-                Logger?.Error(msg);
-                FooterRepository.Text = msg;
-                ExecuteStopCamera();
             }
         }
 
@@ -294,7 +336,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             try
             {
-               
+
                 CurrentCamera.CameraInit();
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
@@ -359,7 +401,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             _width = CurrentCamera.RightBorder - CurrentCamera.LeftBorder;
             //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
-           
+
+            tempImage = new Image<Gray, byte>(_width, 1000);
             img = new Image<Gray, byte>(_width, 1000);
         }
         #endregion

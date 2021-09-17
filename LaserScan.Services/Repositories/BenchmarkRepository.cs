@@ -21,5 +21,12 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _rawIamage, value); }
         }
 
+        private int _tempQueueCount;
+        public int TempQueueCount
+        {
+            get { return _tempQueueCount; }
+            set { SetProperty(ref _tempQueueCount, value); }
+        }
+
     }
 }

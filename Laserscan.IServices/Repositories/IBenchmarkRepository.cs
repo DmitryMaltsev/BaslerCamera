@@ -4,5 +4,6 @@
     {
         double ImageProcessingSpeedCounter { get; set; }
         bool RawImage { get; set; }
+        int TempQueueCount { get; set; }
     }
 }
