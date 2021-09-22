@@ -111,14 +111,10 @@
                                 <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Padding="5" Content="Очистить дефекты" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
-                            <TextBlock  Grid.Column="1" Text="{Binding BaslerRepository.TotalCount}" 
-                                        VerticalAlignment="Center"  HorizontalAlignment="Center"
-                                        FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            <TextBlock Grid.Row="1"  Grid.Column="0" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=IS: {0:n3}}" 
-                                        VerticalAlignment="Center"  HorizontalAlignment="Center"
-                                        FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            <CheckBox Grid.Row="1" Grid.Column="1" Content="Raw" IsChecked="{Binding BenchmarkRepository.RawImage}"
-                                      VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding BenchmarkRepository.RawImage}"
+                                     VerticalAlignment="Center">
+                                <TextBlock Text="Включить фильтрацию" Foreground="{StaticResource ControlForeground}"/>
+                            </CheckBox>
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -127,18 +123,26 @@
                     <!--#endregion-->
 
                     <!--#region Clear Defects -->
-                    <DockPanel LastChildFill="False" Width="150">
+                    <DockPanel LastChildFill="False" Width="250">
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="{Binding BenchmarkRepository.TempQueueCount,StringFormat=IDB {0}}"
-                                      VerticalAlignment="Center"/>
+                            <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Очередь на принятие" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.TotalCount}" VerticalAlignment="Center"  HorizontalAlignment="Center"
+                                        FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock  Grid.Row="1" Grid.Column="0"  Margin="1" Text="Очередь на обработку" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock  Grid.Row="1" Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.TempQueueCount}" Foreground="{StaticResource ControlForegroundWhite}"
+                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <TextBlock   Grid.Row="2" Grid.Column="0"  Margin="1" Text="Время обработки" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter}" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
                         </Grid>
                         <TextBlock Text="Метрика" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
