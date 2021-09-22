@@ -113,7 +113,7 @@
                             <Button Grid.Column="0" Padding="5" Content="Очистить дефекты" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
                             <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding BenchmarkRepository.RawImage}"
                                      VerticalAlignment="Center">
-                                <TextBlock Text="Включить фильтрацию" Foreground="{StaticResource ControlForeground}"/>
+                                <TextBlock Text="Отключить калибровку" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
