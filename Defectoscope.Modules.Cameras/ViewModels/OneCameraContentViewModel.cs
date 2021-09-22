@@ -16,6 +16,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -166,9 +167,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 if (_resImage != null)
                 {
-                    var bmp = _resImage.ToBitmap();
+                   Bitmap bmp = _resImage.ToBitmap();
                     ImageSource = MathService.BitmapToImageSource(bmp);
-
                 }
                 if (_defects != null && _needToDrawDefects)
                 {
@@ -223,7 +223,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        var res = _concurentVideoBuffer.TryDequeue(out var bufferData);
+                        var res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
                         if (res && bufferData != default)
                         {
                             Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
