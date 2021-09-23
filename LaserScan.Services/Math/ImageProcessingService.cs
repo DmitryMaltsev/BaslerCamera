@@ -448,8 +448,8 @@ namespace Kogerent.Services.Implementation
                                                             Image<Bgr, byte> tempBmp, bool up)
         {
             List<DefectProperties> defects = new();
-            var rectColor = up ? _blueBgr : _redBgr;
-            var largeContours = dnContours.Where(c => c.Width * widthDiscrete >= widthThreshold && c.Height * heightDiscrete >= heightThreshold).ToList();
+            Bgr rectColor = up ? _blueBgr : _redBgr;
+            List<ContourData> largeContours = dnContours.Where(c => c.Width * widthDiscrete >= widthThreshold && c.Height * heightDiscrete >= heightThreshold).ToList();
 
             foreach (ContourData c in largeContours)
             {
@@ -469,7 +469,7 @@ namespace Kogerent.Services.Implementation
                 };
                 defects.Add(defect);
 
-                var rectF = new Rectangle(rectangle.Location, size);
+                Rectangle rectF = new Rectangle(rectangle.Location, size);
 
                 tempBmp.Draw(rectF, rectColor, 3);
             }

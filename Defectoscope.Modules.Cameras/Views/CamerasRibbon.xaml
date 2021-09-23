@@ -23,7 +23,7 @@
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="0" Content="Старт"  Command="{Binding ApplicationCommands.StartAllSensors}" 
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="1" Content="Стоп"  Command="{Binding ApplicationCommands.StopAllSensors}"/>
-                            <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="Запас"  Command="{Binding ApplicationCommands.InitAllSensors}"/>
+                            <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="Запас"/>
                         </Grid>
                         <TextBlock Text="Управление" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -44,8 +44,8 @@
                             </Grid.RowDefinitions>
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="0" Content="Калибровка"  Command="{Binding ApplicationCommands.Calibrate}"/>
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="0" Content="Сохранить"  Command="{Binding SaveCamerasSettings}"/>
-                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="1" Content="Init"  Command="{Binding ApplicationCommands.InitAllSensors}"/>
-                            <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="1" Content="Init"  Command="{Binding ApplicationCommands.InitAllSensors}"/>
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="1" Content="Init"/>
+                            <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="1" Content="Init"/>
                         </Grid>
                         <TextBlock Text="Калибровка" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>

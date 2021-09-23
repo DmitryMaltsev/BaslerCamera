@@ -287,20 +287,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
                                 //    _needToSave = false;
                                 //}
-
-
-                                (Image<Bgr, byte> img2, var defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
+                                (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
                                                                                                       CurrentCamera.WidthThreshold,
                                                                                                       CurrentCamera.HeightThreshold,
                                                                                                       CurrentCamera.WidthDescrete,
                                                                                                       CurrentCamera.HeightDescrete,
                                                                                                       _strobe);
-                                foreach (var defect in defects)
+
+                                foreach (DefectProperties defect in defects)
                                 {
                                     defect.X += Shift;
                                 }
-
-                                //_resImage = img2.Clone();
+                               // _resImage = img2.Clone();
                                 _resImage = img.Convert<Bgr, byte>();
 
                                 if (defects.Any()) _needToDrawDefects = true;
