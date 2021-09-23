@@ -365,7 +365,7 @@ namespace Kogerent.Services.Implementation
                                                                                   float heightDiscrete, int strobe)
         {
             List<DefectProperties> defects = new();
-            var defectCollection = new ConcurrentBag<DefectProperties>();
+            ConcurrentBag<DefectProperties> defectCollection = new ConcurrentBag<DefectProperties>();
             GetContours(imgUp, out List<ContourData> upContours);
             GetContours(imgDn, out List<ContourData> dnContours);
             var imgWidth = Math.Max(imgDn.Width, imgUp.Width);

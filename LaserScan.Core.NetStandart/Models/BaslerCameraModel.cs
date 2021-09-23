@@ -21,6 +21,7 @@ namespace LaserScan.Core.NetStandart.Models
         public double[] P { get; set; } = new double[4];
         public sbyte[] Deltas { get; set; }
 
+        #region Raised properties
         private string _ip;
         public string Ip
         {
@@ -68,7 +69,8 @@ namespace LaserScan.Core.NetStandart.Models
         {
             get { return _heightThreshold; }
             set { SetProperty(ref _heightThreshold, value); }
-        }
+        } 
+        #endregion
 
         public event EventHandler<BufferData> CameraImageEvent;// событие, имеющее делегат CameraImage
 
