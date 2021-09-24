@@ -25,5 +25,6 @@ namespace Kogerent.Services.Interfaces
         /// Пул объектов профилей
         /// </summary>
         ObjectPool<List<PointF>> ListPool { get; set; }
+        bool VisualAnalizeIsActive { get; set; }
     }
 }

@@ -34,16 +34,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IBaslerRepository BaslerRepository { get; }
         public IXmlService XmlService { get; }
         public IBenchmarkRepository BenchmarkRepository { get; }
+        public IDefectRepository DefectRepository { get; }
 
         public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository,
             IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,
-            IXmlService xmlService, IBenchmarkRepository benchmarkRepository) : base(regionManager)
+            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository) : base(regionManager)
         {
             FooterRepository = footerRepository;
             ApplicationCommands = applicationCommands;
             BaslerRepository = baslerRepository;
             XmlService = xmlService;
             BenchmarkRepository = benchmarkRepository;
+            DefectRepository = defectRepository;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
         }
 

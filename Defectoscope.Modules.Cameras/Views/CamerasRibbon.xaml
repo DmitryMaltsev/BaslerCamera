@@ -109,11 +109,16 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Padding="5" Content="Очистить дефекты" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
                             <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding BenchmarkRepository.RawImage}"
                                      VerticalAlignment="Center">
                                 <TextBlock Text="Отключить калибровку" Foreground="{StaticResource ControlForeground}"/>
+                            </CheckBox>
+                            <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding  DefectRepository.VisualAnalizeIsActive}" 
+                                      VerticalAlignment="Center">
+                                <TextBlock Text="Визуализация дефектов" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>

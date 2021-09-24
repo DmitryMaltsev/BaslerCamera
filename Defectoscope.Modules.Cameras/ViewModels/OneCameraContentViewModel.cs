@@ -197,7 +197,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             if (!CurrentCamera.CalibrationMode)
             {
-                    _concurentVideoBuffer.Enqueue(e);
+                _concurentVideoBuffer.Enqueue(e);
             }
             else
             {
@@ -298,9 +298,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     defect.X += Shift;
                                 }
-                               // _resImage = img2.Clone();
-                                _resImage = img.Convert<Bgr, byte>();
-
+                                if (DefectRepository.VisualAnalizeIsActive)
+                                {
+                                    _resImage = img2.Clone();
+                                }
+                                else
+                                {
+                                    _resImage = img.Convert<Bgr, byte>();
+                                }
                                 if (defects.Any()) _needToDrawDefects = true;
                                 _defects = defects;
                             }
@@ -384,7 +389,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.TotalCount = 0;
                 BenchmarkRepository.ImageProcessingSpeedCounter = 0;
                 BenchmarkRepository.TempQueueCount = 0;
-            }     
+            }
             CurrentCamera.StopAndKill();
             FooterRepository.Text = $"Stopped = true";
         }

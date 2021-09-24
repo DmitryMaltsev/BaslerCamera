@@ -77,7 +77,6 @@ namespace LaserScan.Core.NetStandart.Models
         //public delegate void CameraImage(BufferData bmp); // делегат CameraImage, представляющий метод с возвращ. значением BufferData
         [XmlIgnore]
         public Camera Camera { get; set; }
-
         // Управляем процессом получения изображений камерой
         bool GrabOver = false;
 

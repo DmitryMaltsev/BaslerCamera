@@ -1,7 +1,10 @@
 ﻿using Kogerent.Core;
 using Kogerent.Services.Interfaces;
+
 using Microsoft.Extensions.ObjectPool;
+
 using Prism.Mvvm;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -31,5 +34,15 @@ namespace Kogerent.Services.Implementation
         /// Пул объектов профилей
         /// </summary>
         public ObjectPool<List<PointF>> ListPool { get; set; } = ObjectPool.Create<List<PointF>>();
+
+        /// <summary>
+        /// Активация отрисовки дефектов на картинках
+        /// </summary>
+        private bool _visualAnalizeIsActive = true;
+        public bool VisualAnalizeIsActive
+        {
+            get { return _visualAnalizeIsActive; }
+            set { SetProperty(ref _visualAnalizeIsActive   , value); }
+        }
     }
 }
