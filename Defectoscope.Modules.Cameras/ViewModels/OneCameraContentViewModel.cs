@@ -300,7 +300,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 }
                                 if (DefectRepository.VisualAnalizeIsActive)
                                 {
-                                    _resImage = img2.Clone();
+                                    _resImage = img2; //img2.Clone();
                                 }
                                 else
                                 {

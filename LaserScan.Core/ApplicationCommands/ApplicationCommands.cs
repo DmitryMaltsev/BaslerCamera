@@ -162,5 +162,7 @@ namespace Kogerent.Core
         public CompositeCommand Destroy { get; } = new();
 
         public CompositeCommand Calibrate { get; } = new();
+
+        public CompositeCommand CheckNoCalibrateAll { get; } = new();
     }
 }
