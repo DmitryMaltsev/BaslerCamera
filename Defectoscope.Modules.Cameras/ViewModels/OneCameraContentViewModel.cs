@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
@@ -50,7 +51,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             IsActiveChanged?.Invoke(this, new EventArgs());
         }
         #endregion
-
+        public string SettingsDir => Directory.CreateDirectory($"{Environment.CurrentDirectory}\\Settings").FullName;
         #region Private Fields
         private bool _needToDrawDefects;
         private Queue<byte[]> _videoBuffer;
@@ -61,6 +62,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private readonly Task _processVideoWork;
         private readonly Task _processImageTask;
         private bool _needToProcessImage;
+        private bool _rawMode = false;
+        private bool _filterMode = false;
         private Image<Bgr, byte> _resImage;
         private IOrderedEnumerable<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
@@ -104,6 +107,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         public DelegateCommand ClearDefects =>
             _clearDefects ?? (_clearDefects = new DelegateCommand(ExecuteClearDefects));
+
+        private DelegateCommand _takeRawData;
+        public DelegateCommand TakeRawData =>
+            _takeRawData ?? (_takeRawData = new DelegateCommand(ExecuteTakeRawData));
+
+        private DelegateCommand _takeFilteredData;
+        public DelegateCommand TakeFilteredData =>
+            _takeFilteredData ?? (_takeFilteredData = new DelegateCommand(ExecuteTakeFilteredData));
+
+
+
+
         #endregion
 
         #region Properties
@@ -132,6 +147,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.SaveDefectsAndCrearTable.RegisterCommand(ClearDefects);
             ApplicationCommands.InitAllSensors.RegisterCommand(Init);
             ApplicationCommands.StopAllSensors.RegisterCommand(StopCamera);
+            ApplicationCommands.CheckNoCalibrateAll.RegisterCommand(TakeRawData);
+            ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -204,6 +221,60 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 PerformCalibration(e);
                 CurrentCamera.CalibrationMode = false;
             }
+            if (_filterMode)
+            {
+                try
+                {
+                    List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
+                    List<byte> line = lines[0];
+                    List<byte> newLine = new();
+                    string path = Path.Combine(SettingsDir, $"{_currentCamera.ID}_filterData.xml");
+                    // XmlService.
+                    for (int i = 0; i < line.Count; i++)
+                    {
+                        if ((line[i] + CurrentCamera.Deltas[i]) >= 255)
+                        {
+                            newLine.Add(255);
+                        }
+                        else
+                        {
+                            newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
+                        }
+
+                    }
+                    XmlService.Write(path, newLine);
+                    _filterMode = false;
+                    //         ExecuteStopCamera();
+                }
+                catch (Exception ex)
+                {
+                    string msg = $"{ex.Message}";
+                    Logger?.Error(msg);
+                    FooterRepository.Text = msg;
+                    ExecuteStopCamera();
+                }
+
+            }
+            if (_rawMode)
+            {
+                try
+                {
+                    List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
+                    List<byte> line = lines[0];
+                    string path = Path.Combine(SettingsDir, $"{_currentCamera.ID}_RawData.xml");
+                    // XmlService
+                    XmlService.Write(path, line);
+                    _rawMode = false;
+                    //   ExecuteStopCamera();
+                }
+                catch (Exception ex)
+                {
+                    string msg = $"{ex.Message}";
+                    Logger?.Error(msg);
+                    FooterRepository.Text = msg;
+                    ExecuteStopCamera();
+                }
+            }
         }
 
         private void PerformCalibration(BufferData e)
@@ -254,7 +325,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     try
                     {
-                        if (_imageDataBuffer.TryDequeue(out var dataBuffer))
+                        if (_imageDataBuffer.TryDequeue(out byte[,,] dataBuffer))
                         {
                             _imageDataBuffer.Clear();
                             imgProcessingStopWatch.Restart();
@@ -268,7 +339,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     for (int x = 0; x < _width; x++)
                                     {
                                         //img.Data[y, x, 0] += deltas[x];
-                                        img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                                        if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
+                                        {
+                                            img.Data[y, x, 0] = 255;
+                                        }
+                                        else
+                                        {
+                                            img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                                        }                                           
                                     }
                                 }
                             }
@@ -374,6 +452,28 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
+            }
+        }
+
+        void ExecuteTakeRawData()
+        {
+            if (CurrentCamera == null) return;
+            if (CurrentCamera.Initialized)
+            {
+                // CurrentCamera.CalibrationMode = true;
+                CurrentCamera.OneShotForCalibration();
+                _rawMode = true;
+            }
+        }
+
+        void ExecuteTakeFilteredData()
+        {
+            if (CurrentCamera == null) return;
+            if (CurrentCamera.Initialized)
+            {
+                // CurrentCamera.CalibrationMode = true;
+                CurrentCamera.OneShotForCalibration();
+                _filterMode = true;
             }
         }
 

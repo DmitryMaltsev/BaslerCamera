@@ -47,6 +47,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BenchmarkRepository = benchmarkRepository;
             DefectRepository = defectRepository;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
+            
         }
 
         #region Execute methods delegates

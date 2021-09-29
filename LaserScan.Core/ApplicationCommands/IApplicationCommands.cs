@@ -41,5 +41,6 @@ namespace Kogerent.Core
         CompositeCommand StartAllSensors { get; }
         CompositeCommand Calibrate { get; }
         CompositeCommand CheckNoCalibrateAll { get; }
+        CompositeCommand CheckFilterAll { get; }
     }
 }
