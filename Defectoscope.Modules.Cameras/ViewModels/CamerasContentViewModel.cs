@@ -122,9 +122,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
-            var cameras = new List<BaslerCameraModel>();
+            List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-
+            BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth;
             //TODO: Если файл с настройками не существует - создать настройки по умолчанию и записать их в файл.
 
             //string[] ips = { "0.0.0.0" };

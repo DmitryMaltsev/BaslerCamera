@@ -1,9 +1,8 @@
 ﻿using Kogerent.Core;
 using Kogerent.Services.Interfaces;
-
 using Prism.Commands;
 using Prism.Regions;
-
+using LaserScan.Core.NetStandart.Models;
 using System;
 using System.IO;
 
@@ -47,14 +46,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BenchmarkRepository = benchmarkRepository;
             DefectRepository = defectRepository;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
-            
+           
         }
 
         #region Execute methods delegates
         private void ExecuteSaveCamerasSettings()
         {
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
-            foreach (LaserScan.Core.NetStandart.Models.BaslerCameraModel cameraModel in BaslerRepository.BaslerCamerasCollection)
+            foreach (BaslerCameraModel cameraModel in BaslerRepository.BaslerCamerasCollection)
             {
                 cameraModel.CanvasWidth = BaslerRepository.CanvasWidth;
             }
@@ -63,7 +62,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ExecuteDestroyCommand()
         {
-
             Destroy();
         }
         #endregion

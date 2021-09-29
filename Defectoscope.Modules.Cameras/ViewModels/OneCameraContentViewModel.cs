@@ -317,8 +317,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 ExecuteStopCamera();
                             }
 
-
-
                             Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
                             _cnt += bufferData.Height;
                             _strobe += bufferData.Height;
