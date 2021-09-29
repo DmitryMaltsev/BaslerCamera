@@ -11,5 +11,6 @@ namespace Kogerent.Services.Interfaces
         BaslerCameraModel CurrentCamera { get; set; }
         bool AllCamerasInitialized { get; set; }
         int TotalCount { get; set; }
+        float CanvasWidth { get; set; }
     }
 }

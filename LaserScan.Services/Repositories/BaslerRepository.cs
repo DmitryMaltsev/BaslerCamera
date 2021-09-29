@@ -40,5 +40,12 @@ namespace Kogerent.Services.Implementation
             get { return _totalCount; }
             set { SetProperty(ref _totalCount, value); }
         }
+
+        private float _canvasWidth;
+        public float CanvasWidth
+        {
+            get { return _canvasWidth; }
+            set { SetProperty(ref _canvasWidth, value); }
+        }
     }
 }

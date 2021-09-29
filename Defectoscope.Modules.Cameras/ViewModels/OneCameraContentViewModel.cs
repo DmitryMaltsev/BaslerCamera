@@ -75,7 +75,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private int _cnt;
         #endregion
 
-        #region Delegate Commands
         private BaslerCameraModel _currentCamera;
         public BaslerCameraModel CurrentCamera
         {
@@ -90,6 +89,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             set { SetProperty(ref _imageSource, value); }
         }
 
+
+        #region Delegate Commands
         private DelegateCommand _init;
         public DelegateCommand Init => _init ??= new DelegateCommand(Executeinit);
 
@@ -115,9 +116,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _takeFilteredData;
         public DelegateCommand TakeFilteredData =>
             _takeFilteredData ?? (_takeFilteredData = new DelegateCommand(ExecuteTakeFilteredData));
-
-
-
 
         #endregion
 
@@ -254,7 +252,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     ExecuteStopCamera();
                 }
 
-            }
+            }         
             if (_rawMode)
             {
                 try
@@ -294,9 +292,33 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        var res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
+                        bool res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
                         if (res && bufferData != default)
                         {
+                            try
+                            {
+                                if (CurrentCamera.ID == "Центральная камера" || CurrentCamera.ID == "Правая камера")
+                                {
+                                    List<byte> bufferByteList = new();
+                                    List<List<byte>> InvertList = bufferData.Data.SplitByCount(_width).ToList();
+                                    foreach (List<byte> invertBytes in InvertList)
+                                    {
+                                        invertBytes.Reverse(0, invertBytes.Count);
+                                        bufferByteList.AddRange(invertBytes);
+                                    }
+                                    bufferData.Data = bufferByteList.ToArray();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                string msg = $"{ex.Message}";
+                                Logger?.Error(msg);
+                                FooterRepository.Text = msg;
+                                ExecuteStopCamera();
+                            }
+
+
+
                             Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
                             _cnt += bufferData.Height;
                             _strobe += bufferData.Height;
@@ -307,6 +329,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 byte[,,] data3Darray = new byte[1000, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
+
                                 _cnt = 0;
                                 _needToProcessImage = true;
                             }
@@ -329,6 +352,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         {
                             _imageDataBuffer.Clear();
                             imgProcessingStopWatch.Restart();
+
                             img.Data = dataBuffer;
 
 
@@ -346,12 +370,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                         else
                                         {
                                             img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
-                                        }                                           
+                                        }
                                     }
                                 }
                             }
-                            using (var upImg = img.CopyBlank())
-                            using (var dnImg = img.CopyBlank())
+                            using (Image<Gray, byte> upImg = img.CopyBlank())
+                            using (Image<Gray, byte> dnImg = img.CopyBlank())
                             {
                                 CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
                                 CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
@@ -513,7 +537,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private void OnNavigatedTo()
         {
             CurrentCamera.CameraImageEvent += ImageGrabbed;
-            _width = CurrentCamera.RightBorder - CurrentCamera.LeftBorder;
+            _width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
             //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
 
             tempImage = new Image<Gray, byte>(_width, 1000);

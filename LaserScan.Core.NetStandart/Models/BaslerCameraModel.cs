@@ -16,8 +16,9 @@ namespace LaserScan.Core.NetStandart.Models
         public float WidthDescrete { get; set; }
         public int Hz { get; set; }
         public string SerialNumber { get; set; }
-        public int LeftBorder { get; set; }
+        public float LeftBorder { get; set; }
         public int RightBorder { get; set; }
+        public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
         public sbyte[] Deltas { get; set; }
 

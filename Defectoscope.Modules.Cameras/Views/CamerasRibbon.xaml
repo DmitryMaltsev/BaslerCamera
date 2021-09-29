@@ -41,6 +41,8 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="0" Content="Калибровка"  Command="{Binding ApplicationCommands.Calibrate}"/>
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="0" Content="Сохранить"  Command="{Binding SaveCamerasSettings}"/>
@@ -106,9 +108,10 @@
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="50" />
+         
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
@@ -122,6 +125,11 @@
                                       VerticalAlignment="Center">
                                 <TextBlock Text="Визуализация дефектов" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="3">
+                                <TextBox Width="60" Height="28" Margin="1" Text="{Binding BaslerRepository.CanvasWidth}" HorizontalAlignment="Left" TextAlignment="Center"/>
+                                <TextBlock  Margin="2,1,1,1" Text="Ширина полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            </StackPanel>
+                           
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>

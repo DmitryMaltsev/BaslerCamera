@@ -54,6 +54,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private void ExecuteSaveCamerasSettings()
         {
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
+            foreach (LaserScan.Core.NetStandart.Models.BaslerCameraModel cameraModel in BaslerRepository.BaslerCamerasCollection)
+            {
+                cameraModel.CanvasWidth = BaslerRepository.CanvasWidth;
+            }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
         }
 
