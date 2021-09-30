@@ -365,20 +365,18 @@ namespace Kogerent.Services.Implementation
                                                                                   float heightDiscrete, int strobe)
         {
             List<DefectProperties> defects = new();
-            ConcurrentBag<DefectProperties> defectCollection = new ConcurrentBag<DefectProperties>();
             GetContours(imgUp, out List<ContourData> upContours);
             GetContours(imgDn, out List<ContourData> dnContours);
-            var imgWidth = Math.Max(imgDn.Width, imgUp.Width);
-            var imgHeight = Math.Max(imgDn.Height, imgUp.Height);
+            int imgWidth = Math.Max(imgDn.Width, imgUp.Width);
+            int imgHeight = Math.Max(imgDn.Height, imgUp.Height);
 
-            var tempBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
+            Image<Bgr, byte> tempBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
 
             if (upContours != null && upContours.Count > 0)
             {
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
                                                           imgWidth, imgHeight, strobe, upContours, tempBmp, true));
             }
-
             if (dnContours != null && dnContours.Count > 0)
             {
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
@@ -408,7 +406,7 @@ namespace Kogerent.Services.Implementation
                     Rectangle rectangle = c.Rectangle;
                     var imageCount = strobe / (uint)imgHeight;
 
-                    DefectProperties defect = new DefectProperties
+                    DefectProperties defect = new()
                     {
                         X = Math.Round(center.X * widthDiscrete, 1),
                         Y = Math.Round(((uint)center.Y + imageCount * (uint)imgHeight) * heightDiscrete, 1),

@@ -21,7 +21,7 @@ namespace LaserScan.Core.NetStandart.Models
         public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
         public sbyte[] Deltas { get; set; }
-
+        public int StartPixelPoint { get; set; }
         #region Raised properties
         private string _ip;
         public string Ip
@@ -129,7 +129,10 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
 
             //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
-
+            if (ID == "Центральная камера" || ID == "Правая камера")
+            {
+                Camera.Parameters[PLCamera.ReverseX].SetValue(false);
+            }
             Initialized = true; // успешная инициализация
 
         }

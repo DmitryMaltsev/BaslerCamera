@@ -130,7 +130,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IFooterRepository FooterRepository { get; }
         public IBenchmarkRepository BenchmarkRepository { get; }
         public ICalibrateService CalibrateService { get; }
-        public int Shift { get; set; }
+        public float Shift { get; set; }
         #endregion
 
         public OneCameraContentViewModel(IRegionManager regionManager, IApplicationCommands applicationCommands,
@@ -295,27 +295,27 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         bool res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
                         if (res && bufferData != default)
                         {
-                            try
-                            {
-                                if (CurrentCamera.ID == "Центральная камера" || CurrentCamera.ID == "Правая камера")
-                                {
-                                    List<byte> bufferByteList = new();
-                                    List<List<byte>> InvertList = bufferData.Data.SplitByCount(_width).ToList();
-                                    foreach (List<byte> invertBytes in InvertList)
-                                    {
-                                        invertBytes.Reverse(0, invertBytes.Count);
-                                        bufferByteList.AddRange(invertBytes);
-                                    }
-                                    bufferData.Data = bufferByteList.ToArray();
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                string msg = $"{ex.Message}";
-                                Logger?.Error(msg);
-                                FooterRepository.Text = msg;
-                                ExecuteStopCamera();
-                            }
+                            //try
+                            //{
+                            //    if (CurrentCamera.ID == "Центральная камера" || CurrentCamera.ID == "Правая камера")
+                            //    {
+                            //        List<byte> bufferByteList = new();
+                            //        List<List<byte>> InvertList = bufferData.Data.SplitByCount(_width).ToList();
+                            //        foreach (List<byte> invertBytes in InvertList)
+                            //        {
+                            //            invertBytes.Reverse(0, invertBytes.Count);
+                            //            bufferByteList.AddRange(invertBytes);
+                            //        }
+                            //        bufferData.Data = bufferByteList.ToArray();
+                            //    }
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    string msg = $"{ex.Message}";
+                            //    Logger?.Error(msg);
+                            //    FooterRepository.Text = msg;
+                            //    ExecuteStopCamera();
+                            //}
 
                             Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
                             _cnt += bufferData.Height;
@@ -360,18 +360,27 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     for (int x = 0; x < _width; x++)
                                     {
-                                        //img.Data[y, x, 0] += deltas[x];
-                                        if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
+                                        if (BaslerRepository.LeftObloy < x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete
+                                            && BaslerRepository.RightObloy > x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete)
                                         {
-                                            img.Data[y, x, 0] = 255;
+                                            //img.Data[y, x, 0] += deltas[x];
+                                            if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
+                                            {
+                                                img.Data[y, x, 0] = 255;
+                                            }
+                                            else
+                                            {
+                                                img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                                            }
                                         }
                                         else
                                         {
-                                            img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                                            img.Data[y, x, 0] = 127;
                                         }
                                     }
                                 }
                             }
+              
                             using (Image<Gray, byte> upImg = img.CopyBlank())
                             using (Image<Gray, byte> dnImg = img.CopyBlank())
                             {

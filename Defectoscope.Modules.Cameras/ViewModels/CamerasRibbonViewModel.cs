@@ -19,8 +19,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         #region Delegate commands
         private DelegateCommand _destroyCommand;
         public DelegateCommand DestroyCommand => _destroyCommand ??= new DelegateCommand(ExecuteDestroyCommand);
-
-
         private DelegateCommand _saveCamersSettings;
         public DelegateCommand SaveCamerasSettings =>
             _saveCamersSettings ?? (_saveCamersSettings = new DelegateCommand(ExecuteSaveCamerasSettings));

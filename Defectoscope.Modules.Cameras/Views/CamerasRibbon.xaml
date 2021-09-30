@@ -69,6 +69,8 @@
                                 <RowDefinition Height="35" />
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="35" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="35" />
                             </Grid.RowDefinitions>
                             <TextBlock Width="110" Margin="1" Grid.Column="0" Grid.Row="0"  Text="Верхняя граница"/>
                             <TextBox Width="110" Margin="1" Grid.Column="0" Grid.Row="1" Text="{Binding BaslerRepository.CurrentCamera.UpThreshold}"/>
@@ -78,6 +80,8 @@
                             <TextBox Width="110" Margin="1" Grid.Column="0"  Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.WidthThreshold}"/>
                             <TextBlock Width="110" Margin="1" Grid.Column="1" Grid.Row="2" Text="Высота дефекта"/>
                             <TextBox Width="110" Margin="1" Grid.Column="1" Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.HeightThreshold}"/>
+                            <TextBlock Width="110" Margin="1" Grid.Column="0" Grid.Row="4" Text="Начало камеры"/>
+                            <TextBox Width="110" Margin="1" Grid.Column="0" Grid.Row="5" Text="{Binding BaslerRepository.CurrentCamera.StartPixelPoint}"/>
                         </Grid>
                         <TextBlock Text="Пороги" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -138,11 +142,11 @@
                     <!--#endregion-->
 
                     <!--#region Clear Defects -->
-                    <DockPanel LastChildFill="False" Width="250">
+                    <DockPanel LastChildFill="False" Width="200">
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="50" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
