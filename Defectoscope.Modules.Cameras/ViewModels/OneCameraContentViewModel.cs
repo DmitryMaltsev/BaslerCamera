@@ -380,47 +380,47 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                         //}
                                     }
                                 }
-
-                                using (Image<Gray, byte> upImg = img.CopyBlank())
-                                using (Image<Gray, byte> dnImg = img.CopyBlank())
-                                {
-                                    CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
-                                    CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
-
-                                    //if (_needToSave)
-                                    //{
-                                    //    var dir = Directory.CreateDirectory($"{Environment.CurrentDirectory}\\ResultImages").FullName;
-                                    //    var path = Path.Combine(dir, $"result_{CurrentCamera.ID}_Up.png");
-                                    //    var path2 = Path.Combine(dir, $"result_{CurrentCamera.ID}_Dn.png");
-                                    //    upImg.ToBitmap().Save(path, System.Drawing.Imaging.ImageFormat.Png);
-                                    //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
-                                    //    _needToSave = false;
-                                    //}
-                                    (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
-                                                                                                          CurrentCamera.WidthThreshold,
-                                                                                                          CurrentCamera.HeightThreshold,
-                                                                                                          CurrentCamera.WidthDescrete,
-                                                                                                          CurrentCamera.HeightDescrete,
-                                                                                                          _strobe);
-                                    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
-                                    foreach (DefectProperties defect in _filteredDefects)
-                                    {
-                                        defect.X += Shift;
-                                    }
-                                    if (DefectRepository.VisualAnalizeIsActive)
-                                    {
-                                        _resImage = img2; //img2.Clone();
-                                    }
-                                    else
-                                    {
-                                        _resImage = img.Convert<Bgr, byte>();
-                                    }
-                                    if (_filteredDefects.Any()) _needToDrawDefects = true;
-                                    _defects = _filteredDefects;
-                                }
-                                imgProcessingStopWatch.Stop();
-                                _needToProcessImage = false;
                             }
+
+                            using (Image<Gray, byte> upImg = img.CopyBlank())
+                            using (Image<Gray, byte> dnImg = img.CopyBlank())
+                            {
+                                CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
+                                CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
+
+                                //if (_needToSave)
+                                //{
+                                //    var dir = Directory.CreateDirectory($"{Environment.CurrentDirectory}\\ResultImages").FullName;
+                                //    var path = Path.Combine(dir, $"result_{CurrentCamera.ID}_Up.png");
+                                //    var path2 = Path.Combine(dir, $"result_{CurrentCamera.ID}_Dn.png");
+                                //    upImg.ToBitmap().Save(path, System.Drawing.Imaging.ImageFormat.Png);
+                                //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
+                                //    _needToSave = false;
+                                //}
+                                (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
+                                                                                                      CurrentCamera.WidthThreshold,
+                                                                                                      CurrentCamera.HeightThreshold,
+                                                                                                      CurrentCamera.WidthDescrete,
+                                                                                                      CurrentCamera.HeightDescrete,
+                                                                                                      _strobe);
+                                  List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
+                                foreach (DefectProperties defect in _filteredDefects)
+                                {
+                                    defect.X += Shift;
+                                }
+                                if (DefectRepository.VisualAnalizeIsActive)
+                                {
+                                    _resImage = img2; //img2.Clone();
+                                }
+                                else
+                                {
+                                    _resImage = img.Convert<Bgr, byte>();
+                                }
+                                if (_filteredDefects.Any()) _needToDrawDefects = true;
+                                _defects = _filteredDefects;
+                            }
+                            imgProcessingStopWatch.Stop();
+                            _needToProcessImage = false;
                         }
                     }
                     catch (Exception ex)
