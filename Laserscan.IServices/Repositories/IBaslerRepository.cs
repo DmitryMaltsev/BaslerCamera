@@ -13,7 +13,5 @@ namespace Kogerent.Services.Interfaces
         int TotalCount { get; set; }
         float CanvasWidth { get; set; }
         float FullCamerasWidth { get; set; }
-        float LeftObloy { get; set; }
-        float RightObloy { get; set; }
     }
 }

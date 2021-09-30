@@ -340,7 +340,7 @@ namespace Kogerent.Services.Implementation
         /// <param name="defects">Коллекция дефектов</param>
         public List<DefectProperties> FilterDefects(List<DefectProperties> defects)
         {
-            var minXs = Zones.Obloys.Select(o => o.MinimumX).ToList();
+            List<float> minXs = Zones.Obloys.Select(o => o.MinimumX).ToList();
             minXs.AddRange(Zones.Zones.Select(z => z.MinimumX));
 
             var maxXs = Zones.Obloys.Select(o => o.MaximumX).ToList();
@@ -348,9 +348,8 @@ namespace Kogerent.Services.Implementation
 
             for (int i = 0; i < minXs.Count; i++)
             {
-                var min = minXs[i];
-                var max = maxXs[i];
-
+                float min = minXs[i];
+                float max = maxXs[i];
                 int res = defects.RemoveAll(d => d.X >= min && d.X < max);
             }
 
@@ -404,7 +403,7 @@ namespace Kogerent.Services.Implementation
                     Point center = new((int)c.RotRect.Center.X, (int)c.RotRect.Center.Y);
                     Size size = new(imgWidth / 2, imgHeight);
                     Rectangle rectangle = c.Rectangle;
-                    var imageCount = strobe / (uint)imgHeight;
+                    long imageCount = strobe / (uint)imgHeight;
 
                     DefectProperties defect = new()
                     {

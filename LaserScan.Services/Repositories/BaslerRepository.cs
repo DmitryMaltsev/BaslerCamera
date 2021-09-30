@@ -15,6 +15,10 @@ namespace Kogerent.Services.Implementation
 {
     public class BaslerRepository : BindableBase, IBaslerRepository
     {
+        public BaslerRepository(INonControlZonesRepository nonControlZonesRepository)
+        {
+            NonControlZonesRepository = nonControlZonesRepository;
+        }
         private bool _allCamerasInitialized;
         public bool AllCamerasInitialized
         {
@@ -49,29 +53,22 @@ namespace Kogerent.Services.Implementation
             set
             {
                 SetProperty(ref _canvasWidth, value);
-                _leftObloy = _fullCamerasWidth / 2 - _canvasWidth * 1_000 / 2;
-                _rightObloy = _fullCamerasWidth / 2 + _canvasWidth * 1_000 / 2;
+                if (NonControlZonesRepository.Obloys.Count > 1)
+                {
+                    NonControlZonesRepository.Obloys[0].MaximumX = FullCamerasWidth / 2 - CanvasWidth * 1_000 / 2;
+                    NonControlZonesRepository.Obloys[1].MinimumX = FullCamerasWidth / 2 + CanvasWidth * 1_000 / 2;
+                }
+                //_leftObloy = _fullCamerasWidth / 2 - _canvasWidth * 1_000 / 2;
+                //_rightObloy = _fullCamerasWidth / 2 + _canvasWidth * 1_000 / 2;
             }
         }
-        private float _fullCamerasWidth=3573.694F;
+        private float _fullCamerasWidth = 3573.694F;
         public float FullCamerasWidth
         {
             get { return _fullCamerasWidth; }
             set { SetProperty(ref _fullCamerasWidth, value); }
         }
 
-        private float _leftObloy;
-        public float LeftObloy
-        {
-            get { return _leftObloy; }
-            set { SetProperty(ref _leftObloy, value); }
-        }
-
-        private float _rightObloy;
-        public float RightObloy
-        {
-            get { return _rightObloy; }
-            set { SetProperty(ref _rightObloy, value); }
-        }
+        public INonControlZonesRepository NonControlZonesRepository { get; }
     }
 }

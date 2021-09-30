@@ -65,7 +65,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool _rawMode = false;
         private bool _filterMode = false;
         private Image<Bgr, byte> _resImage;
-        private IOrderedEnumerable<DefectProperties> _defects;
+        private List<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
         private Stopwatch imgProcessingStopWatch = new();
         private Image<Gray, byte> img;
@@ -252,7 +252,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     ExecuteStopCamera();
                 }
 
-            }         
+            }
             if (_rawMode)
             {
                 try
@@ -360,66 +360,67 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     for (int x = 0; x < _width; x++)
                                     {
-                                        if (BaslerRepository.LeftObloy < x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete
-                                            && BaslerRepository.RightObloy > x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete)
+                                        //if (BaslerRepository.LeftObloy < x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete
+                                        //    && BaslerRepository.RightObloy > x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete)
+                                        // {
+                                        //img.Data[y, x, 0] += deltas[x];
+                                        if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
                                         {
-                                            //img.Data[y, x, 0] += deltas[x];
-                                            if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
-                                            {
-                                                img.Data[y, x, 0] = 255;
-                                            }
-                                            else
-                                            {
-                                                img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
-                                            }
+                                            img.Data[y, x, 0] = 255;
                                         }
                                         else
                                         {
-                                            img.Data[y, x, 0] = 127;
+                                            img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
                                         }
+                                        //  }
+                                        //    else
+                                        //    {
+                                        //        img.Data[y, x, 0] = 127;
+                                        //    }
+                                        //}
                                     }
                                 }
-                            }
-              
-                            using (Image<Gray, byte> upImg = img.CopyBlank())
-                            using (Image<Gray, byte> dnImg = img.CopyBlank())
-                            {
-                                CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
-                                CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
 
-                                //if (_needToSave)
-                                //{
-                                //    var dir = Directory.CreateDirectory($"{Environment.CurrentDirectory}\\ResultImages").FullName;
-                                //    var path = Path.Combine(dir, $"result_{CurrentCamera.ID}_Up.png");
-                                //    var path2 = Path.Combine(dir, $"result_{CurrentCamera.ID}_Dn.png");
-                                //    upImg.ToBitmap().Save(path, System.Drawing.Imaging.ImageFormat.Png);
-                                //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
-                                //    _needToSave = false;
-                                //}
-                                (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
-                                                                                                      CurrentCamera.WidthThreshold,
-                                                                                                      CurrentCamera.HeightThreshold,
-                                                                                                      CurrentCamera.WidthDescrete,
-                                                                                                      CurrentCamera.HeightDescrete,
-                                                                                                      _strobe);
+                                using (Image<Gray, byte> upImg = img.CopyBlank())
+                                using (Image<Gray, byte> dnImg = img.CopyBlank())
+                                {
+                                    CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
+                                    CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
 
-                                foreach (DefectProperties defect in defects)
-                                {
-                                    defect.X += Shift;
+                                    //if (_needToSave)
+                                    //{
+                                    //    var dir = Directory.CreateDirectory($"{Environment.CurrentDirectory}\\ResultImages").FullName;
+                                    //    var path = Path.Combine(dir, $"result_{CurrentCamera.ID}_Up.png");
+                                    //    var path2 = Path.Combine(dir, $"result_{CurrentCamera.ID}_Dn.png");
+                                    //    upImg.ToBitmap().Save(path, System.Drawing.Imaging.ImageFormat.Png);
+                                    //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
+                                    //    _needToSave = false;
+                                    //}
+                                    (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
+                                                                                                          CurrentCamera.WidthThreshold,
+                                                                                                          CurrentCamera.HeightThreshold,
+                                                                                                          CurrentCamera.WidthDescrete,
+                                                                                                          CurrentCamera.HeightDescrete,
+                                                                                                          _strobe);
+                                    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
+                                    foreach (DefectProperties defect in _filteredDefects)
+                                    {
+                                        defect.X += Shift;
+                                    }
+                                    if (DefectRepository.VisualAnalizeIsActive)
+                                    {
+                                        _resImage = img2; //img2.Clone();
+                                    }
+                                    else
+                                    {
+                                        _resImage = img.Convert<Bgr, byte>();
+                                    }
+                                    if (_filteredDefects.Any()) _needToDrawDefects = true;
+                                    _defects = _filteredDefects;
                                 }
-                                if (DefectRepository.VisualAnalizeIsActive)
-                                {
-                                    _resImage = img2; //img2.Clone();
-                                }
-                                else
-                                {
-                                    _resImage = img.Convert<Bgr, byte>();
-                                }
-                                if (defects.Any()) _needToDrawDefects = true;
-                                _defects = defects;
+                                imgProcessingStopWatch.Stop();
+                                _needToProcessImage = false;
                             }
-                            imgProcessingStopWatch.Stop();
-                            _needToProcessImage = false;
                         }
                     }
                     catch (Exception ex)

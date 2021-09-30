@@ -30,8 +30,8 @@ namespace Kogerent.Services.Implementation
                 Zones.Add(new ObloyModel { Name = $"Зона {i}", MinimumY = 0, MaximumY = 300 });
             }
 
-            Obloys.Add(new ObloyModel { Name = $"Облой л.", MinimumY = 0, MaximumY = 300, MinimumX = 0, MaximumX = 50 });
-            Obloys.Add(new ObloyModel { Name = $"Облой п.", MinimumY = 0, MaximumY = 300, MinimumX = 1261, MaximumX = 1311 });
+            //Obloys.Add(new ObloyModel { Name = $"Облой л.", MinimumY = 0, MaximumY = 300, MinimumX = 0, MaximumX = 50 });
+            //Obloys.Add(new ObloyModel { Name = $"Облой п.", MinimumY = 0, MaximumY = 300, MinimumX = 1261, MaximumX = 1311 });
         }
     }
 }

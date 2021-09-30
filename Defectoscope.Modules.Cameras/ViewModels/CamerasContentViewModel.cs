@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -44,10 +45,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IContainerProvider ContainerProvider { get; }
         public IDefectRepository DefectRepository { get; }
         public IXmlService XmlService { get; }
+        public INonControlZonesRepository NonControlZonesRepository { get; }
         #endregion
 
         public CamerasContentViewModel(IRegionManager regionManager, IApplicationCommands applicationCommands, IBaslerService baslerService,
-            IBaslerRepository baslerRepository, IContainerProvider containerProvider, IDefectRepository defectRepository, IXmlService xmlService) : base(regionManager)
+            IBaslerRepository baslerRepository, IContainerProvider containerProvider, IDefectRepository defectRepository, IXmlService xmlService,
+            INonControlZonesRepository nonControlZonesRepository) : base(regionManager)
         {
             ApplicationCommands = applicationCommands;
             BaslerService = baslerService;
@@ -55,6 +58,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ContainerProvider = containerProvider;
             DefectRepository = defectRepository;
             XmlService = xmlService;
+            NonControlZonesRepository = nonControlZonesRepository;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
             //ApplicationCommands.InitAllSensors.RegisterCommand(InitCameras);
             //ApplicationCommands.StartAllSensors.RegisterCommand(StartAllCameras);
@@ -125,9 +129,26 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
             BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth;
-            BaslerRepository.FullCamerasWidth = BaslerRepository.BaslerCamerasCollection[0].WidthDescrete * 6144 +
-                BaslerRepository.BaslerCamerasCollection[1].WidthDescrete * 6144 +
-                BaslerRepository.BaslerCamerasCollection[2].WidthDescrete * 6144;
+            NonControlZonesRepository.Obloys.Add(new ObloyModel
+            {
+                Name = $"Облой л.",
+                MinimumY = 0,
+                MaximumY = 300,
+                MinimumX = 0,
+                MaximumX = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2
+            });
+            NonControlZonesRepository.Obloys.Add(new ObloyModel
+            {
+                Name = $"Облой п.",
+                MinimumY = 0,
+                MaximumY = 300,
+                MinimumX = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2,
+                MaximumX = BaslerRepository.FullCamerasWidth
+            });
+
+            //BaslerRepository.FullCamerasWidth = BaslerRepository.BaslerCamerasCollection[0].WidthDescrete * 6144 +
+            //    BaslerRepository.BaslerCamerasCollection[1].WidthDescrete * 6144 +
+            //    BaslerRepository.BaslerCamerasCollection[2].WidthDescrete * 6144;
             //TODO: Если файл с настройками не существует - создать настройки по умолчанию и записать их в файл.
 
             //string[] ips = { "0.0.0.0" };
