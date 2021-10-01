@@ -130,6 +130,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IFooterRepository FooterRepository { get; }
         public IBenchmarkRepository BenchmarkRepository { get; }
         public ICalibrateService CalibrateService { get; }
+        public INonControlZonesRepository NonControlZonesRepository { get; }
         public float Shift { get; set; }
         #endregion
 
@@ -137,7 +138,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                          IImageProcessingService imageProcessing, IDefectRepository defectRepository,
                                          IMathService mathService, IXmlService xmlService, IBaslerRepository baslerRepository,
                                          ILogger logger, IFooterRepository footerRepository, IBenchmarkRepository benchmarkRepository,
-                                         ICalibrateService calibrateService) : base(regionManager)
+                                         ICalibrateService calibrateService, INonControlZonesRepository nonControlZonesRepository) : base(regionManager)
         {
             ApplicationCommands = applicationCommands;
             ApplicationCommands.Calibrate.RegisterCommand(Calibrate);
@@ -156,6 +157,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             FooterRepository = footerRepository;
             BenchmarkRepository = benchmarkRepository;
             CalibrateService = calibrateService;
+            NonControlZonesRepository = nonControlZonesRepository;
             //CurrentCamera.CameraImageEvent += ImageGrabbed;
             var uriSource = new Uri(@"/Defectoscope.Modules.Cameras;component/Images/ImageSurce_cam.png", UriKind.Relative);
             ImageSource = new BitmapImage(uriSource);
@@ -360,10 +362,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     for (int x = 0; x < _width; x++)
                                     {
-                                        //if (BaslerRepository.LeftObloy < x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete
-                                        //    && BaslerRepository.RightObloy > x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete)
-                                        // {
-                                        //img.Data[y, x, 0] += deltas[x];
+                                        //if (NonControlZonesRepository.Obloys[0].MaximumX < x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete
+                                        //    && NonControlZonesRepository.Obloys[1].MinimumX > x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete)
+                                        //{
+                                        //img.Data[y, x, 0] += CurrentCamera.Deltas[x];
                                         if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
                                         {
                                             img.Data[y, x, 0] = 255;
@@ -372,13 +374,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                         {
                                             img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
                                         }
-                                        //  }
-                                        //    else
-                                        //    {
-                                        //        img.Data[y, x, 0] = 127;
-                                        //    }
-                                        //}
                                     }
+                                    //else
+                                    //{
+                                    //    img.Data[y, x, 0] = 127;
+                                    //}
                                 }
                             }
 
@@ -397,13 +397,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
                                 //    _needToSave = false;
                                 //}
+                              
                                 (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
                                                                                                       CurrentCamera.WidthThreshold,
                                                                                                       CurrentCamera.HeightThreshold,
                                                                                                       CurrentCamera.WidthDescrete,
                                                                                                       CurrentCamera.HeightDescrete,
-                                                                                                      _strobe);
-                                  List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
+                                                                                                      _strobe);                          
                                 foreach (DefectProperties defect in _filteredDefects)
                                 {
                                     defect.X += Shift;
@@ -416,7 +416,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     _resImage = img.Convert<Bgr, byte>();
                                 }
-                                if (_filteredDefects.Any()) _needToDrawDefects = true;
+                                if (_filteredDefects.Any())
+                                    _needToDrawDefects = true;
                                 _defects = _filteredDefects;
                             }
                             imgProcessingStopWatch.Stop();

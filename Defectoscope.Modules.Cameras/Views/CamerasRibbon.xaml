@@ -27,8 +27,8 @@
                         </Grid>
                         <TextBlock Text="Управление" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
-                    <Rectangle Width="1" Height="140" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
-                    <Rectangle Width="1" Height="140" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
 
                     <!--#region Calibrate/save -->
@@ -53,8 +53,8 @@
                         </Grid>
                         <TextBlock Text="Калибровка" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
-                    <Rectangle Width="1" Height="140" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
-                    <Rectangle Width="1" Height="140" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
 
                     <!--#region Thresholds -->
@@ -85,8 +85,8 @@
                         </Grid>
                         <TextBlock Text="Пороги" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
-                    <Rectangle Width="1" Height="140" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
-                    <Rectangle Width="1" Height="140" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
 
                     <!--#region Camera selection -->
@@ -103,8 +103,8 @@
                         </Grid>
                         <TextBlock Text="Выбор камеры" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
-                    <Rectangle Width="1" Height="140" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
-                    <Rectangle Width="1" Height="140" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
 
                     <!--#region Clear Defects -->
@@ -137,16 +137,16 @@
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
-                    <Rectangle Width="1" Height="140" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
-                    <Rectangle Width="1" Height="140" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
 
-                    <!--#region Clear Defects -->
-                    <DockPanel LastChildFill="False" Width="200">
+                    <!--#region Counters -->
+                    <DockPanel LastChildFill="False" Width="220">
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="160" />
+                                <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
@@ -160,13 +160,13 @@
                             <TextBlock  Grid.Row="1" Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.TempQueueCount}" Foreground="{StaticResource ControlForegroundWhite}"
                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <TextBlock   Grid.Row="2" Grid.Column="0"  Margin="1" Text="Время обработки" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter}" 
+                            <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=N2}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
                         </Grid>
                         <TextBlock Text="Метрика" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
-                    <Rectangle Width="1" Height="140" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
-                    <Rectangle Width="1" Height="140" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
                 </StackPanel>
             </TabItem>

@@ -381,6 +381,7 @@ namespace Kogerent.Services.Implementation
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
                                                           imgWidth, imgHeight, strobe, dnContours, tempBmp, false));
             }
+
             return (tempBmp, defects.OrderBy(d => d.Время));
         }
         #endregion
