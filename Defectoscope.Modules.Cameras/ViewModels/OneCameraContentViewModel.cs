@@ -403,11 +403,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                                                                                       CurrentCamera.HeightThreshold,
                                                                                                       CurrentCamera.WidthDescrete,
                                                                                                       CurrentCamera.HeightDescrete,
-                                                                                                      _strobe);
-                                foreach (DefectProperties defect in defects)
-                                {
-                                    defect.X += Shift;
-                                }
+                                                                                                      _strobe, Shift);
+                                //foreach (DefectProperties defect in defects)
+                                //{
+                                //    defect.X += Shift;
+                                //}
 
                             //    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
       

@@ -362,7 +362,7 @@ namespace Kogerent.Services.Implementation
                                                                                   float widthThreshold,
                                                                                   float heightThreshold,
                                                                                   float widthDiscrete,
-                                                                                  float heightDiscrete, int strobe)
+                                                                                  float heightDiscrete, int strobe, float Shift)
         {
             List<DefectProperties> defects = new();
             GetContours(imgUp, out List<ContourData> upContours);
@@ -379,7 +379,7 @@ namespace Kogerent.Services.Implementation
                 //foreach (ContourData upContour in upContours)
                 //{
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
-                                                         imgWidth, imgHeight, strobe, upContours, tempBmp, true));
+                                                         imgWidth, imgHeight, strobe, upContours, tempBmp, true, Shift));
                 //}
             }
             if (dnContours != null && dnContours.Count > 0)
@@ -387,7 +387,7 @@ namespace Kogerent.Services.Implementation
                 //foreach (var dnContour in dnContours)
                 //{
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
-                                                         imgWidth, imgHeight, strobe, dnContours, tempBmp, false));
+                                                         imgWidth, imgHeight, strobe, dnContours, tempBmp, false, Shift));
                 //}
             }
 
@@ -452,7 +452,7 @@ namespace Kogerent.Services.Implementation
         private List<DefectProperties> DrawDefectPropertiesEmgu(float widthThreshold, float heightThreshold,
                                                             float widthDiscrete, float heightDiscrete, int imgWidth,
                                                             int imgHeight, int strobe, List<ContourData> dnContours,
-                                                            Image<Bgr, byte> tempBmp, bool up)
+                                                            Image<Bgr, byte> tempBmp, bool up, float Shift)
         {
             List<DefectProperties> defects = new();
             Bgr rectColor = up ? _blueBgr : _redBgr;
@@ -470,28 +470,23 @@ namespace Kogerent.Services.Implementation
 
                 DefectProperties defect = new DefectProperties
                 {
-                    X = Math.Round(center.X * widthDiscrete, 1),
+                    X = Math.Round(center.X * widthDiscrete+Shift, 1),
                     Y = Math.Round(((uint)center.Y + imageCount * (uint)imgHeight) * heightDiscrete, 1),
                     Ширина = Math.Round(rectangle.Width * widthDiscrete, 1),
                     Высота = Math.Round(rectangle.Height * heightDiscrete, 1),
                     Тип = up ? "выпуклость" : "вдав",
                     Время = DateTime.Now
                 };
-                if (defect != null)
-                {
-                    for (int i = 0; i < minXs.Count; i++)
-                    {
-                        float min = minXs[i];
-                        float max = maxXs[i];
-                        // int res = defects.RemoveAll(d => d.X >= min && d.X < max);
-                        if (!(defect.X >= min && defect.X < max))
-                        {
-                            defect = null;
-                            continue;
-                        }
-                    }
-                }
-                   
+                //if (defect != null)
+                //{
+                //    for (int i = 0; i < minXs.Count; i++)
+                //    {
+                //        float min = minXs[i];
+                //        float max = maxXs[i];
+                //        // int res = defects.RemoveAll(d => d.X >= min && d.X < max);
+                //    }
+                //}
+                if (defect != null && minXs.Find(p => p >= defect.X) != 0 && maxXs.Find(p => p < defect.X) != 0)
                 {
                     defects.Add(defect);
                     Size size = new(rectangle.Width, rectangle.Height);

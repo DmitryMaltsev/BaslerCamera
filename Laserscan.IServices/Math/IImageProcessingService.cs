@@ -12,7 +12,7 @@ namespace Kogerent.Services.Interfaces
 {
     public interface IImageProcessingService
     {
-        (Image<Bgr, byte>, IOrderedEnumerable<DefectProperties>) AnalyzeDefects(Image<Gray, byte> imgUp, Image<Gray, byte> imgDn, float widthThreshold, float heightThreshold, float widthDiscrete, float heightDiscrete, int strobe);
+        (Image<Bgr, byte>, IOrderedEnumerable<DefectProperties>) AnalyzeDefects(Image<Gray, byte> imgUp, Image<Gray, byte> imgDn, float widthThreshold, float heightThreshold, float widthDiscrete, float heightDiscrete, int strobe, float Shift);
         (Bitmap, IOrderedEnumerable<DefectProperties>) AnalyzeDefectsAsync(Image<Gray, byte> imgUp, Image<Gray, byte> imgDn, float widthThreshold, float heightThreshold, float widthDiscrete, float heightDiscrete, int strobe);
         BitmapImage BitmapToImageSource(Bitmap bitmap);
         Image<Gray, byte> FillImageDnThreshold(float dn, List<List<PointF>> sourceList, int width, int height);

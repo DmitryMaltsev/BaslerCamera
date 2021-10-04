@@ -257,8 +257,8 @@ namespace Kogerent.Services.Implementation
                                                                                        float widthThreshold,
                                                                                        float heightThreshold,
                                                                                        float widthDiscrete,
-                                                                                       float heightDiscrete, int strobe) =>
-            ImageProcessingService.AnalyzeDefects(imgUp, imgDn, widthThreshold, heightThreshold, widthDiscrete, heightDiscrete, strobe);
+                                                                                       float heightDiscrete, int strobe, float Shift) =>
+            ImageProcessingService.AnalyzeDefects(imgUp, imgDn, widthThreshold, heightThreshold, widthDiscrete, heightDiscrete, strobe,  Shift);
 
 
         public bool ApproxEquals(float a, float b, double precision)
