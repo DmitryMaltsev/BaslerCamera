@@ -62,7 +62,7 @@ namespace Kogerent.Services.Implementation
                 //_rightObloy = _fullCamerasWidth / 2 + _canvasWidth * 1_000 / 2;
             }
         }
-        private float _fullCamerasWidth = 3573.694F;
+        private float _fullCamerasWidth = 3810F;
         public float FullCamerasWidth
         {
             get { return _fullCamerasWidth; }

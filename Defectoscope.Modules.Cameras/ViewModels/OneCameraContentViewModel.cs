@@ -65,7 +65,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool _rawMode = false;
         private bool _filterMode = false;
         private Image<Bgr, byte> _resImage;
-        private List<DefectProperties> _defects;
+        private IOrderedEnumerable<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
         private Stopwatch imgProcessingStopWatch = new();
         private Image<Gray, byte> img;
@@ -403,11 +403,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                                                                                       CurrentCamera.HeightThreshold,
                                                                                                       CurrentCamera.WidthDescrete,
                                                                                                       CurrentCamera.HeightDescrete,
-                                                                                                      _strobe);                          
-                                foreach (DefectProperties defect in _filteredDefects)
+                                                                                                      _strobe);
+                                foreach (DefectProperties defect in defects)
                                 {
                                     defect.X += Shift;
                                 }
+
+                            //    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
+      
                                 if (DefectRepository.VisualAnalizeIsActive)
                                 {
                                     _resImage = img2; //img2.Clone();
@@ -416,9 +419,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     _resImage = img.Convert<Bgr, byte>();
                                 }
-                                if (_filteredDefects.Any())
+                                if (defects.Any())
                                     _needToDrawDefects = true;
-                                _defects = _filteredDefects;
+                                _defects = defects;
                             }
                             imgProcessingStopWatch.Stop();
                             _needToProcessImage = false;

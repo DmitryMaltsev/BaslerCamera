@@ -341,18 +341,19 @@ namespace Kogerent.Services.Implementation
         public List<DefectProperties> FilterDefects(List<DefectProperties> defects)
         {
             List<float> minXs = Zones.Obloys.Select(o => o.MinimumX).ToList();
-            minXs.AddRange(Zones.Zones.Select(z => z.MinimumX));
+            //minXs.AddRange(Zones.Zones.Select(z => z.MinimumX));
 
-            var maxXs = Zones.Obloys.Select(o => o.MaximumX).ToList();
-            maxXs.AddRange(Zones.Zones.Select(z => z.MaximumX));
-
-            for (int i = 0; i < minXs.Count; i++)
+            List<float> maxXs = Zones.Obloys.Select(o => o.MaximumX).ToList();
+            // maxXs.AddRange(Zones.Obloys.Select(z => z.MaximumX));
+            if (defects.Count > 0)
             {
-                float min = minXs[i];
-                float max = maxXs[i];
-                int res = defects.RemoveAll(d => d.X >= min && d.X < max);
+                for (int i = 0; i < minXs.Count; i++)
+                {
+                    float min = minXs[i];
+                    float max = maxXs[i];
+                    int res = defects.RemoveAll(d => d.X >= min && d.X < max);
+                }
             }
-
             return defects;
         }
 
@@ -366,20 +367,28 @@ namespace Kogerent.Services.Implementation
             List<DefectProperties> defects = new();
             GetContours(imgUp, out List<ContourData> upContours);
             GetContours(imgDn, out List<ContourData> dnContours);
+
             int imgWidth = Math.Max(imgDn.Width, imgUp.Width);
             int imgHeight = Math.Max(imgDn.Height, imgUp.Height);
 
             Image<Bgr, byte> tempBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
-
+            //Image<Bgr, byte> tempUpBmp = new Image<Bgr, byte>(upContours.G, imgHeight);
+            //Image<Bgr, byte> tempDownBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
             if (upContours != null && upContours.Count > 0)
             {
+                //foreach (ContourData upContour in upContours)
+                //{
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
-                                                          imgWidth, imgHeight, strobe, upContours, tempBmp, true));
+                                                         imgWidth, imgHeight, strobe, upContours, tempBmp, true));
+                //}
             }
             if (dnContours != null && dnContours.Count > 0)
             {
+                //foreach (var dnContour in dnContours)
+                //{
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
-                                                          imgWidth, imgHeight, strobe, dnContours, tempBmp, false));
+                                                         imgWidth, imgHeight, strobe, dnContours, tempBmp, false));
+                //}
             }
 
             return (tempBmp, defects.OrderBy(d => d.Время));
@@ -448,11 +457,14 @@ namespace Kogerent.Services.Implementation
             List<DefectProperties> defects = new();
             Bgr rectColor = up ? _blueBgr : _redBgr;
             List<ContourData> largeContours = dnContours.Where(c => c.Width * widthDiscrete >= widthThreshold && c.Height * heightDiscrete >= heightThreshold).ToList();
+            List<float> minXs = Zones.Obloys.Select(o => o.MinimumX).ToList();
+            //minXs.AddRange(Zones.Zones.Select(z => z.MinimumX));
 
+            List<float> maxXs = Zones.Obloys.Select(o => o.MaximumX).ToList();
+            // maxXs.AddRange(Zones.Obloys.Select(z => z.MaximumX));   
             foreach (ContourData c in largeContours)
             {
                 Point center = new((int)c.RotRect.Center.X, (int)c.RotRect.Center.Y);
-                Size size = new(imgWidth / 2, imgHeight);
                 Rectangle rectangle = c.Rectangle;
                 var imageCount = strobe / (uint)imgHeight;
 
@@ -465,14 +477,30 @@ namespace Kogerent.Services.Implementation
                     Тип = up ? "выпуклость" : "вдав",
                     Время = DateTime.Now
                 };
-                defects.Add(defect);
-
-                Rectangle rectF = new Rectangle(rectangle.Location, size);
-
-                tempBmp.Draw(rectF, rectColor, 3);
+                if (defect != null)
+                {
+                    for (int i = 0; i < minXs.Count; i++)
+                    {
+                        float min = minXs[i];
+                        float max = maxXs[i];
+                        // int res = defects.RemoveAll(d => d.X >= min && d.X < max);
+                        if (!(defect.X >= min && defect.X < max))
+                        {
+                            defect = null;
+                            continue;
+                        }
+                    }
+                }
+                   
+                {
+                    defects.Add(defect);
+                    Size size = new(rectangle.Width, rectangle.Height);
+                    Rectangle rectF = new Rectangle(rectangle.Location, size);
+                    tempBmp.Draw(rectF, rectColor, 40);
+                }
             }
             return defects;
-        } 
+        }
         #endregion
     }
 }
