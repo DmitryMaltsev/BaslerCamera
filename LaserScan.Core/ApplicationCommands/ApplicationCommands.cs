@@ -166,5 +166,7 @@ namespace Kogerent.Core
         public CompositeCommand CheckNoCalibrateAll { get; } = new();
 
         public CompositeCommand CheckFilterAll { get; } = new();
+
+        public CompositeCommand CheckCamerasOverLay { get; } = new();
     }
 }

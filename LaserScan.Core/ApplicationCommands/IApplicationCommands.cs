@@ -42,5 +42,6 @@ namespace Kogerent.Core
         CompositeCommand Calibrate { get; }
         CompositeCommand CheckNoCalibrateAll { get; }
         CompositeCommand CheckFilterAll { get; }
+        CompositeCommand CheckCamerasOverLay { get; }
     }
 }

@@ -64,6 +64,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool _needToProcessImage;
         private bool _rawMode = false;
         private bool _filterMode = false;
+        private bool _overlayMode = false;
         private Image<Bgr, byte> _resImage;
         private IOrderedEnumerable<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
@@ -117,6 +118,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand TakeFilteredData =>
             _takeFilteredData ?? (_takeFilteredData = new DelegateCommand(ExecuteTakeFilteredData));
 
+        private DelegateCommand _camerasOverlayCommand;
+        public DelegateCommand CamerasOverlayCommand =>
+            _camerasOverlayCommand ?? (_camerasOverlayCommand = new DelegateCommand(ExecuteCamerasOverlayCommand));
+
+
         #endregion
 
         #region Properties
@@ -148,6 +154,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.StopAllSensors.RegisterCommand(StopCamera);
             ApplicationCommands.CheckNoCalibrateAll.RegisterCommand(TakeRawData);
             ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
+
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -191,6 +198,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     DefectRepository.DefectsCollection.AddRange(_defects);
                     _needToDrawDefects = false;
+                    if (_overlayMode)
+                    {
+                        if (CurrentCamera.ID == "Левая камера")
+                        {
+                            List<DefectProperties> leftDefects = _defects.ToList();
+                            float currentShift = 6144 * CurrentCamera.WidthDescrete;
+                            BaslerRepository.BaslerCamerasCollection[1].LeftBorder = currentShift + (currentShift - (float)leftDefects[0].X);
+                            BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth = currentShift - (float)leftDefects[0].X;
+                            _overlayMode = false;
+                        }
+                        if (CurrentCamera.ID == "Правая камера")
+                        {
+                            List<DefectProperties> rightDefects = _defects.ToList();
+                            BaslerRepository.BaslerCamerasCollection[1].RightBorder =  Shift-((float)(rightDefects[0].X + rightDefects[0].Ширина)-Shift);
+
+                            BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина)-Shift;                                                  
+                            _overlayMode = false;
+                        }
+                    }        
                 }
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
@@ -203,6 +229,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = msg;
                 ExecuteStopCamera();
             }
+        }
+
+        private void CreateOverlayBoundsLeft(DefectProperties leftDefect)
+        {
+            float currentShift = 6144 * CurrentCamera.WidthDescrete;
+            float leftBoundCoord=currentShift + (currentShift - (float)leftDefect.X);
+            float leftBoundWidth = currentShift - (float)leftDefect.X;
+        }
+
+        private void CreateOverlayBoundsRight(DefectProperties rightDefect)
+        {
+            
         }
 
         private void ImageGrabbed(object sender, BufferData e)
@@ -221,6 +259,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 PerformCalibration(e);
                 CurrentCamera.CalibrationMode = false;
             }
+
             if (_filterMode)
             {
                 try
@@ -397,7 +436,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
                                 //    _needToSave = false;
                                 //}
-                              
+
                                 (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
                                                                                                       CurrentCamera.WidthThreshold,
                                                                                                       CurrentCamera.HeightThreshold,
@@ -409,8 +448,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 //    defect.X += Shift;
                                 //}
 
-                            //    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
-      
+                                //    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
+
                                 if (DefectRepository.VisualAnalizeIsActive)
                                 {
                                     _resImage = img2; //img2.Clone();
@@ -468,6 +507,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         }
 
+
         private void ExecuteStartGrab()
         {
             if (CurrentCamera == null) return;
@@ -488,6 +528,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
+            }
+        }
+
+
+        private void ExecuteCamerasOverlayCommand()
+        {
+            if (CurrentCamera == null) return;
+            if (CurrentCamera.Initialized)
+            {
+                //   CurrentCamera.CalibrationMode = true;
+                ExecuteStartGrab();
+                _overlayMode = true;
             }
         }
 
@@ -548,6 +600,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void OnNavigatedTo()
         {
+            ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             _width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
             //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);

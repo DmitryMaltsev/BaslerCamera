@@ -22,8 +22,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _saveCamersSettings;
         public DelegateCommand SaveCamerasSettings =>
             _saveCamersSettings ?? (_saveCamersSettings = new DelegateCommand(ExecuteSaveCamerasSettings));
-
-
+        private DelegateCommand _checkCamerasOverLay;
+        public DelegateCommand CheckCamerasOverLay =>
+            _checkCamerasOverLay ?? (_checkCamerasOverLay = new DelegateCommand(ExecuteCheckCamerasOverlay));
         #endregion
 
         public IFooterRepository FooterRepository { get; }
@@ -43,8 +44,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             XmlService = xmlService;
             BenchmarkRepository = benchmarkRepository;
             DefectRepository = defectRepository;
-            ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
-           
+            ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);        
         }
 
         #region Execute methods delegates
@@ -58,6 +58,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
         }
 
+        void ExecuteCheckCamerasOverlay()
+        {
+
+        }
         private void ExecuteDestroyCommand()
         {
             Destroy();

@@ -17,12 +17,14 @@ namespace LaserScan.Core.NetStandart.Models
         public int Hz { get; set; }
         public string SerialNumber { get; set; }
         public float LeftBorder { get; set; }
-        public int RightBorder { get; set; }
+        public float RightBorder { get; set; }
         public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
         public sbyte[] Deltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
+        public float LeftBoundWidth { get; set; }
+        public float RightBoundWidth { get; set; }
         #region Raised properties
         private string _ip;
         public string Ip
