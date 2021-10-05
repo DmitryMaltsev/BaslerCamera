@@ -368,7 +368,7 @@ namespace Kogerent.Services.Implementation
             GetContours(imgUp, out List<ContourData> upContours);
             GetContours(imgDn, out List<ContourData> dnContours);
 
-            int imgWidth = Math.Max(imgDn.Width, imgUp.Width);
+            int imgWidth = Math.Max(imgUp.Width, imgUp.Width);
             int imgHeight = Math.Max(imgDn.Height, imgUp.Height);
 
             Image<Bgr, byte> tempBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
