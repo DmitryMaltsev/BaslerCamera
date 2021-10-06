@@ -129,23 +129,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
             BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth;
-            NonControlZonesRepository.Obloys.Add(new ObloyModel
-            {
-                Name = $"Облой л.",
-                MinimumY = 0,
-                MaximumY = 300,
-                MinimumX = 0,
-                MaximumX = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2
-            });
-            NonControlZonesRepository.Obloys.Add(new ObloyModel
-            {
-                Name = $"Облой п.",
-                MinimumY = 0,
-                MaximumY = 300,
-                MinimumX = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2,
-                MaximumX = BaslerRepository.FullCamerasWidth
-            });
-
+            NonControlZonesRepository.AddZones(BaslerRepository);
             //BaslerRepository.FullCamerasWidth = BaslerRepository.BaslerCamerasCollection[0].WidthDescrete * 6144 +
             //    BaslerRepository.BaslerCamerasCollection[1].WidthDescrete * 6144 +
             //    BaslerRepository.BaslerCamerasCollection[2].WidthDescrete * 6144;
@@ -159,9 +143,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             //    cameras.Add(new BaslerCameraModel { Ip = "1.1.1.1", ID = "Центральная камера" });
             //    cameras.Add(new BaslerCameraModel { Ip = "2.2.2.2", ID = "Правая камера" });
             //}
-
-
-            //XmlService.Write(path, cameras);
+         //XmlService.Write(path, cameras);
             float shift = 0;
             OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();
             OneCameraContentViewModel Camera1VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
@@ -180,8 +162,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Camera2V.DataContext = Camera2VM;
             if (Camera2VM != null)
             {
-                shift += (BaslerRepository.BaslerCamerasCollection[0].LeftBorder+ BaslerRepository.BaslerCamerasCollection[0].RightBorder)
-                        * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
+                shift += 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
                 Camera2VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[1];
                 IRegion currentRegion = RegionManager.Regions[RegionNames.Camera2Region];
                 Camera2VM.Shift = shift;
@@ -194,8 +175,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Camera3V.DataContext = Camera3VM;
             if (Camera3V != null)
             {
-                shift += (BaslerRepository.BaslerCamerasCollection[1].LeftBorder + BaslerRepository.BaslerCamerasCollection[1].RightBorder)
-                    * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
+                shift += 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
                 Camera3VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[2];
                 IRegion currentRegion = RegionManager.Regions[RegionNames.Camera3Region];
                 Camera3VM.Shift = shift;

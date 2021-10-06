@@ -10,5 +10,7 @@ namespace Kogerent.Services.Interfaces
     {
         ObservableCollection<ObloyModel> Zones { get; set; }
         ObservableCollection<ObloyModel> Obloys { get; set; }
+
+        void AddZones(IBaslerRepository BaslerRepository);
     }
 }

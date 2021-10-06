@@ -602,7 +602,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             CurrentCamera.CameraImageEvent += ImageGrabbed;
-            _width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
+            //_width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
+            _width = 6144;
             //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
 
             tempImage = new Image<Gray, byte>(_width, 1000);
