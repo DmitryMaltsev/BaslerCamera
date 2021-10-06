@@ -71,8 +71,7 @@ namespace Kogerent.Services.Implementation
             else
             {
                 float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;
-                minimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
-                  
+                minimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;                 
             }
             Obloys.Add(new ObloyModel
             {

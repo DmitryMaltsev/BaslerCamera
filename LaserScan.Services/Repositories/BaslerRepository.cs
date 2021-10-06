@@ -55,8 +55,7 @@ namespace Kogerent.Services.Implementation
                 SetProperty(ref _canvasWidth, value);
                 if (NonControlZonesRepository.Obloys.Count > 1)
                 {
-                    NonControlZonesRepository.Obloys[0].MaximumX = FullCamerasWidth / 2 - CanvasWidth * 1_000 / 2;
-                    NonControlZonesRepository.Obloys[1].MinimumX = FullCamerasWidth / 2 + CanvasWidth * 1_000 / 2;
+                  NonControlZonesRepository.AddZones
                 }
                 //_leftObloy = _fullCamerasWidth / 2 - _canvasWidth * 1_000 / 2;
                 //_rightObloy = _fullCamerasWidth / 2 + _canvasWidth * 1_000 / 2;
