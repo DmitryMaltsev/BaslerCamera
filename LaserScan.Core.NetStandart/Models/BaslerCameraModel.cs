@@ -20,6 +20,7 @@ namespace LaserScan.Core.NetStandart.Models
         public float RightBorder { get; set; }
         public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
+        public List<MaterialModel> MaterialList { get; set; }
         public sbyte[] Deltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
@@ -137,7 +138,6 @@ namespace LaserScan.Core.NetStandart.Models
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
             }
             Initialized = true; // успешная инициализация
-
         }
 
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)

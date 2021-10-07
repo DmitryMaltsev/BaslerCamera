@@ -52,6 +52,7 @@ namespace Kogerent.Services.Implementation
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
                 maximumX = offsetLeft <= 0 ? 0 : offsetLeft;
             }
+            Obloys.Clear();
             Obloys.Add(new ObloyModel
             {
                 Name = $"Облой л.",
@@ -81,7 +82,7 @@ namespace Kogerent.Services.Implementation
                 MinimumX = minimumX,
                 MaximumX = BaslerRepository.FullCamerasWidth
             });
-
+            Zones.Clear();
             Zones.Add(new ObloyModel
             {
                 Name = $"Зона л.",

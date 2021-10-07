@@ -121,7 +121,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _camerasOverlayCommand;
         public DelegateCommand CamerasOverlayCommand =>
             _camerasOverlayCommand ?? (_camerasOverlayCommand = new DelegateCommand(ExecuteCamerasOverlayCommand));
-
+        private DelegateCommand _addNewMaterialCommand;
+        public DelegateCommand AddNewMaterialCommand =>
+            _addNewMaterialCommand ?? (_addNewMaterialCommand = new DelegateCommand(ExecuteAddNewMaterialCommand));
 
         #endregion
 
@@ -231,18 +233,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-        private void CreateOverlayBoundsLeft(DefectProperties leftDefect)
-        {
-            float currentShift = 6144 * CurrentCamera.WidthDescrete;
-            float leftBoundCoord=currentShift + (currentShift - (float)leftDefect.X);
-            float leftBoundWidth = currentShift - (float)leftDefect.X;
-        }
-
-        private void CreateOverlayBoundsRight(DefectProperties rightDefect)
-        {
-            
-        }
-
         private void ImageGrabbed(object sender, BufferData e)
         {
             if (CurrentCamera.Deltas == null)
@@ -292,7 +282,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     FooterRepository.Text = msg;
                     ExecuteStopCamera();
                 }
-
             }
             if (_rawMode)
             {
@@ -531,7 +520,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-
         private void ExecuteCamerasOverlayCommand()
         {
             if (CurrentCamera == null) return;
@@ -563,6 +551,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.OneShotForCalibration();
                 _filterMode = true;
             }
+        }
+
+        void ExecuteAddNewMaterialCommand()
+        {
+
         }
 
         private void ExecuteStopCamera()

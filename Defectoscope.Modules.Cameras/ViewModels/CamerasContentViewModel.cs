@@ -129,6 +129,31 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
             BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth;
+            BaslerRepository.MaterialModelCollection = new();
+            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+            {              
+                MaterialName = "This MaterialName"
+            });
+            BaslerRepository.MaterialModelCollection.Add(new MaterialModel 
+            {              
+                MaterialName = "This MaterialName2"
+            });
+            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+            {              
+                MaterialName = "This MaterialName2"
+            });
+            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+            {   
+                MaterialName = "This MaterialName2"
+            });
+            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+            {         
+                MaterialName = "This MaterialName2"
+            });
+            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+            {
+                MaterialName = "This MaterialName2"
+            });
             NonControlZonesRepository.AddZones(BaslerRepository);
             //BaslerRepository.FullCamerasWidth = BaslerRepository.BaslerCamerasCollection[0].WidthDescrete * 6144 +
             //    BaslerRepository.BaslerCamerasCollection[1].WidthDescrete * 6144 +

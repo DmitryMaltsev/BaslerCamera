@@ -39,6 +39,13 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _baslerCameraModel, value); }
         }
 
+        private ObservableCollection<MaterialModel> _materialModelCollection;
+        public ObservableCollection<MaterialModel> MaterialModelCollection
+        {
+            get { return _materialModelCollection; }
+            set { SetProperty(ref _materialModelCollection, value); }
+        }
+
         private int _totalCount;
         public int TotalCount
         {
@@ -55,10 +62,8 @@ namespace Kogerent.Services.Implementation
                 SetProperty(ref _canvasWidth, value);
                 if (NonControlZonesRepository.Obloys.Count > 1)
                 {
-                  NonControlZonesRepository.AddZones
+                    NonControlZonesRepository.AddZones(this);
                 }
-                //_leftObloy = _fullCamerasWidth / 2 - _canvasWidth * 1_000 / 2;
-                //_rightObloy = _fullCamerasWidth / 2 + _canvasWidth * 1_000 / 2;
             }
         }
         private float _fullCamerasWidth=3810;

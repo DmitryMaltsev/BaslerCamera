@@ -168,5 +168,7 @@ namespace Kogerent.Core
         public CompositeCommand CheckFilterAll { get; } = new();
 
         public CompositeCommand CheckCamerasOverLay { get; } = new();
+
+        public CompositeCommand AddNewMaterial { get; } = new();
     }
 }
