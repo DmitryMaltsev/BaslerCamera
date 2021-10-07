@@ -154,6 +154,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 MaterialName = "This MaterialName2"
             });
+            BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
             NonControlZonesRepository.AddZones(BaslerRepository);
             //BaslerRepository.FullCamerasWidth = BaslerRepository.BaslerCamerasCollection[0].WidthDescrete * 6144 +
             //    BaslerRepository.BaslerCamerasCollection[1].WidthDescrete * 6144 +

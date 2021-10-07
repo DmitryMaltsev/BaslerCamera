@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 
 using Defectoscope.Modules.Cameras;
+using Defectoscope.Modules.Cameras.ViewModels;
+using Defectoscope.Modules.Cameras.Views;
 
 using Kogerent.Core;
 using Kogerent.LaserScan.Views;
@@ -60,6 +62,8 @@ namespace LaserScan
             _ = containerRegistry.RegisterSingleton<IBaslerService, BaslerService>();
             _ = containerRegistry.RegisterSingleton<IBenchmarkRepository, BenchmarkRepository>();
             _ = containerRegistry.RegisterSingleton<ICalibrateService, CalibrateService>();
+            containerRegistry.RegisterDialog<AddMaterialContext, AddMaterialContextViewModel>();
+            containerRegistry.RegisterDialog<DeleteMaterialContext, DeleteMaterialContextViewModel>();
         }
 
         /// <summary>

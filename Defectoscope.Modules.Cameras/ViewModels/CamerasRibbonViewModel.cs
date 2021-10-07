@@ -5,6 +5,8 @@ using Prism.Regions;
 using LaserScan.Core.NetStandart.Models;
 using System;
 using System.IO;
+using Prism.Services.Dialogs;
+using Defectoscope.Modules.Cameras.Views;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
@@ -25,6 +27,20 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _checkCamerasOverLay;
         public DelegateCommand CheckCamerasOverLay =>
             _checkCamerasOverLay ?? (_checkCamerasOverLay = new DelegateCommand(ExecuteCheckCamerasOverlay));
+        private DelegateCommand _addNewMaterialCommand;
+        public DelegateCommand AddNewMaterialCommand =>
+            _addNewMaterialCommand ?? (_addNewMaterialCommand = new DelegateCommand(ExecuteAddNewMaterialCommand));
+        private DelegateCommand _deleteMaterialCommand;
+        public DelegateCommand DeleteMaterialCommand =>
+            _deleteMaterialCommand ?? (_deleteMaterialCommand = new DelegateCommand(ExecuteDeleteMaterialCommand));
+
+
+        void ExecuteCommandName()
+        {
+
+        }
+
+        public IRegionManager RegionManager { get; }
         #endregion
 
         public IFooterRepository FooterRepository { get; }
@@ -33,18 +49,22 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IXmlService XmlService { get; }
         public IBenchmarkRepository BenchmarkRepository { get; }
         public IDefectRepository DefectRepository { get; }
+        public IDialogService DialogService { get; }
 
         public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository,
             IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,
-            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository) : base(regionManager)
+            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository,
+            IDialogService dialogService) : base(regionManager)
         {
+            RegionManager = regionManager;
             FooterRepository = footerRepository;
             ApplicationCommands = applicationCommands;
             BaslerRepository = baslerRepository;
             XmlService = xmlService;
             BenchmarkRepository = benchmarkRepository;
             DefectRepository = defectRepository;
-            ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);        
+            DialogService = dialogService;
+            ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
         }
 
         #region Execute methods delegates
@@ -66,6 +86,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             Destroy();
         }
+
+
+        void ExecuteAddNewMaterialCommand()
+        {
+            DialogService.ShowDialog("AddMaterialContext");
+        }
+
+        void ExecuteDeleteMaterialCommand()
+        {
+            if (BaslerRepository.MaterialModelCollection.Count > 0)
+            {
+                DialogParameters p = new DialogParameters();
+                p.Add("MaterialName", BaslerRepository.CurrentMaterial.MaterialName);
+                DialogService.ShowDialog("DeleteMaterialContext", p, result => { });
+            }
+        }
+
         #endregion
 
         public override void Destroy()

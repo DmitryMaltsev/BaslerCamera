@@ -39,6 +39,13 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _baslerCameraModel, value); }
         }
 
+        private MaterialModel _currentMaterial;
+        public MaterialModel CurrentMaterial
+        {
+            get { return _currentMaterial; }
+            set { SetProperty(ref _currentMaterial, value); }
+        }
+
         private ObservableCollection<MaterialModel> _materialModelCollection;
         public ObservableCollection<MaterialModel> MaterialModelCollection
         {
