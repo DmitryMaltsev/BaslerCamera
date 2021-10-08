@@ -128,48 +128,15 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-            BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth;
-            BaslerRepository.MaterialModelCollection = new();
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
-            {              
-                MaterialName = "This MaterialName"
-            });
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel 
-            {              
-                MaterialName = "This MaterialName2"
-            });
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
-            {              
-                MaterialName = "This MaterialName2"
-            });
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
-            {   
-                MaterialName = "This MaterialName2"
-            });
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
-            {         
-                MaterialName = "This MaterialName2"
-            });
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
-            {
-                MaterialName = "This MaterialName2"
-            });
-            BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
-            NonControlZonesRepository.AddZones(BaslerRepository);
-            //BaslerRepository.FullCamerasWidth = BaslerRepository.BaslerCamerasCollection[0].WidthDescrete * 6144 +
-            //    BaslerRepository.BaslerCamerasCollection[1].WidthDescrete * 6144 +
-            //    BaslerRepository.BaslerCamerasCollection[2].WidthDescrete * 6144;
-            //TODO: Если файл с настройками не существует - создать настройки по умолчанию и записать их в файл.
+            BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth; ;
 
-            //string[] ips = { "0.0.0.0" };
-            //List<BaslerCameraModel> cameras = BaslerService.CreateCameras(ips);
-            //if (cameras.Count == 0)
-            //{
-            //    cameras.Add(new BaslerCameraModel { Ip = "0.0.0.0", ID = "Левая камера" });
-            //    cameras.Add(new BaslerCameraModel { Ip = "1.1.1.1", ID = "Центральная камера" });
-            //    cameras.Add(new BaslerCameraModel { Ip = "2.2.2.2", ID = "Правая камера" });
-            //}
-         //XmlService.Write(path, cameras);
+            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+            List<MaterialModel> materials = new();
+            BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
+            BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
+
+            NonControlZonesRepository.AddZones(BaslerRepository);
+
             float shift = 0;
             OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();
             OneCameraContentViewModel Camera1VM = ContainerProvider.Resolve<OneCameraContentViewModel>();

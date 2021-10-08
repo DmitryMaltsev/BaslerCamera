@@ -1,20 +1,19 @@
 ﻿using Kogerent.Services.Interfaces;
-
 using LaserScan.Core.NetStandart.Models;
-
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
     public class AddMaterialContextViewModel : BindableBase, IDialogAware
     {
+        private string SettingsDir => Directory.CreateDirectory($"{Environment.CurrentDirectory}\\Settings").FullName;
         public IBaslerRepository BaslerRepository { get; }
+        public IXmlService XmlService { get; }
+
         private string _materialName;
         public string MaterialName
         {
@@ -35,11 +34,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand AddMaterialCommand =>
             _addMaterialCommand ?? (_addMaterialCommand = new DelegateCommand(ExecuteAddMaterialCommand));
 
-   
 
-        public AddMaterialContextViewModel(IBaslerRepository baslerRepository)
+
+        public AddMaterialContextViewModel(IBaslerRepository baslerRepository, IXmlService xmlService)
         {
             BaslerRepository = baslerRepository;
+            XmlService = xmlService;
         }
 
         private void ExecuteAddMaterialCommand()
@@ -47,11 +47,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BaslerRepository.MaterialModelCollection.Add(new MaterialModel
             {
                 MaterialName = _materialName,
-                SupplyTime= _supplyTime
+                SupplyTime = _supplyTime
             });
+            string path = Path.Combine(SettingsDir, "MaterialSettings.xml");
+            XmlService.Write(path, BaslerRepository.MaterialModelCollection);
             ButtonResult result = ButtonResult.OK;
-            //DialogParameters p = new DialogParameters();
-            //p.Add("myParam", "The dialog closed by user");
             RequestClose?.Invoke(new DialogResult(result));
         }
 
@@ -70,7 +70,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-           
-        }  
+
+        }
     }
 }

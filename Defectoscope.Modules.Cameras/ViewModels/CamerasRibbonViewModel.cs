@@ -95,7 +95,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         void ExecuteDeleteMaterialCommand()
         {
-            if (BaslerRepository.MaterialModelCollection.Count > 0)
+            if (BaslerRepository.MaterialModelCollection.Count > 1)
             {
                 DialogParameters p = new DialogParameters();
                 p.Add("MaterialName", BaslerRepository.CurrentMaterial.MaterialName);
