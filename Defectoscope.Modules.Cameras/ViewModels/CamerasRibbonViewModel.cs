@@ -76,6 +76,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 cameraModel.CanvasWidth = BaslerRepository.CanvasWidth;
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
+            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+
         }
 
         void ExecuteCheckCamerasOverlay()

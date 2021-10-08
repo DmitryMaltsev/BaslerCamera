@@ -90,7 +90,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             set { SetProperty(ref _imageSource, value); }
         }
 
-
         #region Delegate Commands
         private DelegateCommand _init;
         public DelegateCommand Init => _init ??= new DelegateCommand(Executeinit);
@@ -214,7 +213,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         {
                             List<DefectProperties> rightDefects = _defects.ToList();
                             BaslerRepository.BaslerCamerasCollection[1].RightBorder =  Shift-((float)(rightDefects[0].X + rightDefects[0].Ширина)-Shift);
-
                             BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина)-Shift;                                                  
                             _overlayMode = false;
                         }
