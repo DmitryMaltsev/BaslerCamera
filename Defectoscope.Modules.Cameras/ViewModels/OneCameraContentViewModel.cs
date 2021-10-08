@@ -74,7 +74,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private byte[,,] imgData;
         private bool _needToSave = true;
         private int _cnt;
-        private CameraDelta _currentDeltas=null;
         #endregion
 
         private BaslerCameraModel _currentCamera;
@@ -213,11 +212,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         if (CurrentCamera.ID == "Правая камера")
                         {
                             List<DefectProperties> rightDefects = _defects.ToList();
-                            BaslerRepository.BaslerCamerasCollection[1].RightBorder =  Shift-((float)(rightDefects[0].X + rightDefects[0].Ширина)-Shift);
-                            BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина)-Shift;                                                  
+                            BaslerRepository.BaslerCamerasCollection[1].RightBorder = Shift - ((float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift);
+                            BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift;
                             _overlayMode = false;
                         }
-                    }        
+                    }
                 }
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
@@ -325,28 +324,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         bool res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
                         if (res && bufferData != default)
                         {
-                            //try
-                            //{
-                            //    if (CurrentCamera.ID == "Центральная камера" || CurrentCamera.ID == "Правая камера")
-                            //    {
-                            //        List<byte> bufferByteList = new();
-                            //        List<List<byte>> InvertList = bufferData.Data.SplitByCount(_width).ToList();
-                            //        foreach (List<byte> invertBytes in InvertList)
-                            //        {
-                            //            invertBytes.Reverse(0, invertBytes.Count);
-                            //            bufferByteList.AddRange(invertBytes);
-                            //        }
-                            //        bufferData.Data = bufferByteList.ToArray();
-                            //    }
-                            //}
-                            //catch (Exception ex)
-                            //{
-                            //    string msg = $"{ex.Message}";
-                            //    Logger?.Error(msg);
-                            //    FooterRepository.Text = msg;
-                            //    ExecuteStopCamera();
-                            //}
-
                             Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
                             _cnt += bufferData.Height;
                             _strobe += bufferData.Height;

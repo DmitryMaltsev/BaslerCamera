@@ -43,11 +43,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
 
         private void ExecuteAddMaterialCommand()
-        {
+        { 
             BaslerRepository.MaterialModelCollection.Add(new MaterialModel
             {
                 MaterialName = _materialName,
-                SupplyTime = _supplyTime
+                SupplyTime = _supplyTime,
+               
             });
             string path = Path.Combine(SettingsDir, "MaterialSettings.xml");
             XmlService.Write(path, BaslerRepository.MaterialModelCollection);

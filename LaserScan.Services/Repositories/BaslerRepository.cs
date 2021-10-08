@@ -43,7 +43,13 @@ namespace Kogerent.Services.Implementation
         public MaterialModel CurrentMaterial
         {
             get { return _currentMaterial; }
-            set { SetProperty(ref _currentMaterial, value); }
+            set { 
+                SetProperty(ref _currentMaterial, value);
+                for (int i = 0; i < _currentMaterial.CameraDeltaList.Count; i++)
+                {
+                    this.BaslerCamerasCollection[i].Deltas = _currentMaterial.CameraDeltaList[i].Deltas;
+                }
+            }
         }
 
         private ObservableCollection<MaterialModel> _materialModelCollection;
@@ -73,7 +79,7 @@ namespace Kogerent.Services.Implementation
                 }
             }
         }
-        private float _fullCamerasWidth=3810;
+        private float _fullCamerasWidth = 3810;
         public float FullCamerasWidth
         {
             get { return _fullCamerasWidth; }

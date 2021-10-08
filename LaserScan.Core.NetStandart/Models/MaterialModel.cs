@@ -9,7 +9,12 @@ namespace LaserScan.Core.NetStandart.Models
     public class MaterialModel : BindableBase
     {
         public DateTime SupplyTime { get; set; }
-        public List<CameraDelta> CameraDeltaList { get; set; }
+        private List<CameraDelta> _cameraDeltaList;
+        public List<CameraDelta> CameraDeltaList
+        {
+            get { return _cameraDeltaList; }
+            set { SetProperty(ref _cameraDeltaList, value); }
+        }
         private string _materialName;
         public string MaterialName
         {
