@@ -77,7 +77,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-
+            BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
+            foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
+            {
+                BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
+                {
+                    CameraId=camera.ID,
+                    Delta=camera.Deltas
+                });
+            }
+            XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
         }
 
         void ExecuteCheckCamerasOverlay()
