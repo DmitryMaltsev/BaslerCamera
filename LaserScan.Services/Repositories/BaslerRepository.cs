@@ -45,9 +45,12 @@ namespace Kogerent.Services.Implementation
             get { return _currentMaterial; }
             set { 
                 SetProperty(ref _currentMaterial, value);
-                for (int i = 0; i < _currentMaterial.CameraDeltaList.Count; i++)
+                if (_currentMaterial.CameraDeltaList!=null)
                 {
-                    this.BaslerCamerasCollection[i].Deltas = _currentMaterial.CameraDeltaList[i].Deltas;
+                    for (int i = 0; i < _currentMaterial.CameraDeltaList.Count; i++)
+                    {
+                        this.BaslerCamerasCollection[i].Deltas = _currentMaterial.CameraDeltaList[i].Deltas;
+                    }
                 }
             }
         }
