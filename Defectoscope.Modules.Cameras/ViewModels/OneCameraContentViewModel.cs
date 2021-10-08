@@ -74,6 +74,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private byte[,,] imgData;
         private bool _needToSave = true;
         private int _cnt;
+        private CameraDelta _currentDeltas=null;
         #endregion
 
         private BaslerCameraModel _currentCamera;
@@ -233,7 +234,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ImageGrabbed(object sender, BufferData e)
         {
-            if (CurrentCamera.Deltas == null)
+            CameraDelta _currentDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList.Find(p => p.CameraId == CurrentCamera.ID);
+            if (_currentDeltas == null)
             {
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
@@ -265,7 +267,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         }
                         else
                         {
-                            newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
+                            newLine.Add((byte)((sbyte)line[i] + _currentDeltas.Deltas[i]));
                         }
 
                     }

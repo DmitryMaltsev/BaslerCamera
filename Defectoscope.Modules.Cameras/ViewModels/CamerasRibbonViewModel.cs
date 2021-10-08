@@ -83,7 +83,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
                 {
                     CameraId=camera.ID,
-                    Delta=camera.Deltas
+                    Deltas=camera.Deltas
                 });
             }
             XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);

@@ -34,6 +34,6 @@ namespace LaserScan.Core.NetStandart.Models
     public class CameraDelta
     {
         public string CameraId { get; set; }
-        public sbyte[] Delta { get; set; }
+        public sbyte[] Deltas { get; set; }
     }
 }
