@@ -45,7 +45,7 @@ namespace Kogerent.Services.Implementation
             get { return _currentMaterial; }
             set { 
                 SetProperty(ref _currentMaterial, value);
-                if (_currentMaterial.CameraDeltaList!=null)
+                if (_currentMaterial!=null && _currentMaterial.CameraDeltaList!=null)
                 {
                     for (int i = 0; i < _currentMaterial.CameraDeltaList.Count; i++)
                     {

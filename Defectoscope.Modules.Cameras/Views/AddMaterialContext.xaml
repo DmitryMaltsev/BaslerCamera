@@ -15,13 +15,15 @@
             <RowDefinition Height="60"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Очередь на принятие" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"
-                      Foreground="{StaticResource ControlForeground}"/>
+        <TextBlock   Grid.Row="0" Grid.Column="0" Margin="5,10,5,10" Text="Название материала" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"
+                      Foreground="{StaticResource ControlForeground}"  />
         <TextBox  Text="{Binding MaterialName}"    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,10,5,10"  Foreground="{StaticResource ControlForegroundWhite}"/>
-        <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="1" Text="Дата поставки" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"
+        <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="5,10,5,10"  Text="Дата поставки" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"
                       Foreground="{StaticResource ControlForeground}"/>
-        <TextBox Text="{Binding SupplyTime}" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,10,5,10" Foreground="{StaticResource ControlForegroundWhite}" />
-        <Button Width="80" Margin="5,10,5,10" Grid.Column="1" Grid.Row="2" Content="Добавить"  Command="{Binding AddMaterialCommand}"/>
+        <DatePickerTextBox Text="{Binding SupplyTime, StringFormat='dd-MM-yyyy'}" Grid.Row="1" Grid.Column="1"
+                                                       Style="{StaticResource {x:Type TextBox}}" VerticalAlignment="Center"
+                                                       FontSize="14"/>
+        <Button  Margin="5,10,5,10" Grid.Column="1" Grid.Row="2" Content="Добавить"  Command="{Binding AddMaterialCommand}"/>
     </Grid>
 
     <!--#endregion-->
