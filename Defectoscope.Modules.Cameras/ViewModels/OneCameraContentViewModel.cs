@@ -458,8 +458,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (CurrentCamera == null) return;
             try
-            {
-
+            {             
                 CurrentCamera.CameraInit();
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
@@ -474,9 +473,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         }
 
-
+        
         private void ExecuteStartGrab()
         {
+            BaslerRepository.AllCamerasStarted = false;
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
@@ -485,8 +485,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     _drawingTimer.Start();
                 }
                 CurrentCamera.Start();
-                BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Started);
+              
             }
+         
         }
 
         private void ExecuteCalibrate()
@@ -567,7 +568,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = 0;
                 BenchmarkRepository.TempQueueCount = 0;
             }
-            CurrentCamera.Started = true;
+            BaslerRepository.AllCamerasStarted = false;
             CurrentCamera.StopAndKill();
             FooterRepository.Text = $"Stopped = true";
         }
@@ -591,6 +592,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void OnNavigatedTo()
         {
+            BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
+
             ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             //_width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);

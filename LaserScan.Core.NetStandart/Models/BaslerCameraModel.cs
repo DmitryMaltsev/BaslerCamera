@@ -47,13 +47,6 @@ namespace LaserScan.Core.NetStandart.Models
             get { return initialized; }
             set { SetProperty(ref initialized, value); }
         }
-
-        private bool _started=false;
-        public bool Started
-        {
-            get { return _started; }
-            set { SetProperty(ref _started, value); }
-        }
         private byte upThreshold = 60; // верхняя граница
         public byte UpThreshold
         {
@@ -89,7 +82,7 @@ namespace LaserScan.Core.NetStandart.Models
         [XmlIgnore]
         public Camera Camera { get; set; }
         // Управляем процессом получения изображений камерой
-        bool GrabOver = false;
+        public bool GrabOver = false;
 
         // Инициализация камеры
         public void CameraInit()
@@ -170,7 +163,6 @@ namespace LaserScan.Core.NetStandart.Models
         private void StreamGrabber_GrabStopped(object sender, GrabStopEventArgs e)
         {
             GrabOver = false;
-            Started = false;
         }
 
         // Удаляем камеру
@@ -212,7 +204,6 @@ namespace LaserScan.Core.NetStandart.Models
                 // Непрерывный сбор 
                 Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
                 Camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
-                Started = true;
             }
         }
 

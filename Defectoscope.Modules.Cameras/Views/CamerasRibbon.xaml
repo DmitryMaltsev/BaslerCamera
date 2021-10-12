@@ -133,9 +133,10 @@
                                 <RowDefinition Height="40" />
                                 <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
-                            <Button Width="80" Margin="2,10,2,2" Grid.Column="0" Grid.Row="0" Content="Добавить"  Command="{Binding AddNewMaterialCommand}"/>
-                            <Button Width="80" Margin="2,10,2,2" Grid.Column="1" Grid.Row="0" Content="Удалить"  Command="{Binding DeleteMaterialCommand}"/>
-                            <Button Width="80" Margin="2,2,2,2" Grid.Column="0" Grid.Row="1" Content="Применить"  Command="{Binding ApplicationCommands.ChangeMaterialDeltas}" />
+                            <Button Width="90" Margin="2,10,1,2" Grid.Column="0" Grid.Row="0" Content="Добавить"  Command="{Binding AddNewMaterialCommand}"/>
+                            <Button Width="90" Margin="1,10,2,2" Grid.Column="1" Grid.Row="0" Content="Удалить"  Command="{Binding DeleteMaterialCommand}"/>
+                            <Button Width="90" Margin="2,2,1,2" Grid.Column="0" Grid.Row="1" Content="Применить"  Command="{Binding ApplicationCommands.ChangeMaterialDeltas}" 
+                                    IsEnabled="{Binding BaslerRepository.AllCamerasStarted}"/>
 
                         </Grid>
                         <TextBlock Text="Выбор материала" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
