@@ -86,6 +86,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Task result = Task.WhenAll(tasks);
             await result;
             BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
+           
         }
 
         private void ExecuteDestroy()
@@ -104,6 +105,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             Task result = Task.WhenAll(tasks);
             await result;
+
         }
 
         private async void ExecuteStop()

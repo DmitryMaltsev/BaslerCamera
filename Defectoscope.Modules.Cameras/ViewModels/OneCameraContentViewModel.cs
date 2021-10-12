@@ -124,6 +124,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand AddNewMaterialCommand =>
             _addNewMaterialCommand ?? (_addNewMaterialCommand = new DelegateCommand(ExecuteAddNewMaterialCommand));
 
+        private DelegateCommand _changeMaterialDeltasCommand;
+        public DelegateCommand ChangeMaterialDeltasCommand =>
+            _changeMaterialDeltasCommand ?? (_changeMaterialDeltasCommand = new DelegateCommand(ExecuteChangeMaterialDeltas));
         #endregion
 
         #region Properties
@@ -155,7 +158,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.StopAllSensors.RegisterCommand(StopCamera);
             ApplicationCommands.CheckNoCalibrateAll.RegisterCommand(TakeRawData);
             ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
-
+            ApplicationCommands.ChangeMaterialDeltas.RegisterCommand(ChangeMaterialDeltasCommand);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -359,8 +362,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             imgProcessingStopWatch.Restart();
 
                             img.Data = dataBuffer;
-
-
                             if (!BenchmarkRepository.RawImage)
                             {
                                 for (int y = 0; y < img.Height; y++)
@@ -484,6 +485,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     _drawingTimer.Start();
                 }
                 CurrentCamera.Start();
+                BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Started);
             }
         }
 
@@ -530,10 +532,26 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-        void ExecuteAddNewMaterialCommand()
+        void ExecuteChangeMaterialDeltas()
         {
-
+            if (BaslerRepository.CurrentMaterial != null)
+            {
+                // todo CameraDelta buffer = BaslerRepository.CurrentMaterial.CameraDeltaList.Select(p => p.CameraId = CurrentCamera.ID);
+                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+                {
+                    if (CurrentCamera.ID==BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
+                    {
+                        CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                    }
+                }
+            }
         }
+
+
+        private void ExecuteAddNewMaterialCommand()
+        {        
+        }
+
 
         private void ExecuteStopCamera()
         {
@@ -541,6 +559,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             CurrentCamera.Initialized = false;
             BaslerRepository.AllCamerasInitialized = false;
+            BaslerRepository.AllCamerasStarted = false;
             if (_drawingTimer.IsEnabled)
             {
                 _drawingTimer.Stop();
@@ -548,6 +567,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = 0;
                 BenchmarkRepository.TempQueueCount = 0;
             }
+            CurrentCamera.Started = true;
             CurrentCamera.StopAndKill();
             FooterRepository.Text = $"Stopped = true";
         }
@@ -559,6 +579,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.Calibrate.UnregisterCommand(Calibrate);
             ApplicationCommands.SaveDefectsAndCrearTable.UnregisterCommand(ClearDefects);
             ApplicationCommands.InitAllSensors.UnregisterCommand(Init);
+            ApplicationCommands.ChangeMaterialDeltas.UnregisterCommand(ChangeMaterialDeltasCommand);
             ApplicationCommands.StopAllSensors.UnregisterCommand(StopCamera);
             base.Destroy();
         }

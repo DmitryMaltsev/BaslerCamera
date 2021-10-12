@@ -15,5 +15,6 @@ namespace Kogerent.Services.Interfaces
         float FullCamerasWidth { get; set; }
         ObservableCollection<MaterialModel> MaterialModelCollection { get; set; }
         MaterialModel CurrentMaterial { get; set; }
+        bool AllCamerasStarted { get; set; }
     }
 }

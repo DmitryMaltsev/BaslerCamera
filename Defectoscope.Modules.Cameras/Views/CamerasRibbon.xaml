@@ -111,7 +111,7 @@
                     <!--#region Material selection -->
                     <DockPanel LastChildFill="False">
                         <Grid DockPanel.Dock="Top">
-                            <ListBox Height="120" ItemsSource="{Binding BaslerRepository.MaterialModelCollection}" 
+                            <ListBox Height="89" ItemsSource="{Binding BaslerRepository.MaterialModelCollection}" 
                                      SelectedItem="{Binding BaslerRepository.CurrentMaterial}" SelectedIndex="0">
                                 <!--SelectedItem="{Binding BaslerRepository.BaslerCamerasCollection.MaterialModelCollection[0]}"  SelectedIndex="0">-->
                                 <ListBox.ItemTemplate>
@@ -128,9 +128,12 @@
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="40" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Width="80" Margin="2,10,2,2" Grid.Column="0" Grid.Row="0" Content="Добавить"  Command="{Binding AddNewMaterialCommand}"/>
                             <Button Width="80" Margin="2,10,2,2" Grid.Column="1" Grid.Row="0" Content="Удалить"  Command="{Binding DeleteMaterialCommand}"/>
+                            <Button Width="80" Margin="2,2,2,2" Grid.Column="0" Grid.Row="1" Content="Применить"  Command="{Binding ApplicationCommands.ChangeMaterialDeltas}" />
+
                         </Grid>
                         <TextBlock Text="Выбор материала" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>

@@ -25,6 +25,14 @@ namespace Kogerent.Services.Implementation
             get { return _allCamerasInitialized; }
             set { SetProperty(ref _allCamerasInitialized, value); }
         }
+
+        private bool _allCamerasStarted;
+        public bool AllCamerasStarted
+        {
+            get { return _allCamerasStarted; }
+            set { SetProperty(ref _allCamerasStarted, value); }
+        }   
+
         private BaslerCameraModel _currentCamera;
         public BaslerCameraModel CurrentCamera
         {
@@ -43,15 +51,9 @@ namespace Kogerent.Services.Implementation
         public MaterialModel CurrentMaterial
         {
             get { return _currentMaterial; }
-            set { 
+            set
+            {
                 SetProperty(ref _currentMaterial, value);
-                if (_currentMaterial.CameraDeltaList!=null)
-                {
-                    for (int i = 0; i < _currentMaterial.CameraDeltaList.Count; i++)
-                    {
-                        this.BaslerCamerasCollection[i].Deltas = _currentMaterial.CameraDeltaList[i].Deltas;
-                    }
-                }
             }
         }
 
