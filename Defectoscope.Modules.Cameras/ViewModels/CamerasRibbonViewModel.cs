@@ -34,15 +34,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand DeleteMaterialCommand =>
             _deleteMaterialCommand ?? (_deleteMaterialCommand = new DelegateCommand(ExecuteDeleteMaterialCommand));
 
-
-        void ExecuteCommandName()
-        {
-
-        }
-
-        public IRegionManager RegionManager { get; }
         #endregion
-
+        public IRegionManager RegionManager { get; }
         public IFooterRepository FooterRepository { get; }
         public IApplicationCommands ApplicationCommands { get; }
         public IBaslerRepository BaslerRepository { get; }
@@ -77,8 +70,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            if(BaslerRepository.CurrentMaterial.CameraDeltaList.Count>0)
-            BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
+                BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
             foreach (var camera in BaslerRepository.BaslerCamerasCollection)
             {
                 BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
@@ -87,13 +80,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     Deltas = camera.Deltas
                 });
             }
-           XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
+            XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
         }
 
-        void ExecuteCheckCamerasOverlay()
-        {
-
-        }
         private void ExecuteDestroyCommand()
         {
             Destroy();
