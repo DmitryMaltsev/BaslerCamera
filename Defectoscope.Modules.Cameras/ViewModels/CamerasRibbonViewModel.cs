@@ -25,8 +25,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand SaveCamerasSettings =>
             _saveCamersSettings ?? (_saveCamersSettings = new DelegateCommand(ExecuteSaveCamerasSettings));
         private DelegateCommand _checkCamerasOverLay;
-        public DelegateCommand CheckCamerasOverLay =>
-            _checkCamerasOverLay ?? (_checkCamerasOverLay = new DelegateCommand(ExecuteCheckCamerasOverlay));
         private DelegateCommand _addNewMaterialCommand;
         public DelegateCommand AddNewMaterialCommand =>
             _addNewMaterialCommand ?? (_addNewMaterialCommand = new DelegateCommand(ExecuteAddNewMaterialCommand));
