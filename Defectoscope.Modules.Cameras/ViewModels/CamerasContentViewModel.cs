@@ -143,7 +143,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 }
             }
             BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
-
             NonControlZonesRepository.AddZones(BaslerRepository);
             float shift = 0;
             OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();

@@ -1,8 +1,12 @@
 ﻿using Kogerent.Services.Interfaces;
+using Kogerent.Utilities;
+
 using LaserScan.Core.NetStandart.Models;
+
 using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
+
 using System;
 using System.IO;
 
@@ -43,17 +47,27 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
 
         private void ExecuteAddMaterialCommand()
-        { 
-            BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+        {
+            string res=null;
+            if (MaterialName != null)
             {
-                MaterialName = _materialName,
-                SupplyTime = _supplyTime,
-               
-            });
-            string path = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            XmlService.Write(path, BaslerRepository.MaterialModelCollection);
-            ButtonResult result = ButtonResult.OK;
-            RequestClose?.Invoke(new DialogResult(result));
+                char[] charsToTrim = { ' ' };
+                res = _materialName.Trim(charsToTrim);
+            }
+
+            if (!res.IsNullOrEmpty())
+            {
+                BaslerRepository.MaterialModelCollection.Add(new MaterialModel
+                {
+                    MaterialName = res,
+                    SupplyTime = _supplyTime,
+
+                });
+                string path = Path.Combine(SettingsDir, "MaterialSettings.xml");
+                XmlService.Write(path, BaslerRepository.MaterialModelCollection);
+                ButtonResult result = ButtonResult.OK;
+                RequestClose?.Invoke(new DialogResult(result));
+            }
         }
 
         public string Title => "Материал";
