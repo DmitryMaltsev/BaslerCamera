@@ -494,6 +494,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
             }
+            else
+            {
+                FooterRepository.Text = "Инициализируйте камеры перед калибровкой";
+            }
         }
 
         private void ExecuteCamerasOverlayCommand()
@@ -531,7 +535,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         void ExecuteChangeMaterialDeltas()
         {
-            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null)
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count>0)
             {
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
                 {
@@ -540,6 +544,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
                     }
                 }
+                FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
             }
             else
             {

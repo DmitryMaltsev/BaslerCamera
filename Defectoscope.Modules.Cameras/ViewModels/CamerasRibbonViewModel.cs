@@ -68,7 +68,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null)
+            if (BaslerRepository.AllCamerasInitialized && BaslerRepository.CurrentMaterial.CameraDeltaList != null)
             {
                 BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
                 foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
@@ -80,6 +80,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     });
                 }
                 XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
+                FooterRepository.Text = $"Калибровочные данные сохранены в  {BaslerRepository.CurrentMaterial.MaterialName}";
+            }
+            else
+            {
+                FooterRepository.Text="Проведите инициализацию перед калибровкой и сохранитесь";
             }
         }
 

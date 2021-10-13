@@ -135,6 +135,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             List<MaterialModel> materials = new();
             BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
+            BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
             if (BaslerRepository.CurrentMaterial.CameraDeltaList != null)
             {
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
@@ -142,7 +143,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     BaslerRepository.BaslerCamerasCollection[i].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
                 }
             }
-            BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
+         
             NonControlZonesRepository.AddZones(BaslerRepository);
             float shift = 0;
             OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();
