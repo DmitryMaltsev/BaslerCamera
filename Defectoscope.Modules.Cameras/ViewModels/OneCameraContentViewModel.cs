@@ -120,9 +120,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _camerasOverlayCommand;
         public DelegateCommand CamerasOverlayCommand =>
             _camerasOverlayCommand ?? (_camerasOverlayCommand = new DelegateCommand(ExecuteCamerasOverlayCommand));
-        private DelegateCommand _addNewMaterialCommand;
-        public DelegateCommand AddNewMaterialCommand =>
-            _addNewMaterialCommand ?? (_addNewMaterialCommand = new DelegateCommand(ExecuteAddNewMaterialCommand));
 
         private DelegateCommand _changeMaterialDeltasCommand;
         public DelegateCommand ChangeMaterialDeltasCommand =>
@@ -485,7 +482,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     _drawingTimer.Start();
                 }
                 CurrentCamera.Start();
-              
+                BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
             }
          
         }
@@ -548,12 +545,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-
-        private void ExecuteAddNewMaterialCommand()
-        {        
-        }
-
-
         private void ExecuteStopCamera()
         {
 
@@ -570,6 +561,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             BaslerRepository.AllCamerasStarted = false;
             CurrentCamera.StopAndKill();
+            BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
             FooterRepository.Text = $"Stopped = true";
         }
 

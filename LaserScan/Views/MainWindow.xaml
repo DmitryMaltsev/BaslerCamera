@@ -8,7 +8,7 @@
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
-        Height="720" Width="1300"
+        Height="720" Width="1350"
         Name="mainWindow"
         WindowStartupLocation="CenterScreen" 
         Background="#333">

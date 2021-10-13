@@ -180,7 +180,7 @@
                     <!--#endregion-->
 
                     <!--#region Counters -->
-                    <DockPanel LastChildFill="False" Width="220">
+                    <DockPanel LastChildFill="False">
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="160" />
