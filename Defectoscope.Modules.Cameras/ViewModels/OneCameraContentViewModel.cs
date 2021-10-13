@@ -233,8 +233,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ImageGrabbed(object sender, BufferData e)
         {
-            CameraDelta _currentDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList.Find(p => p.CameraId == CurrentCamera.ID);
-            if (_currentDeltas == null)
+            if (CurrentCamera.Deltas == null)
             {
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
@@ -266,7 +265,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         }
                         else
                         {
-                            newLine.Add((byte)((sbyte)line[i] + _currentDeltas.Deltas[i]));
+                            newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
                         }
 
                     }
@@ -455,7 +454,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (CurrentCamera == null) return;
             try
-            {             
+            {
                 CurrentCamera.CameraInit();
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
@@ -470,7 +469,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         }
 
-        
+
         private void ExecuteStartGrab()
         {
             BaslerRepository.AllCamerasStarted = false;
@@ -484,7 +483,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.Start();
                 BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
             }
-         
+
         }
 
         private void ExecuteCalibrate()
@@ -532,16 +531,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         void ExecuteChangeMaterialDeltas()
         {
-            if (BaslerRepository.CurrentMaterial != null)
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null)
             {
-                // todo CameraDelta buffer = BaslerRepository.CurrentMaterial.CameraDeltaList.Select(p => p.CameraId = CurrentCamera.ID);
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
                 {
-                    if (CurrentCamera.ID==BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
+                    if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
                     {
                         CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
                     }
                 }
+            }
+            else
+            {
+                FooterRepository.Text = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
             }
         }
 

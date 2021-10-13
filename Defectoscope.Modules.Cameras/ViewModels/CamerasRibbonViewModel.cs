@@ -68,17 +68,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            if (BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
-                BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
-            foreach (var camera in BaslerRepository.BaslerCamerasCollection)
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null)
             {
-                BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
+                BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
+                foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
                 {
-                    CameraId = camera.ID,
-                    Deltas = camera.Deltas
-                });
+                    BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
+                    {
+                        CameraId = camera.ID,
+                        Deltas = camera.Deltas
+                    });
+                }
+                XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
             }
-            XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
         }
 
         private void ExecuteDestroyCommand()

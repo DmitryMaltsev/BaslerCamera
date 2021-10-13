@@ -37,7 +37,8 @@ namespace Kogerent.Services.Implementation
         public BaslerCameraModel CurrentCamera
         {
             get { return _currentCamera; }
-            set { SetProperty(ref _currentCamera, value); }
+            set {
+                SetProperty(ref _currentCamera, value); }
         }
 
         private ObservableCollection<BaslerCameraModel> _baslerCameraModel;
@@ -54,13 +55,6 @@ namespace Kogerent.Services.Implementation
             set
             {
                 SetProperty(ref _currentMaterial, value);
-                if (_currentMaterial!=null && _currentMaterial.CameraDeltaList!=null)
-                {
-                    for (int i = 0; i < _currentMaterial.CameraDeltaList.Count; i++)
-                    {
-                        this.BaslerCamerasCollection[i].Deltas = _currentMaterial.CameraDeltaList[i].Deltas;
-                    }
-                }
             }
         }
 
@@ -68,7 +62,8 @@ namespace Kogerent.Services.Implementation
         public ObservableCollection<MaterialModel> MaterialModelCollection
         {
             get { return _materialModelCollection; }
-            set { SetProperty(ref _materialModelCollection, value); }
+            set { SetProperty(ref _materialModelCollection, value);
+            }
         }
 
         private int _totalCount;
@@ -91,6 +86,7 @@ namespace Kogerent.Services.Implementation
                 }
             }
         }
+
         private float _fullCamerasWidth = 3810;
         public float FullCamerasWidth
         {

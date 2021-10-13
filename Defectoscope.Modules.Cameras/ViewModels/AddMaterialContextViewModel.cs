@@ -8,6 +8,7 @@ using Prism.Mvvm;
 using Prism.Services.Dialogs;
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
@@ -48,19 +49,29 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ExecuteAddMaterialCommand()
         {
-            string res=null;
+            string filteredName = null;
             if (MaterialName != null)
             {
                 char[] charsToTrim = { ' ' };
-                res = _materialName.Trim(charsToTrim);
+                filteredName = _materialName.Trim(charsToTrim);
             }
 
-            if (!res.IsNullOrEmpty())
+            if (!filteredName.IsNullOrEmpty())
             {
+                //List<CameraDelta> cameraDeltaList = new();
+                //foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
+                //{
+                //    cameraDeltaList.Add(new CameraDelta()
+                //    {
+                //        CameraId=camera.ID
+                //    });
+                //}
+
                 BaslerRepository.MaterialModelCollection.Add(new MaterialModel
                 {
-                    MaterialName = res,
+                    MaterialName = filteredName,
                     SupplyTime = _supplyTime,
+                    CameraDeltaList = new()
 
                 });
                 string path = Path.Combine(SettingsDir, "MaterialSettings.xml");
