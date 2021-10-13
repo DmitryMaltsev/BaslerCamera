@@ -113,16 +113,16 @@
                         <Grid DockPanel.Dock="Top">
                             <ListBox Height="89" ItemsSource="{Binding BaslerRepository.MaterialModelCollection}" 
                                      SelectedItem="{Binding BaslerRepository.CurrentMaterial}" SelectedIndex="0">
-                            <!--SelectedItem="{Binding BaslerRepository.BaslerCamerasCollection.MaterialModelCollection[0]}"  SelectedIndex="0">-->
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal"  >
-                                        <TextBlock Text="{Binding MaterialName}"/>
-                                        <TextBlock Text="{Binding SupplyTime, StringFormat='  dd.MM.yyyy'}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-
+                                <!--SelectedItem="{Binding BaslerRepository.BaslerCamerasCollection.MaterialModelCollection[0]}"  SelectedIndex="0">-->
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal"  >
+                                            <TextBlock Text="{Binding MaterialName}"/>
+                                            <TextBlock Text="{Binding SupplyTime, StringFormat='  dd.MM.yyyy'}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
                         </Grid>
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
