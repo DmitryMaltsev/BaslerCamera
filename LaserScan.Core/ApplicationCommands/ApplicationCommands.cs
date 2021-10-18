@@ -170,7 +170,5 @@ namespace Kogerent.Core
         public CompositeCommand CheckCamerasOverLay { get; } = new();
 
         public CompositeCommand AddNewMaterial { get; } = new();
-
-        public CompositeCommand ChangeMaterialDeltas { get; } = new();
     }
 }

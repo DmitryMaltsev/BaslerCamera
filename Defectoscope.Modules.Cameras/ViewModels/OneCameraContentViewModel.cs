@@ -73,6 +73,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private Image<Gray, byte> tempImage;
         private byte[,,] imgData;
         private bool _needToSave = true;
+        private bool _currentRawImage;
+        private bool _currentVisualAnalizeIsActive;
         private int _cnt;
         #endregion
 
@@ -118,12 +120,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _takeFilteredData ?? (_takeFilteredData = new DelegateCommand(ExecuteTakeFilteredData));
 
         private DelegateCommand _camerasOverlayCommand;
+     
+
         public DelegateCommand CamerasOverlayCommand =>
             _camerasOverlayCommand ?? (_camerasOverlayCommand = new DelegateCommand(ExecuteCamerasOverlayCommand));
 
-        private DelegateCommand _changeMaterialDeltasCommand;
-        public DelegateCommand ChangeMaterialDeltasCommand =>
-            _changeMaterialDeltasCommand ?? (_changeMaterialDeltasCommand = new DelegateCommand(ExecuteChangeMaterialDeltas));
+        //private DelegateCommand _changeMaterialDeltasCommand;
+        //public DelegateCommand ChangeMaterialDeltasCommand =>
+        //    _changeMaterialDeltasCommand ?? (_changeMaterialDeltasCommand = new DelegateCommand(ExecuteChangeMaterialDeltas));
         #endregion
 
         #region Properties
@@ -155,7 +159,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.StopAllSensors.RegisterCommand(StopCamera);
             ApplicationCommands.CheckNoCalibrateAll.RegisterCommand(TakeRawData);
             ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
-            ApplicationCommands.ChangeMaterialDeltas.RegisterCommand(ChangeMaterialDeltasCommand);
+            // ApplicationCommands.ChangeMaterialDeltas.RegisterCommand(ChangeMaterialDeltasCommand);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -218,6 +222,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         }
                     }
                 }
+                _currentRawImage = BenchmarkRepository.RawImage;
+                _currentVisualAnalizeIsActive=DefectRepository.VisualAnalizeIsActive;
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
@@ -333,7 +339,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 byte[,,] data3Darray = new byte[1000, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
-
+                                if (_strobe > 10_000_000) _strobe = 0;
                                 _cnt = 0;
                                 _needToProcessImage = true;
                             }
@@ -358,7 +364,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             imgProcessingStopWatch.Restart();
 
                             img.Data = dataBuffer;
-                            if (!BenchmarkRepository.RawImage)
+                            if (!_currentRawImage)
                             {
                                 for (int y = 0; y < img.Height; y++)
                                 {
@@ -413,7 +419,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
                                 //    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
 
-                                if (DefectRepository.VisualAnalizeIsActive)
+                                if (_currentVisualAnalizeIsActive)
                                 {
                                     _resImage = img2; //img2.Clone();
                                 }
@@ -476,14 +482,37 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
-                if (!_drawingTimer.IsEnabled)
+                if (ChangeMaterialDeltas())
                 {
-                    _drawingTimer.Start();
+                    if (!_drawingTimer.IsEnabled)
+                    {
+                        _drawingTimer.Start();
+                    }
+                    CurrentCamera.Start();
+                    BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
                 }
-                CurrentCamera.Start();
-                BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
             }
+        }
 
+        private bool ChangeMaterialDeltas()
+        {
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
+            {
+                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+                {
+                    if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
+                    {
+                        CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                    }
+                }
+                FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
+                return true;
+            }
+            else
+            {
+                FooterRepository.Text = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
+                return false;
+            }
         }
 
         private void ExecuteCalibrate()
@@ -533,32 +562,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-        void ExecuteChangeMaterialDeltas()
-        {
-            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
-            {
 
-                if (CurrentCamera.Initialized)
-                {
-                    ExecuteStopCamera();
-                }
-
-                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
-                {
-                    if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
-                    {
-                        CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
-                    }
-                }
-                FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
-                Executeinit();
-            }
-            else
-            {
-                FooterRepository.Text = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
-            }
-
-        }
 
         private void ExecuteStopCamera()
         {
@@ -587,7 +591,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.Calibrate.UnregisterCommand(Calibrate);
             ApplicationCommands.SaveDefectsAndCrearTable.UnregisterCommand(ClearDefects);
             ApplicationCommands.InitAllSensors.UnregisterCommand(Init);
-            ApplicationCommands.ChangeMaterialDeltas.UnregisterCommand(ChangeMaterialDeltasCommand);
+            // ApplicationCommands.ChangeMaterialDeltas.UnregisterCommand(ChangeMaterialDeltasCommand);
             ApplicationCommands.StopAllSensors.UnregisterCommand(StopCamera);
             base.Destroy();
         }

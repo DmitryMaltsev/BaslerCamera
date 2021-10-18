@@ -221,6 +221,10 @@ namespace Kogerent.Services.Implementation
                         Rectangle rectangle = CvInvoke.BoundingRectangle(c[i]);
                         double area = CvInvoke.ContourArea(c[i]);
                         RotatedRect rotatedRectangle = CvInvoke.MinAreaRect(c[i]);
+                        if (rotatedRectangle.Center.Y > 1000)
+                        {
+                            rotatedRectangle.Center.Y = 0;
+                        }
                         contours.Add(new ContourData()
                         {
                             Contour = c[i],
@@ -373,7 +377,7 @@ namespace Kogerent.Services.Implementation
 
             Image<Bgr, byte> tempBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
             //Image<Bgr, byte> tempUpBmp = new Image<Bgr, byte>(upContours.G, imgHeight);
-            //Image<Bgr, byte> tempDownBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
+            //Image<Bgr, byte> tempDownBmp = new Image<Bgr, byte>(imgWidth, imgHeight);         
             if (upContours != null && upContours.Count > 0)
             {
                 //foreach (ContourData upContour in upContours)
@@ -470,7 +474,7 @@ namespace Kogerent.Services.Implementation
 
                 DefectProperties defect = new DefectProperties
                 {
-                    X = Math.Round(center.X * widthDiscrete, 1),
+                    X = Math.Round(center.X * widthDiscrete+Shift, 1),
                     Y = Math.Round(((uint)center.Y + imageCount * (uint)imgHeight) * heightDiscrete, 1),
                     Ширина = Math.Round(rectangle.Width * widthDiscrete, 1),
                     Высота = Math.Round(rectangle.Height * heightDiscrete, 1),
