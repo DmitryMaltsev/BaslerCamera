@@ -224,7 +224,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             catch (Exception ex)
             {
-                string msg = $"{ex.Message}";
+                string msg = $"{ex.Message} {ex.InnerException} {ex.StackTrace}";
                 Logger?.Error(msg);
                 FooterRepository.Text = msg;
                 ExecuteStopCamera();
@@ -535,8 +535,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         void ExecuteChangeMaterialDeltas()
         {
-            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count>0)
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
             {
+
+                if (CurrentCamera.Initialized)
+                {
+                    ExecuteStopCamera();
+                }
+
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
                 {
                     if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
@@ -545,11 +551,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     }
                 }
                 FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
+                Executeinit();
             }
             else
             {
                 FooterRepository.Text = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
             }
+
         }
 
         private void ExecuteStopCamera()

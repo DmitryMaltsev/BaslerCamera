@@ -32,13 +32,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             get { return _supplyTime; }
             set { SetProperty(ref _supplyTime, value); }
         }
+
         private DelegateCommand _addMaterialCommand;
 
         public event Action<IDialogResult> RequestClose;
 
         public DelegateCommand AddMaterialCommand =>
             _addMaterialCommand ?? (_addMaterialCommand = new DelegateCommand(ExecuteAddMaterialCommand));
-
 
 
         public AddMaterialContextViewModel(IBaslerRepository baslerRepository, IXmlService xmlService)
@@ -58,19 +58,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
             if (!filteredName.IsNullOrEmpty())
             {
-                //List<CameraDelta> cameraDeltaList = new();
-                //foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
-                //{
-                //    cameraDeltaList.Add(new CameraDelta()
-                //    {
-                //        CameraId=camera.ID
-                //    });
-                //}
-
                 BaslerRepository.MaterialModelCollection.Add(new MaterialModel
                 {
                     MaterialName = filteredName,
-                    SupplyTime = _supplyTime,
+                    SupplyTime = SupplyTime,
                     CameraDeltaList = new()
 
                 });
@@ -96,7 +87,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-
         }
     }
 }

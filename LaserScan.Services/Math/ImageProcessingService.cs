@@ -470,7 +470,7 @@ namespace Kogerent.Services.Implementation
 
                 DefectProperties defect = new DefectProperties
                 {
-                    X = Math.Round(center.X * widthDiscrete + Shift, 1),
+                    X = Math.Round(center.X * widthDiscrete, 1),
                     Y = Math.Round(((uint)center.Y + imageCount * (uint)imgHeight) * heightDiscrete, 1),
                     Ширина = Math.Round(rectangle.Width * widthDiscrete, 1),
                     Высота = Math.Round(rectangle.Height * heightDiscrete, 1),
