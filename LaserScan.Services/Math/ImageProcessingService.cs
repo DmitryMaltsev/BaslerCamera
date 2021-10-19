@@ -37,14 +37,16 @@ namespace Kogerent.Services.Implementation
         public ILogger Logger { get; }
 
         public INonControlZonesRepository Zones { get; }
+        public IBaslerRepository BaslerRepository { get; }
         #endregion
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-        public ImageProcessingService(ILogger logger, INonControlZonesRepository zones)
+        public ImageProcessingService(ILogger logger, INonControlZonesRepository zones, IBaslerRepository baslerRepository)
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         {
             Logger = logger;
             Zones = zones;
+            BaslerRepository = baslerRepository;
         }
 
 
@@ -474,7 +476,7 @@ namespace Kogerent.Services.Implementation
 
                 DefectProperties defect = new DefectProperties
                 {
-                    X = Math.Round(center.X * widthDiscrete+Shift, 1),
+                    X = Math.Round(center.X * widthDiscrete + Shift, 1),
                     Y = Math.Round(((uint)center.Y + imageCount * (uint)imgHeight) * heightDiscrete, 1),
                     Ширина = Math.Round(rectangle.Width * widthDiscrete, 1),
                     Высота = Math.Round(rectangle.Height * heightDiscrete, 1),
@@ -489,7 +491,7 @@ namespace Kogerent.Services.Implementation
                     bool defectNotInZone = true;
                     for (int i = 0; i < minZonesXs.Count; i++)
                     {
-                        if (minZonesXs[i]<=defect.X && defect.X <= maxZonesXs[i])
+                        if (minZonesXs[i] <= defect.X && defect.X <= maxZonesXs[i])
                         {
                             defectNotInZone = false;
                             continue;
@@ -497,6 +499,16 @@ namespace Kogerent.Services.Implementation
                     }
                     if (defectNotInZone)
                     {
+                        if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)
+                        {
+                            defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
+                        }
+                        else
+                        if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
+                        {
+                            defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth - BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
+                        }
+
                         defects.Add(defect);
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);

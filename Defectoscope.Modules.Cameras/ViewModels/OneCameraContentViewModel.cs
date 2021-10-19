@@ -160,6 +160,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.StopAllSensors.RegisterCommand(StopCamera);
             ApplicationCommands.CheckNoCalibrateAll.RegisterCommand(TakeRawData);
             ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
+            ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             // ApplicationCommands.ChangeMaterialDeltas.RegisterCommand(ChangeMaterialDeltasCommand);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
@@ -539,6 +540,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 //   CurrentCamera.CalibrationMode = true;
                 ExecuteStartGrab();
                 _overlayMode = true;
+                FooterRepository.Text = "Наложение камер определено";
             }
         }
 
@@ -550,6 +552,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 // CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
                 _rawMode = true;
+                FooterRepository.Text = "Сырые данные сохранены";
             }
         }
 
@@ -561,7 +564,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 // CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
                 _filterMode = true;
-            }
+                FooterRepository.Text = "Отфильтрованные данные сохранены";
+            }        
         }
 
         private void ExecuteStopCamera()
@@ -599,8 +603,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
 
         private void OnNavigatedTo()
-        {
-            ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
+        {          
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             //_width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
             _width = 6144;
