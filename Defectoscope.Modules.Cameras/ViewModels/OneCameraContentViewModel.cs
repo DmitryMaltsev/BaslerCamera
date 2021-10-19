@@ -204,6 +204,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 if (_defects != null && _needToDrawDefects)
                 {
                     DefectRepository.DefectsCollection.AddRange(_defects);
+                    if (DefectRepository.DefectsCollection.Count>1_000_000)
+                    {
+                        DefectRepository.DefectsCollection.Clear();
+                    }
                     _needToDrawDefects = false;
                     if (_overlayMode)
                     {
@@ -229,7 +233,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                Thread.Sleep(100);
+                Thread.Sleep(200);
             }
             catch (Exception ex)
             {
