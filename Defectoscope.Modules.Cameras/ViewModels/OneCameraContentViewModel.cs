@@ -121,7 +121,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _takeFilteredData ?? (_takeFilteredData = new DelegateCommand(ExecuteTakeFilteredData));
 
         private DelegateCommand _camerasOverlayCommand;
-     
+
 
         public DelegateCommand CamerasOverlayCommand =>
             _camerasOverlayCommand ?? (_camerasOverlayCommand = new DelegateCommand(ExecuteCamerasOverlayCommand));
@@ -199,12 +199,15 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 if (_resImage != null)
                 {
                     Bitmap bmp = _resImage.ToBitmap();
+                    //bmp = _resImage.ToBitmap();
                     ImageSource = MathService.BitmapToImageSource(bmp);
+                    // bmp.Dispose()
+                    ;
                 }
                 if (_defects != null && _needToDrawDefects)
                 {
                     DefectRepository.DefectsCollection.AddRange(_defects);
-                    if (DefectRepository.DefectsCollection.Count>1_000_000)
+                    if (DefectRepository.DefectsCollection.Count > 1_000_000)
                     {
                         DefectRepository.DefectsCollection.Clear();
                     }
@@ -226,14 +229,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift;
                             _overlayMode = false;
                         }
-                    }               
+                    }
                 }
                 _currentRawImage = BenchmarkRepository.RawImage;
-                _currentVisualAnalizeIsActive=DefectRepository.VisualAnalizeIsActive;
+                _currentVisualAnalizeIsActive = DefectRepository.VisualAnalizeIsActive;
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                Thread.Sleep(200);
+                //     Thread.Sleep(200);
             }
             catch (Exception ex)
             {
@@ -346,7 +349,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 byte[,,] data3Darray = new byte[1000, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
-                               // if (_strobe > 500_000) _strobe = 0;
+                                // if (_strobe > 500_000) _strobe = 0;
                                 _cnt = 0;
                                 _needToProcessImage = true;
                             }
@@ -377,10 +380,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     for (int x = 0; x < _width; x++)
                                     {
-                                        //if (NonControlZonesRepository.Obloys[0].MaximumX < x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete
-                                        //    && NonControlZonesRepository.Obloys[1].MinimumX > x + CurrentCamera.StartPixelPoint * CurrentCamera.WidthDescrete)
-                                        //{
-                                        //img.Data[y, x, 0] += CurrentCamera.Deltas[x];
                                         if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
                                         {
                                             img.Data[y, x, 0] = 255;
@@ -403,29 +402,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
                                 CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
 
-                                //if (_needToSave)
-                                //{
-                                //    var dir = Directory.CreateDirectory($"{Environment.CurrentDirectory}\\ResultImages").FullName;
-                                //    var path = Path.Combine(dir, $"result_{CurrentCamera.ID}_Up.png");
-                                //    var path2 = Path.Combine(dir, $"result_{CurrentCamera.ID}_Dn.png");
-                                //    upImg.ToBitmap().Save(path, System.Drawing.Imaging.ImageFormat.Png);
-                                //    dnImg.ToBitmap().Save(path2, System.Drawing.Imaging.ImageFormat.Png);
-                                //    _needToSave = false;
-                                //}
-
                                 (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
                                                                                                       CurrentCamera.WidthThreshold,
                                                                                                       CurrentCamera.HeightThreshold,
                                                                                                       CurrentCamera.WidthDescrete,
                                                                                                       CurrentCamera.HeightDescrete,
                                                                                                       _strobe, Shift);
-                                //foreach (DefectProperties defect in defects)
-                                //{
-                                //    defect.X += Shift;
-                                //}
-
-                                //    List<DefectProperties> _filteredDefects = ImageProcessing.FilterDefects(defects.ToList());
-
                                 if (_currentVisualAnalizeIsActive)
                                 {
                                     _resImage = img2; //img2.Clone();
@@ -452,6 +434,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     finally
                     {
                         GC.Collect();
+                        Thread.Sleep(100);
                     }
                 }
             }
@@ -494,7 +477,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     {
                         _drawingTimer.Start();
                     }
-                    CurrentCamera.Start();                
+                    CurrentCamera.Start();
                 }
             }
         }
@@ -569,7 +552,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.OneShotForCalibration();
                 _filterMode = true;
                 FooterRepository.Text = "Отфильтрованные данные сохранены";
-            }        
+            }
         }
 
         private void ExecuteStopCamera()
@@ -607,7 +590,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
 
         private void OnNavigatedTo()
-        {          
+        {
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             //_width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
             _width = 6144;
