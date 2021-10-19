@@ -40,11 +40,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand AddMaterialCommand =>
             _addMaterialCommand ?? (_addMaterialCommand = new DelegateCommand(ExecuteAddMaterialCommand));
 
-
         public AddMaterialContextViewModel(IBaslerRepository baslerRepository, IXmlService xmlService)
         {
             BaslerRepository = baslerRepository;
             XmlService = xmlService;
+            SupplyTime = DateTime.Now;
         }
 
         private void ExecuteAddMaterialCommand()

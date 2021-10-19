@@ -21,6 +21,15 @@ namespace LaserScan.Core.NetStandart.Models
             get { return _materialName; }
             set { SetProperty(ref _materialName, value); }
         }
+       
+
+    }
+
+    public class CameraDelta:BindableBase
+    {
+        public string CameraId { get; set; }
+        public sbyte[] Deltas { get; set; }
+
         private byte _upThreshhold;
         public byte UpThreshhold
         {
@@ -28,17 +37,10 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _upThreshhold, value); }
         }
         private byte _dnThreshhold;
-        public byte DnThreshhold
+        public byte DownThreshhold
         {
             get { return _dnThreshhold; }
             set { SetProperty(ref _dnThreshhold, value); }
         }
-
-    }
-
-    public class CameraDelta
-    {
-        public string CameraId { get; set; }
-        public sbyte[] Deltas { get; set; }
     }
 }

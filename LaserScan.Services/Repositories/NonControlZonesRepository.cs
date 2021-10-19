@@ -35,6 +35,7 @@ namespace Kogerent.Services.Implementation
             //Obloys.Add(new ObloyModel { Name = $"Облой п.", MinimumY = 0, MaximumY = 300, MinimumX = 1261, MaximumX = 1311 });
         }
 
+        
         public void AddZones(IBaslerRepository BaslerRepository)
         {
 
@@ -43,8 +44,8 @@ namespace Kogerent.Services.Implementation
             float maximumX;
             if (BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 < camera2Shift)
             {
-                float offsetLeft = (BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 -
-                    BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth);
+                float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 -
+                    BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
                 maximumX = offsetLeft <= 0 ? 0 : offsetLeft;
             }
             else
@@ -52,6 +53,7 @@ namespace Kogerent.Services.Implementation
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
                 maximumX = offsetLeft <= 0 ? 0 : offsetLeft;
             }
+
             Obloys.Clear();
             Obloys.Add(new ObloyModel
             {
@@ -82,6 +84,7 @@ namespace Kogerent.Services.Implementation
                 MinimumX = minimumX,
                 MaximumX = BaslerRepository.FullCamerasWidth
             });
+
             Zones.Clear();
             Zones.Add(new ObloyModel
             {

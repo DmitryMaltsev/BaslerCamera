@@ -76,7 +76,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
                     {
                         CameraId = camera.ID,
-                        Deltas = camera.Deltas
+                        Deltas = camera.Deltas,
+                        UpThreshhold = camera.UpThreshold,
+                        DownThreshhold = camera.DownThreshold
                     });
                 }
                 XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
@@ -84,7 +86,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             else
             {
-                FooterRepository.Text="Проведите инициализацию перед калибровкой и сохранитесь";
+                FooterRepository.Text = "Проведите инициализацию перед калибровкой и сохранитесь";
             }
         }
 

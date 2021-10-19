@@ -1,14 +1,15 @@
 ﻿<UserControl x:Class="Defectoscope.Modules.Cameras.Views.AddMaterialContext"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:prism="http://prismlibrary.com/"             
+             xmlns:prism="http://prismlibrary.com/"  
+            Width="250"
              prism:ViewModelLocator.AutoWireViewModel="True"
              >
     <!--#region Material selection -->
     <Grid  Background="{StaticResource NormalBackgroundTabControl}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="0.7*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="60" />
@@ -20,10 +21,10 @@
         <TextBox  Text="{Binding MaterialName}"    Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5,10,5,10"  Foreground="{StaticResource ControlForegroundWhite}"/>
         <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="5,10,5,10"  Text="Дата поставки" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14"
                       Foreground="{StaticResource ControlForeground}"/>
-        <DatePickerTextBox Text="{Binding SupplyTime, StringFormat='dd-MM-yyyy'}" Grid.Row="1" Grid.Column="1"
+        <DatePickerTextBox Text="{Binding SupplyTime, StringFormat='dd-MM-yyyy'}"  Margin="5,10,5,10" Grid.Row="1" Grid.Column="1"
                                                        Style="{StaticResource {x:Type TextBox}}" VerticalAlignment="Center"
                                                        FontSize="14"/>
-        <Button  Margin="5,10,5,10" Grid.Column="1" Grid.Row="2" Content="Добавить"  Command="{Binding AddMaterialCommand}"/>
+        <Button  Grid.Column="0" Grid.Row="2"  Margin="5,10,5,10" Width="100" Content="Добавить"  Command="{Binding AddMaterialCommand}"/>
     </Grid>
 
     <!--#endregion-->

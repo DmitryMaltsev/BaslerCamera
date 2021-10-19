@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -220,13 +221,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift;
                             _overlayMode = false;
                         }
-                    }
+                    }               
                 }
                 _currentRawImage = BenchmarkRepository.RawImage;
                 _currentVisualAnalizeIsActive=DefectRepository.VisualAnalizeIsActive;
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
+                Thread.Sleep(100);
             }
             catch (Exception ex)
             {
@@ -339,7 +341,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 byte[,,] data3Darray = new byte[1000, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
-                                if (_strobe > 10_000_000) _strobe = 0;
+                               // if (_strobe > 500_000) _strobe = 0;
                                 _cnt = 0;
                                 _needToProcessImage = true;
                             }
@@ -478,7 +480,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ExecuteStartGrab()
         {
-            BaslerRepository.AllCamerasStarted = false;
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
@@ -488,8 +489,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     {
                         _drawingTimer.Start();
                     }
-                    CurrentCamera.Start();
-                    BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
+                    CurrentCamera.Start();                
                 }
             }
         }
@@ -503,6 +503,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
                     {
                         CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                        CurrentCamera.UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
+                        CurrentCamera.DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
                     }
                 }
                 FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
@@ -562,15 +564,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-
-
         private void ExecuteStopCamera()
         {
 
             if (CurrentCamera == null) return;
             CurrentCamera.Initialized = false;
             BaslerRepository.AllCamerasInitialized = false;
-            BaslerRepository.AllCamerasStarted = false;
             if (_drawingTimer.IsEnabled)
             {
                 _drawingTimer.Stop();
@@ -578,9 +577,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = 0;
                 BenchmarkRepository.TempQueueCount = 0;
             }
-            BaslerRepository.AllCamerasStarted = false;
             CurrentCamera.StopAndKill();
-            BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
             FooterRepository.Text = $"Stopped = true";
         }
 
@@ -603,8 +600,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void OnNavigatedTo()
         {
-            BaslerRepository.AllCamerasStarted = BaslerRepository.BaslerCamerasCollection.All(p => p.GrabOver == false);
-
             ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             CurrentCamera.CameraImageEvent += ImageGrabbed;
             //_width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);

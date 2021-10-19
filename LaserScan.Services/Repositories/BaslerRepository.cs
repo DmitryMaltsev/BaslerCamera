@@ -25,14 +25,7 @@ namespace Kogerent.Services.Implementation
             get { return _allCamerasInitialized; }
             set { SetProperty(ref _allCamerasInitialized, value); }
         }
-
-        private bool _allCamerasStarted;
-        public bool AllCamerasStarted
-        {
-            get { return _allCamerasStarted; }
-            set { SetProperty(ref _allCamerasStarted, value); }
-        }   
-
+ 
         private BaslerCameraModel _currentCamera;
         public BaslerCameraModel CurrentCamera
         {
