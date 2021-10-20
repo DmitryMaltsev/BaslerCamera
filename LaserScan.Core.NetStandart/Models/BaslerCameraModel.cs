@@ -130,7 +130,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
-
+            Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(7000);
             //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
             if (ID == "Центральная камера" || ID == "Правая камера")
             {

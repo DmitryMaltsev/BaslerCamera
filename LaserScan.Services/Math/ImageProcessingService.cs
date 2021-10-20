@@ -202,7 +202,6 @@ namespace Kogerent.Services.Implementation
                 bmpImage.StreamSource = ms;
                 bmpImage.CacheOption = BitmapCacheOption.OnLoad;
                 bmpImage.EndInit();
-
                 //bmpImage.Freeze();
                 return bmpImage;
             }

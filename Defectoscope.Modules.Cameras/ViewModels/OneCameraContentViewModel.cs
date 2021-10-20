@@ -417,7 +417,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     _resImage = img.Convert<Bgr, byte>();
                                 }
                                 if (defects.Any())
-                                    _needToDrawDefects = true;
+                                   _needToDrawDefects = true;
                                 _defects = defects;
                             }
                             imgProcessingStopWatch.Stop();
