@@ -1,6 +1,8 @@
 ﻿using Prism.Mvvm;
+
 using System;
 using System.Windows.Markup;
+using System.Xml.Serialization;
 
 [assembly: XmlnsDefinition("http://kogerent.org", "Kogerent.Core")]
 namespace Kogerent.Core
@@ -9,6 +11,7 @@ namespace Kogerent.Core
     {
         private bool _disposed = false;
 
+        [XmlIgnore]
         private DateTime _index;
         public DateTime Время
         {
@@ -44,12 +47,12 @@ namespace Kogerent.Core
         private double _height;
         private bool _disposedValue;
 
+        [XmlIgnore]
         public double Высота
         {
             get { return _height; }
             set { SetProperty(ref _height, value); }
         }
-
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposedValue)

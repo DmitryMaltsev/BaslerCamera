@@ -511,7 +511,7 @@ namespace Kogerent.Services.Implementation
                         defects.Add(defect);
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
-                        tempBmp.Draw(rectF, rectColor, 40);
+                        tempBmp.Draw(rectF, rectColor, -1);
                     }
                 }
             }

@@ -43,6 +43,7 @@
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="0" Content="Калибровка"  Command="{Binding ApplicationCommands.Calibrate}"
                                       IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
@@ -53,6 +54,8 @@
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="2" Content="XmlFilter"  Command="{Binding ApplicationCommands.CheckFilterAll}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="3" Content="CalibData"  Command="{Binding TakeCalibrationDataCommand}"/>
+
                         </Grid>
                         <TextBlock Text="Калибровка" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -72,8 +75,6 @@
                                 <RowDefinition Height="35" />
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="35" />
-                                <RowDefinition Height="20" />
-                                <RowDefinition Height="35" />
                             </Grid.RowDefinitions>
                             <TextBlock Width="110" Margin="1" Grid.Column="0" Grid.Row="0"  Text="Верхняя граница"/>
                             <TextBox Width="110" Margin="1" Grid.Column="0" Grid.Row="1" Text="{Binding BaslerRepository.CurrentCamera.UpThreshold}"/>
@@ -83,8 +84,6 @@
                             <TextBox Width="110" Margin="1" Grid.Column="0"  Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.WidthThreshold}"/>
                             <TextBlock Width="110" Margin="1" Grid.Column="1" Grid.Row="2" Text="Высота дефекта"/>
                             <TextBox Width="110" Margin="1" Grid.Column="1" Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.HeightThreshold}"/>
-                            <TextBlock Width="110" Margin="1" Grid.Column="0" Grid.Row="4" Text="Начало камеры"/>
-                            <TextBox Width="110" Margin="1" Grid.Column="0" Grid.Row="5" Text="{Binding BaslerRepository.CurrentCamera.StartPixelPoint}"/>
                         </Grid>
                         <TextBlock Text="Пороги" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
