@@ -32,7 +32,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand DeleteMaterialCommand =>
             _deleteMaterialCommand ?? (_deleteMaterialCommand = new DelegateCommand(ExecuteDeleteMaterialCommand));
 
+        private DelegateCommand _takeCalibrationDataCommand;
+        public DelegateCommand TakeCalibrationDataCommand =>
+            _takeCalibrationDataCommand ?? (_takeCalibrationDataCommand = new DelegateCommand(ExecuteTakeCalibrationDataCommand));
         #endregion
+
         public IRegionManager RegionManager { get; }
         public IFooterRepository FooterRepository { get; }
         public IApplicationCommands ApplicationCommands { get; }
@@ -109,6 +113,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 p.Add("MaterialName", BaslerRepository.CurrentMaterial.MaterialName);
                 DialogService.ShowDialog("DeleteMaterialContext", p, result => { });
             }
+        }
+
+        void ExecuteTakeCalibrationDataCommand()
+        {
+            string path = Path.Combine(SettingsDir, "CalibrationData.xml");
+            XmlService.Write(path, DefectRepository.DefectsCollection);
         }
 
         #endregion

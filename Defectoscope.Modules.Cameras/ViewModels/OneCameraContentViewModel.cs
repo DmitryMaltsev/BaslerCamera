@@ -199,10 +199,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 if (_resImage != null)
                 {
                     Bitmap bmp = _resImage.ToBitmap();
-                    //bmp = _resImage.ToBitmap();
+                    bmp = _resImage.ToBitmap();
                     ImageSource = MathService.BitmapToImageSource(bmp);
-                    // bmp.Dispose()
-                    ;
+                    bmp.Dispose()
+                   ;
                 }
                 if (_defects != null && _needToDrawDefects)
                 {
@@ -236,7 +236,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                //     Thread.Sleep(200);
             }
             catch (Exception ex)
             {
@@ -244,7 +243,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 Logger?.Error(msg);
                 FooterRepository.Text = msg;
                 ExecuteStopCamera();
+               
             }
+            Thread.Sleep(300);
         }
 
         private void ImageGrabbed(object sender, BufferData e)
@@ -263,7 +264,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 PerformCalibration(e);
                 CurrentCamera.CalibrationMode = false;
             }
-
             if (_filterMode)
             {
                 try
@@ -332,7 +332,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             while (true)
             {
                 int count = _concurentVideoBuffer.Count;
-                if (count > 0)
+                if (count > 1000)
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -366,8 +366,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 if (_needToProcessImage)
                 {
-                    try
-                    {
+                    //try
+                    //{
                         if (_imageDataBuffer.TryDequeue(out byte[,,] dataBuffer))
                         {
                             _imageDataBuffer.Clear();
@@ -417,25 +417,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     _resImage = img.Convert<Bgr, byte>();
                                 }
                                 if (defects.Any())
-                                   _needToDrawDefects = true;
+                                    _needToDrawDefects = true;
                                 _defects = defects;
                             }
                             imgProcessingStopWatch.Stop();
                             _needToProcessImage = false;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        string msg = $"{ex.Message}";
-                        Logger?.Error(msg);
-                        FooterRepository.Text = msg;
-                        ExecuteStopCamera();
-                    }
-                    finally
-                    {
                         GC.Collect();
-                        Thread.Sleep(100);
-                    }
+                        }
+                    //}
+                    //catch (Exception ex)
+                    //{
+                    //    string msg = $"{ex.Message}";
+                    //    Logger?.Error(msg);
+                    //    FooterRepository.Text = msg;
+                    //    ExecuteStopCamera();
+                    //}
+                    //finally
+                    //{
+                    //    GC.Collect();
+                    //}
                 }
             }
         }
