@@ -126,9 +126,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand CamerasOverlayCommand =>
             _camerasOverlayCommand ?? (_camerasOverlayCommand = new DelegateCommand(ExecuteCamerasOverlayCommand));
 
-        //private DelegateCommand _changeMaterialDeltasCommand;
-        //public DelegateCommand ChangeMaterialDeltasCommand =>
-        //    _changeMaterialDeltasCommand ?? (_changeMaterialDeltasCommand = new DelegateCommand(ExecuteChangeMaterialDeltas));
+        private DelegateCommand _changeMaterialCalibrationCommand;
+        public DelegateCommand ChangeMaterialCalibrationCommand =>
+            _changeMaterialCalibrationCommand ?? (_changeMaterialCalibrationCommand = new DelegateCommand(ExecuteChangeMaterialCalibrationCommand));
+
         #endregion
 
         #region Properties
@@ -161,6 +162,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.CheckNoCalibrateAll.RegisterCommand(TakeRawData);
             ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
             ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
+            ApplicationCommands.ChangeMaterialCalibration.RegisterCommand(ChangeMaterialCalibrationCommand);
             // ApplicationCommands.ChangeMaterialDeltas.RegisterCommand(ChangeMaterialDeltasCommand);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
@@ -275,7 +277,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     // XmlService.
                     for (int i = 0; i < line.Count; i++)
                     {
-                        byte currentByte=UsingCalibrationDeltas(line[i], i);
+                        byte currentByte = UsingCalibrationDeltas(line[i], i);
                         newLine.Add(currentByte);
                     }
                     XmlService.Write(path, newLine);
@@ -424,9 +426,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             else
             {
-                //currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]) < 127 ?
-                //     currentByte = (byte)(((sbyte)currentByte + CurrentCamera.Deltas[i]) / 1.5) :
-                     currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
+                currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
             }
             return currentByte;
         }
@@ -453,7 +453,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = msg;
                 ExecuteStopCamera();
             }
-
         }
 
 
@@ -462,19 +461,27 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
-                if (ChangeMaterialDeltas())
+                //if (ChangeMaterialDeltas())
+                //{
+                if (!_drawingTimer.IsEnabled)
                 {
-                    if (!_drawingTimer.IsEnabled)
-                    {
-                        _drawingTimer.Start();
-                    }
-                    CurrentCamera.Start();
+                    _drawingTimer.Start();
                 }
+                CurrentCamera.Start();
+                //}
             }
         }
 
-        private bool ChangeMaterialDeltas()
+        private void ExecuteChangeMaterialCalibrationCommand()
         {
+            Task<string> changeMaterialsDeltasTask = new Task<string>(() => ChangeMaterialDeltas());
+            changeMaterialsDeltasTask.Start();
+            FooterRepository.Text = changeMaterialsDeltasTask.Result;
+        }
+
+        private string ChangeMaterialDeltas()
+        {
+            string footerMessage = "";
             if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
             {
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
@@ -486,13 +493,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         CurrentCamera.DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
                     }
                 }
-                FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
-                return true;
+                footerMessage = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
+                return footerMessage;
             }
             else
             {
-                FooterRepository.Text = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
-                return false;
+                footerMessage = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
+                return footerMessage;
             }
         }
 
@@ -570,7 +577,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.Calibrate.UnregisterCommand(Calibrate);
             ApplicationCommands.SaveDefectsAndCrearTable.UnregisterCommand(ClearDefects);
             ApplicationCommands.InitAllSensors.UnregisterCommand(Init);
-            // ApplicationCommands.ChangeMaterialDeltas.UnregisterCommand(ChangeMaterialDeltasCommand);
+            ApplicationCommands.ChangeMaterialCalibration.UnregisterCommand(ChangeMaterialCalibrationCommand);
             ApplicationCommands.StopAllSensors.UnregisterCommand(StopCamera);
             base.Destroy();
         }
