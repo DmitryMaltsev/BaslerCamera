@@ -411,24 +411,24 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-        private byte UsingCalibrationDeltas(byte curretByte, int i)
+        private byte UsingCalibrationDeltas(byte currentByte, int i)
         {
-            if ((curretByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
+            if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
             {
-                curretByte = 255;
+                currentByte = 255;
             }
             else
-                if (curretByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+                if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
             {
-                curretByte = 0;
+                currentByte = 0;
             }
             else
             {
-                //curretByte = (byte)((sbyte)curretByte + CurrentCamera.Deltas[i]) < 127 ?
-                //     curretByte = (byte)(((sbyte)curretByte + CurrentCamera.Deltas[i]) / 1.5) :
-                     curretByte = (byte)((sbyte)curretByte + CurrentCamera.Deltas[i]);
+                //currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]) < 127 ?
+                //     currentByte = (byte)(((sbyte)currentByte + CurrentCamera.Deltas[i]) / 1.5) :
+                     currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
             }
-            return curretByte;
+            return currentByte;
         }
 
         #region Execute methods
