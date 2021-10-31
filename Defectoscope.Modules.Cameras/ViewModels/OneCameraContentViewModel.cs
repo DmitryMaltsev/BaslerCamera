@@ -275,23 +275,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     // XmlService.
                     for (int i = 0; i < line.Count; i++)
                     {
-                        //if ((line[i] + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
-                        //{
-                        //    newLine.Add(255);
-                        //}
-                        //else
-                        //    if (line[i] + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
-                        //{
-                        //    newLine.Add(0);
-                        //}
-                        //else
-                        //{
-                        // //   newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
-                        //    byte fPoint = (byte)((sbyte)line[i] + CurrentCamera.Deltas[i]) < 127 ?
-                        //         fPoint = (byte)(((sbyte)line[i] + CurrentCamera.Deltas[i]) / 1.5) :
-                        //         fPoint = (byte)((sbyte)line[i] + CurrentCamera.Deltas[i]);
-                        newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
-                        //}
+                        byte currentByte=UsingCalibrationDeltas(line[i], i);
+                        newLine.Add(currentByte);
                     }
                     XmlService.Write(path, newLine);
                     _filterMode = false;
@@ -389,26 +374,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             {
                                 for (int x = 0; x < _width; x++)
                                 {
-                                    //if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >CurrentCamera.UpThreshold)
-                                    //{
-                                    //    img.Data[y, x, 0] = 255;
-                                    //}
-                                    //else
-                                    //if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) < CurrentCamera.DownThreshold )
-                                    //{
-                                    //    img.Data[y, x, 0] = 0;
-                                    //}
-                                    //else
-                                    //{
-                                    img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
-                                    //if (img.Data[y, x, 0] < 127) img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] / 1.55);
-                                    //else
-                                    //}
+                                    img.Data[y, x, 0] = UsingCalibrationDeltas(img.Data[y, x, 0], x);
                                 }
-                                //else
-                                //{
-                                //    img.Data[y, x, 0] = 127;
-                                //}
                             }
                         }
 
@@ -444,10 +411,24 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-        private byte UsingCalibrationDeltas(byte currentColor)
+        private byte UsingCalibrationDeltas(byte curretByte, int i)
         {
-
-            return currentColor;
+            if ((curretByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
+            {
+                curretByte = 255;
+            }
+            else
+                if (curretByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+            {
+                curretByte = 0;
+            }
+            else
+            {
+                //curretByte = (byte)((sbyte)curretByte + CurrentCamera.Deltas[i]) < 127 ?
+                //     curretByte = (byte)(((sbyte)curretByte + CurrentCamera.Deltas[i]) / 1.5) :
+                     curretByte = (byte)((sbyte)curretByte + CurrentCamera.Deltas[i]);
+            }
+            return curretByte;
         }
 
         #region Execute methods
