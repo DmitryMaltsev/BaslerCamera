@@ -1,4 +1,5 @@
 ﻿using Prism.Commands;
+
 using System.Windows.Markup;
 
 [assembly: XmlnsDefinition("http://kogerent.org", "Kogerent.Core")]
@@ -170,5 +171,7 @@ namespace Kogerent.Core
         public CompositeCommand CheckCamerasOverLay { get; } = new();
 
         public CompositeCommand AddNewMaterial { get; } = new();
+
+        public CompositeCommand ChangeMaterialCalibration { get; } = new();
     }
 }

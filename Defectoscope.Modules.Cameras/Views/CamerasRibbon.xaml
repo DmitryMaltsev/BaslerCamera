@@ -1,7 +1,8 @@
 ﻿<UserControl x:Class="Defectoscope.Modules.Cameras.Views.CamerasRibbon"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:prism="http://prismlibrary.com/"             
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:ie="http://schemas.microsoft.com/xaml/behaviors"
              prism:ViewModelLocator.AutoWireViewModel="True"    
              FontSize="14" Name="ThisCamerRibbon">
     <Grid>
@@ -112,9 +113,14 @@
                     <!--#region Material selection -->
                     <DockPanel LastChildFill="False">
                         <Grid DockPanel.Dock="Top">
-                            <ListBox Height="89" ItemsSource="{Binding BaslerRepository.MaterialModelCollection}" 
-                                     SelectedItem="{Binding BaslerRepository.CurrentMaterial}" SelectedIndex="0">
-                                <!--SelectedItem="{Binding BaslerRepository.BaslerCamerasCollection.MaterialModelCollection[0]}"  SelectedIndex="0">-->
+                            <ListBox x:Name="myListBox" Height="89" ItemsSource="{Binding BaslerRepository.MaterialModelCollection}" 
+                                     SelectedItem="{Binding BaslerRepository.CurrentMaterial}" SelectedIndex="0" >
+                                <ie:Interaction.Triggers>
+                                    <ie:EventTrigger EventName="SelectionChanged">
+                                        <ie:InvokeCommandAction Command="{Binding ApplicationCommands.ChangeMaterialCalibration}"  
+                                                                CommandParameter="{Binding ElementName=myListBox, Path=SelectedItem}"/>
+                                    </ie:EventTrigger>
+                                </ie:Interaction.Triggers>
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal"  >
