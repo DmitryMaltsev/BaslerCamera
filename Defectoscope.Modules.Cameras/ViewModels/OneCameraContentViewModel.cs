@@ -191,7 +191,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         }
 
-
         private void _drawingTimer_Tick(object sender, EventArgs e)
         {
             try
@@ -243,7 +242,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 Logger?.Error(msg);
                 FooterRepository.Text = msg;
                 ExecuteStopCamera();
-               
+
             }
             Thread.Sleep(300);
         }
@@ -264,6 +263,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 PerformCalibration(e);
                 CurrentCamera.CalibrationMode = false;
             }
+
             if (_filterMode)
             {
                 try
@@ -275,15 +275,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     // XmlService.
                     for (int i = 0; i < line.Count; i++)
                     {
-                        if ((line[i] + CurrentCamera.Deltas[i]) >= 255)
-                        {
-                            newLine.Add(255);
-                        }
-                        else
-                        {
-                            newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
-                        }
-
+                        //if ((line[i] + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
+                        //{
+                        //    newLine.Add(255);
+                        //}
+                        //else
+                        //    if (line[i] + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+                        //{
+                        //    newLine.Add(0);
+                        //}
+                        //else
+                        //{
+                        // //   newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
+                        //    byte fPoint = (byte)((sbyte)line[i] + CurrentCamera.Deltas[i]) < 127 ?
+                        //         fPoint = (byte)(((sbyte)line[i] + CurrentCamera.Deltas[i]) / 1.5) :
+                        //         fPoint = (byte)((sbyte)line[i] + CurrentCamera.Deltas[i]);
+                        newLine.Add((byte)((sbyte)line[i] + CurrentCamera.Deltas[i]));
+                        //}
                     }
                     XmlService.Write(path, newLine);
                     _filterMode = false;
@@ -318,6 +326,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 }
             }
         }
+
 
         private void PerformCalibration(BufferData e)
         {
@@ -368,76 +377,77 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     //try
                     //{
-                        if (_imageDataBuffer.TryDequeue(out byte[,,] dataBuffer))
-                        {
-                            _imageDataBuffer.Clear();
-                            imgProcessingStopWatch.Restart();
+                    if (_imageDataBuffer.TryDequeue(out byte[,,] dataBuffer))
+                    {
+                        _imageDataBuffer.Clear();
+                        imgProcessingStopWatch.Restart();
 
-                            img.Data = dataBuffer;
-                            if (!_currentRawImage)
+                        img.Data = dataBuffer;
+                        if (!_currentRawImage)
+                        {
+                            for (int y = 0; y < img.Height; y++)
                             {
-                                for (int y = 0; y < img.Height; y++)
+                                for (int x = 0; x < _width; x++)
                                 {
-                                    for (int x = 0; x < _width; x++)
-                                    {
-                                        if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >= 255)
-                                        {
-                                            img.Data[y, x, 0] = 255;
-                                        }
-                                        else
-                                        {
-                                            img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
-                                        }
-                                    }
+                                    //if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) >CurrentCamera.UpThreshold)
+                                    //{
+                                    //    img.Data[y, x, 0] = 255;
+                                    //}
+                                    //else
+                                    //if ((byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]) < CurrentCamera.DownThreshold )
+                                    //{
+                                    //    img.Data[y, x, 0] = 0;
+                                    //}
                                     //else
                                     //{
-                                    //    img.Data[y, x, 0] = 127;
+                                    img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] + CurrentCamera.Deltas[x]);
+                                    //if (img.Data[y, x, 0] < 127) img.Data[y, x, 0] = (byte)(img.Data[y, x, 0] / 1.55);
+                                    //else
                                     //}
                                 }
+                                //else
+                                //{
+                                //    img.Data[y, x, 0] = 127;
+                                //}
                             }
-
-                            using (Image<Gray, byte> upImg = img.CopyBlank())
-                            using (Image<Gray, byte> dnImg = img.CopyBlank())
-                            {
-                                CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
-                                CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
-
-                                (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
-                                                                                                      CurrentCamera.WidthThreshold,
-                                                                                                      CurrentCamera.HeightThreshold,
-                                                                                                      CurrentCamera.WidthDescrete,
-                                                                                                      CurrentCamera.HeightDescrete,
-                                                                                                      _strobe, Shift);
-                                if (_currentVisualAnalizeIsActive)
-                                {
-                                    _resImage = img2; //img2.Clone();
-                                }
-                                else
-                                {
-                                    _resImage = img.Convert<Bgr, byte>();
-                                }
-                                if (defects.Any())
-                                    _needToDrawDefects = true;
-                                _defects = defects;
-                            }
-                            imgProcessingStopWatch.Stop();
-                            _needToProcessImage = false;
-                        GC.Collect();
                         }
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    string msg = $"{ex.Message}";
-                    //    Logger?.Error(msg);
-                    //    FooterRepository.Text = msg;
-                    //    ExecuteStopCamera();
-                    //}
-                    //finally
-                    //{
-                    //    GC.Collect();
-                    //}
+
+                        using (Image<Gray, byte> upImg = img.CopyBlank())
+                        using (Image<Gray, byte> dnImg = img.CopyBlank())
+                        {
+                            CvInvoke.Threshold(img, upImg, CurrentCamera.DownThreshold, 255, Emgu.CV.CvEnum.ThresholdType.BinaryInv);
+                            CvInvoke.Threshold(img, dnImg, CurrentCamera.UpThreshold, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
+
+                            (Image<Bgr, byte> img2, IOrderedEnumerable<DefectProperties> defects) = ImageProcessing.AnalyzeDefects(upImg, dnImg,
+                                                                                                  CurrentCamera.WidthThreshold,
+                                                                                                  CurrentCamera.HeightThreshold,
+                                                                                                  CurrentCamera.WidthDescrete,
+                                                                                                  CurrentCamera.HeightDescrete,
+                                                                                                  _strobe, Shift);
+                            if (_currentVisualAnalizeIsActive)
+                            {
+                                _resImage = img2; //img2.Clone();
+                            }
+                            else
+                            {
+                                _resImage = img.Convert<Bgr, byte>();
+                            }
+                            if (defects.Any())
+                                _needToDrawDefects = true;
+                            _defects = defects;
+                        }
+                        imgProcessingStopWatch.Stop();
+                        _needToProcessImage = false;
+                        GC.Collect();
+                    }
                 }
             }
+        }
+
+        private byte UsingCalibrationDeltas(byte currentColor)
+        {
+
+            return currentColor;
         }
 
         #region Execute methods

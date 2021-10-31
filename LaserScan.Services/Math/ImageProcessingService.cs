@@ -505,13 +505,13 @@ namespace Kogerent.Services.Implementation
                         else
                         if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
                         {
-                            defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth - BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
+                            defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
                         }
 
                         defects.Add(defect);
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
-                        tempBmp.Draw(rectF, rectColor, -1);
+                        tempBmp.Draw(rectF, rectColor, 30);
                     }
                 }
             }
