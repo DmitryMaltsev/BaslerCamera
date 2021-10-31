@@ -8,11 +8,11 @@
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
-        Height="720" Width="1360"
+        Height="720" Width="1400"
         Name="mainWindow"
         WindowStartupLocation="CenterScreen" 
         Background="#333">
-    
+
     <!--<i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <prism:InvokeCommandAction Command="{Binding Navigate}" CommandParameter="{x:Static c:RegionNames.CamerasRibbonKey}"/>
@@ -33,12 +33,13 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0" x:Name="sideBarColumn"/>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="1237*" />
+            <ColumnDefinition Width="153*"/>
         </Grid.ColumnDefinitions>
 
         <!--#region Навигация по модулям -->
         <Border Grid.Column="0" Grid.RowSpan="3" Background="Transparent" BorderBrush="DimGray"
-                BorderThickness="2" CornerRadius="4">
+                BorderThickness="2" CornerRadius="4" Grid.ColumnSpan="2" Margin="0,0,1237,0">
             <StackPanel>
                 <TextBlock Height="50" Text="Модули" TextAlignment="Center" VerticalAlignment="Top"
                            Foreground="White" FontSize="20" Padding="0,10"/>
@@ -54,7 +55,7 @@
         </Border>
         <!--#endregion-->
 
-        <DockPanel Grid.Row="0" Grid.Column="1" Background="Transparent" MouseDown="DockPanel_MouseDown">
+        <DockPanel Grid.Row="0" Grid.Column="1" Background="Transparent" MouseDown="DockPanel_MouseDown" Grid.ColumnSpan="2">
             <!--toggle button-->
             <ToggleButton Margin="1" Name="menu" Width="30" Height="30" DockPanel.Dock="Left" Style="{StaticResource ToolBarButtonBaseStyle}"
                           IsChecked="{Binding ElementName=sideBarColumn,Path=Width,Converter={StaticResource widthToChecked}}">
@@ -68,12 +69,12 @@
                 </Grid>
 
             </ToggleButton>
-            
+
             <!--close button-->
             <Button Margin="1" Name="close" Width="30" Height="30" DockPanel.Dock="Right"  Click="close_Click" Style="{StaticResource ToolBarButtonBaseStyle}" Command="{Binding ApplicationCommands.Destroy}">
                 <Path Width="15" Height="15"  Stretch="Fill" Fill="{StaticResource FillPath}" Data="{StaticResource closeStyle0}" />
             </Button>
-            
+
             <!--maximize button-->
             <Button Margin="1" Name="corner" Width="30" Height="30" DockPanel.Dock="Right" Click="corner_Click" Style="{StaticResource ToolBarButtonBaseStyle}">
                 <Grid Name="cornerGrid">
@@ -83,21 +84,21 @@
                           Visibility="{Binding ElementName=mainWindow,Path=WindowState,Converter={StaticResource windowStateConverter},Mode=OneWay}"/>
                 </Grid>
             </Button>
-            
+
             <!--minimize button-->
             <Button Margin="1" Name="minimize" Width="30" Height="30" DockPanel.Dock="Right" Click="minimize_Click" 
                     Padding="0,10,0,0" Style="{StaticResource ToolBarButtonBaseStyle}">
                 <Rectangle Width="15" Height="4" Fill="{StaticResource FillPath}"/>
             </Button>
-            
+
             <TextBlock Text="{Binding FooterRepository.Title}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
         </DockPanel>
 
-        <ContentControl Grid.Row="1" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.RibbonRegion}" />
+        <ContentControl Grid.Row="1" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.RibbonRegion}" Grid.ColumnSpan="2" />
 
-        <ContentControl Grid.Row="2" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.ContentRegion}" />
+        <ContentControl Grid.Row="2" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.ContentRegion}" Grid.ColumnSpan="2" />
 
-        <StatusBar Grid.Row="3" Grid.ColumnSpan="2">
+        <StatusBar Grid.Row="3" Grid.ColumnSpan="3">
             <StatusBarItem Content="{Binding FooterRepository.HeaderText}" VerticalAlignment="Center"/>
             <StatusBarItem Content="{Binding FooterRepository.Text}" VerticalAlignment="Center"/>
         </StatusBar>
