@@ -246,7 +246,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 ExecuteStopCamera();
 
             }
-            Thread.Sleep(300);
+            // Thread.Sleep(300);
         }
 
         private void ImageGrabbed(object sender, BufferData e)
@@ -317,12 +317,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void PerformCalibration(BufferData e)
         {
+
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
             int index = lines.Count >= 5 ? 4 : 0;
             //(CurrentCamera.P, deltas) = CalibrateService.Calibrate(lines[index].ToArray());
+            //(int exposureTimeRaw, double avgBrightness) = CalibrateService.CalibrateExposureTimeRaw(lines[index].ToArray(), CurrentCamera.CurrentExposureTimeRaw);
+            //CurrentCamera.SetCameraExposureTime(exposureTimeRaw);
+            //if (avgBrightness < 90 || avgBrightness > 160)
+            //{
+            //    return false;
+            //}
             CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
         }
-
         private async void ProceesBuffersAction()
         {
             while (true)
@@ -380,6 +386,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 }
                             }
                         }
+
+
 
                         using (Image<Gray, byte> upImg = img.CopyBlank())
                         using (Image<Gray, byte> dnImg = img.CopyBlank())
@@ -474,6 +482,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void ExecuteChangeMaterialCalibrationCommand()
         {
+            if (BaslerRepository.CurrentMaterial == null)
+            {
+                BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
+                FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
+            }
             Task<string> changeMaterialsDeltasTask = new Task<string>(() => ChangeMaterialDeltas());
             changeMaterialsDeltasTask.Start();
             FooterRepository.Text = changeMaterialsDeltasTask.Result;
