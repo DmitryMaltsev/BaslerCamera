@@ -26,6 +26,7 @@ namespace LaserScan.Core.NetStandart.Models
         public int AllCamerasWidth { get; set; }
         public float LeftBoundWidth { get; set; }
         public float RightBoundWidth { get; set; }
+        public int CurrentExposureTimeRaw { get; set; } = 1_000;
         #region Raised properties
         private string _ip;
         public string Ip
@@ -127,7 +128,7 @@ namespace LaserScan.Core.NetStandart.Models
 
 
             Camera.Parameters[PLCamera.Height].SetValue(5);
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(CurrentExposureTimeRaw);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(8_000);
@@ -154,7 +155,7 @@ namespace LaserScan.Core.NetStandart.Models
                 {
                     // Если событие произошло, тогда выполняем метод через делегат
                     CameraImageEvent?.Invoke(this, GrabResult2Bmp(grabResult));
-                   
+
                 }
             }
         }
@@ -200,7 +201,7 @@ namespace LaserScan.Core.NetStandart.Models
         {
             if (Camera != null)
             {
-               
+
                 // Непрерывный сбор 
                 Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
                 Camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
@@ -251,6 +252,12 @@ namespace LaserScan.Core.NetStandart.Models
                 Camera.Dispose();
                 Camera = null;
             }
+        }
+
+        public void SetCameraExposureTime(int exposureTime)
+        {
+            CurrentExposureTimeRaw = exposureTime;
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(CurrentExposureTimeRaw);
         }
     }
 }

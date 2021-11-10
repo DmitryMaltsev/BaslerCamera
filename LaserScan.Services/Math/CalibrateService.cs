@@ -1,9 +1,11 @@
 ﻿
+using Kogerent.Collections;
 using Kogerent.Services.Interfaces;
 
 using MathNet.Numerics;
 
 using System;
+using System.Linq;
 
 namespace Kogerent.Services.Implementation
 {
@@ -55,10 +57,19 @@ namespace Kogerent.Services.Implementation
             }
             sbyte[] raw = new sbyte[data.Length];
             for (int i = 0; i < data.Length; i++)
-            { 
+            {
                 raw[i] = (sbyte)(127 - data[i]);
             }
             return raw;
+        }
+
+        public (int, double) CalibrateExposureTimeRaw(byte[] data, int currentExposure)
+        {
+            double averageByte = data.Average();
+            if (averageByte < 90) currentExposure+=500;
+            else
+            if (averageByte > 160) currentExposure = currentExposure -= 500;
+            return (currentExposure, averageByte);
         }
 
         public sbyte[] DefaultCalibration(double[] p, int count)
