@@ -202,8 +202,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     Bitmap bmp = _resImage.ToBitmap();
                     bmp = _resImage.ToBitmap();
                     ImageSource = MathService.BitmapToImageSource(bmp);
-                    bmp.Dispose()
-                   ;
+                    bmp.Dispose();
+                   
                 }
                 if (_defects != null && _needToDrawDefects)
                 {
