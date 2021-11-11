@@ -125,6 +125,7 @@ namespace LaserScan.Core.NetStandart.Models
 
 
             Camera.Parameters[PLCamera.Height].SetValue(5);
+
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(CurrentExposureTimeRaw);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
@@ -132,7 +133,6 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
             Camera.Parameters[PLCamera.TriggerMode].SetValue("On");                
-            //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
             if (ID == "Центральная камера" || ID == "Правая камера")
             {
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
