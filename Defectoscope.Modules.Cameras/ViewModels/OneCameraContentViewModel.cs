@@ -274,6 +274,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (!CurrentCamera.CalibrationMode)
             {
                 _concurentVideoBuffer.Enqueue(e);
+               // _strobe+= _concurentVideoBuffer.Count;
             }
             else
             {
@@ -436,19 +437,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private byte UsingCalibrationDeltas(byte currentByte, int i)
         {
-            if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
-            {
-                currentByte = 255;
-            }
-            else
-                if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
-            {
-                currentByte = 0;
-            }
-            else
-            {
+            //if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
+            //{
+            //    currentByte = 255;
+            //}
+            //else
+            //    if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+            //{
+            //    currentByte = 0;
+            //}
+            //else
+            //{
                 currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
-            }
+            //}
             return currentByte;
         }
 
