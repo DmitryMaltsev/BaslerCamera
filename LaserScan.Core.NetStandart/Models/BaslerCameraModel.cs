@@ -124,11 +124,14 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Open();
 
 
-            Camera.Parameters[PLCamera.Height].SetValue(1);
+            Camera.Parameters[PLCamera.Height].SetValue(5);
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(CurrentExposureTimeRaw);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(7_000);
+            Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
+            Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
+            Camera.Parameters[PLCamera.TriggerMode].SetValue("On");                
             //Camera.Parameters.Load("Settings\\left_settings.pfs", ParameterPath.CameraDevice);------
             if (ID == "Центральная камера" || ID == "Правая камера")
             {

@@ -194,6 +194,9 @@
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Очередь на принятие" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.TotalCount}" VerticalAlignment="Center"  HorizontalAlignment="Center"
@@ -203,6 +206,15 @@
                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             <TextBlock   Grid.Row="2" Grid.Column="0"  Margin="1" Text="Время обработки" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=N2}" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock   Grid.Row="3" Grid.Column="0"  Margin="1" Text="Левый строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Row="3"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.LeftStrobe}" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock   Grid.Row="4" Grid.Column="0"  Margin="1" Text="Центральный строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Row="4"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.CenterStrobe}" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock   Grid.Row="5" Grid.Column="0"  Margin="1" Text="Правый строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Row="5"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.RightStrobe}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
                         </Grid>
                         <TextBlock Text="Метрика" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>

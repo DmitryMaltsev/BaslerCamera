@@ -203,7 +203,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     bmp = _resImage.ToBitmap();
                     ImageSource = MathService.BitmapToImageSource(bmp);
                     bmp.Dispose();
-                   
+
                 }
                 if (_defects != null && _needToDrawDefects)
                 {
@@ -237,6 +237,21 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
+                if (CurrentCamera.ID == "Левая камера")
+                {
+                    BenchmarkRepository.LeftStrobe = _strobe;
+                }
+                else
+                 if (CurrentCamera.ID == "Центральная камера")
+                {
+                    BenchmarkRepository.CenterStrobe = _strobe;
+                }
+                else
+                     if (CurrentCamera.ID == "Правая камера")
+                {
+                    BenchmarkRepository.RightStrobe = _strobe;
+                }
+
             }
             catch (Exception ex)
             {
@@ -387,8 +402,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             }
                         }
 
-
-
                         using (Image<Gray, byte> upImg = img.CopyBlank())
                         using (Image<Gray, byte> dnImg = img.CopyBlank())
                         {
@@ -521,8 +534,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
-                CurrentCamera.CalibrationMode = true;
-                CurrentCamera.OneShotForCalibration();
+                if (CurrentCamera.GrabOver == false)
+                {
+                    CurrentCamera.CalibrationMode = true;
+                    CurrentCamera.OneShotForCalibration();
+                }
+                else
+                    FooterRepository.Text = "Нажмите стоп для калибровки камер";
             }
             else
             {

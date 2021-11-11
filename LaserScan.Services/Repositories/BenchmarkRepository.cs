@@ -28,5 +28,26 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _tempQueueCount, value); }
         }
 
+        private int _leftStrobe;
+        public int LeftStrobe
+        {
+            get { return _leftStrobe; }
+            set { SetProperty(ref _leftStrobe, value); }
+        }
+
+        private int _centerStrobe;
+        public int CenterStrobe
+        {
+            get { return _centerStrobe; }
+            set { SetProperty(ref _centerStrobe, value); }
+        }
+
+        private int _rightStrobe;
+        public int RightStrobe
+        {
+            get { return _rightStrobe; }
+            set { SetProperty(ref _rightStrobe, value); }
+        }
+
     }
 }
