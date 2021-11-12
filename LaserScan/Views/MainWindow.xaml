@@ -39,10 +39,10 @@
 
         <!--#region Навигация по модулям -->
         <Border Grid.Column="0" Grid.RowSpan="3" Background="Transparent" BorderBrush="DimGray"
-                BorderThickness="2" CornerRadius="4" Grid.ColumnSpan="2" Margin="0,0,1237,0">
-            <StackPanel>
-                <TextBlock Height="50" Text="Модули" TextAlignment="Center" VerticalAlignment="Top"
-                           Foreground="White" FontSize="20" Padding="0,10"/>
+                BorderThickness="2" CornerRadius="4" Grid.ColumnSpan="2" Margin="0,0,1065,0">
+            <StackPanel Width="200">
+                <TextBlock Height="50" Text="Модули" TextAlignment="Center" 
+                           VerticalAlignment="Top" Foreground="White" FontSize="20" Padding="0,10"/>
                 <RadioButton Content="Дефектоскоп"  VerticalAlignment="Center" FontSize="16" IsChecked="True"
                              Margin="10" Command="{Binding Navigate}" CommandParameter="{x:Static c:RegionNames.CamerasRibbonKey}"/>
 
