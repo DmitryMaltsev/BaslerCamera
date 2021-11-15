@@ -246,15 +246,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                  if (CurrentCamera.ID == "Центральная камера")
                 {
                     BenchmarkRepository.CenterStrobe = _strobe;
-                    if (_strobe > 1_000_000) _strobe = 0;
+                  //  if (_strobe > 1_000_000) _strobe = 0;
                 }
                 else
-                     if (CurrentCamera.ID == "Правая камера")
+                   //  if (CurrentCamera.ID == "Правая камера")
                 {
                     BenchmarkRepository.RightStrobe = _strobe;
-                    if (_strobe > 1_000_000) _strobe = 0;
+                   // if (_strobe > 1_000_000) _strobe = 0;
                 }
-
             }
             catch (Exception ex)
             {

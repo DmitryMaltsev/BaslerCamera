@@ -123,10 +123,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Open();
 
 
-            Camera.Parameters[PLCamera.Height].SetValue(5);
-           // Camera.Parameters[PLCamera.ExposureTimeAbs].SetValue(CurrentExposureTimeRaw / 10);
-           
-            
+            Camera.Parameters[PLCamera.Height].SetValue(1);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(7_050);
