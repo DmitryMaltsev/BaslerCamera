@@ -246,13 +246,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                  if (CurrentCamera.ID == "Центральная камера")
                 {
                     BenchmarkRepository.CenterStrobe = _strobe;
-                  //  if (_strobe > 1_000_000) _strobe = 0;
+                    if (_strobe > 1_000_000) _strobe = 0;
                 }
                 else
-                   //  if (CurrentCamera.ID == "Правая камера")
+                //  if (CurrentCamera.ID == "Правая камера")
                 {
                     BenchmarkRepository.RightStrobe = _strobe;
-                   // if (_strobe > 1_000_000) _strobe = 0;
+                    if (_strobe > 1_000_000) _strobe = 0;
                 }
             }
             catch (Exception ex)
@@ -276,7 +276,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (!CurrentCamera.CalibrationMode)
             {
                 _concurentVideoBuffer.Enqueue(e);
-               // _strobe+= _concurentVideoBuffer.Count;
+                //int count = _concurentVideoBuffer.Count;
+                //if (count > 1000)
+                //{
+                //    ProceesBuffersAction(count);
+                //}
+
             }
             else
             {
@@ -332,7 +337,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-
         private void PerformCalibration(BufferData e)
         {
 
@@ -363,15 +367,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             _cnt += bufferData.Height;
                             _strobe += bufferData.Height;
                             bufferData.Dispose();
-                            //GC.Collect();
+                            GC.Collect();
                             if (_cnt == 1000)
                             {
                                 byte[,,] data3Darray = new byte[1000, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
-                                // if (_strobe > 500_000) _strobe = 0;
+                                if (_strobe > 500_000) _strobe = 0;
                                 _cnt = 0;
                                 _needToProcessImage = true;
+                                ProcessImageAction();
                             }
                         }
                     }
@@ -386,13 +391,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 if (_needToProcessImage)
                 {
-                    //try
-                    //{
                     if (_imageDataBuffer.TryDequeue(out byte[,,] dataBuffer))
                     {
                         _imageDataBuffer.Clear();
                         imgProcessingStopWatch.Restart();
-
                         img.Data = dataBuffer;
                         if (!_currentRawImage)
                         {
@@ -432,6 +434,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         imgProcessingStopWatch.Stop();
                         _needToProcessImage = false;
                         GC.Collect();
+                        CurrentCamera.DefectsFound = true;
                     }
                 }
             }
@@ -439,19 +442,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private byte UsingCalibrationDeltas(byte currentByte, int i)
         {
-            //if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
-            //{
-            //    currentByte = 255;
-            //}
-            //else
-            //    if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
-            //{
-            //    currentByte = 0;
-            //}
-            //else
-            //{
+            if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
+            {
+                currentByte = 255;
+            }
+            else
+                if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+            {
+                currentByte = 0;
+            }
+            else
+            {
                 currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
-            //}
+            }
             return currentByte;
         }
 

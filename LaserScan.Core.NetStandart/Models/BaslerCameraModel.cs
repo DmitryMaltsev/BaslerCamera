@@ -26,6 +26,7 @@ namespace LaserScan.Core.NetStandart.Models
         public int AllCamerasWidth { get; set; }
         public float LeftBoundWidth { get; set; }
         public float RightBoundWidth { get; set; }
+        public bool DefectsFound { get; set; } = false;
         #region Raised properties
         private string _ip;
         public string Ip
@@ -123,10 +124,10 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Open();
 
 
-            Camera.Parameters[PLCamera.Height].SetValue(1);
+            Camera.Parameters[PLCamera.Height].SetValue(5);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
-            Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(7_050);
+            Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(5_000);
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");

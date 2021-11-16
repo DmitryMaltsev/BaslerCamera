@@ -87,6 +87,12 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _fullCamerasWidth, value); }
         }
 
+        private  bool _allDefectsFount;
+        public bool AllDefectsFound
+        {
+            get { return _allDefectsFount; }
+            set { SetProperty(ref _allDefectsFount, value); }
+        }
         public INonControlZonesRepository NonControlZonesRepository { get; }
     }
 }
