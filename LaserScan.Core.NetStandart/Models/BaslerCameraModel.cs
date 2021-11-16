@@ -123,7 +123,6 @@ namespace LaserScan.Core.NetStandart.Models
             //Открываем камеру
             Camera.Open();
 
-
             Camera.Parameters[PLCamera.Height].SetValue(5);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);

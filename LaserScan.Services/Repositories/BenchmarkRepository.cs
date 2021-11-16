@@ -28,6 +28,13 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _tempQueueCount, value); }
         }
 
+        private double _defectsProcessingTimer;
+        public double DefectsProcessingTimer
+        {
+            get { return _defectsProcessingTimer; }
+            set { SetProperty(ref _defectsProcessingTimer, value); }
+        }
+
         private int _leftStrobe;
         public int LeftStrobe
         {
@@ -48,6 +55,5 @@ namespace Kogerent.Services.Implementation
             get { return _rightStrobe; }
             set { SetProperty(ref _rightStrobe, value); }
         }
-
     }
 }

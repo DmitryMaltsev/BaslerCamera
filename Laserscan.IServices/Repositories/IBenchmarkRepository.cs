@@ -8,5 +8,6 @@
         int LeftStrobe { get; set; }
         int CenterStrobe { get; set; }
         int RightStrobe { get; set; }
+        double DefectsProcessingTimer { get; set; }
     }
 }
