@@ -57,7 +57,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
 
             if (!filteredName.IsNullOrEmpty())
-            {
+            {               
                 BaslerRepository.MaterialModelCollection.Add(new MaterialModel
                 {
                     MaterialName = filteredName,

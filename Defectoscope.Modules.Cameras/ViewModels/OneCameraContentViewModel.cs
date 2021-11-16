@@ -70,6 +70,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private IOrderedEnumerable<DefectProperties> _defects;
         private DispatcherTimer _drawingTimer;
         private Stopwatch imgProcessingStopWatch = new();
+        private Stopwatch defectsProcessingStopWatch = new();
         private Image<Gray, byte> img;
         private Image<Gray, byte> tempImage;
         private byte[,,] imgData;
@@ -236,20 +237,24 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 _currentVisualAnalizeIsActive = DefectRepository.VisualAnalizeIsActive;
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
+                BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
                 if (CurrentCamera.ID == "Левая камера")
                 {
                     BenchmarkRepository.LeftStrobe = _strobe;
+                    if (_strobe > 1_000_000) _strobe = 0;
                 }
                 else
                  if (CurrentCamera.ID == "Центральная камера")
                 {
                     BenchmarkRepository.CenterStrobe = _strobe;
+                    if (_strobe > 1_000_000) _strobe = 0;
                 }
                 else
                      if (CurrentCamera.ID == "Правая камера")
                 {
                     BenchmarkRepository.RightStrobe = _strobe;
+                    if (_strobe > 1_000_000) _strobe = 0;
                 }
 
             }
@@ -274,6 +279,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (!CurrentCamera.CalibrationMode)
             {
                 _concurentVideoBuffer.Enqueue(e);
+                // _strobe+= _concurentVideoBuffer.Count;
             }
             else
             {
@@ -329,7 +335,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-
         private void PerformCalibration(BufferData e)
         {
 
@@ -349,7 +354,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             while (true)
             {
                 int count = _concurentVideoBuffer.Count;
-                if (count > 1000)
+                if (count > 500)
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -361,12 +366,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             _strobe += bufferData.Height;
                             bufferData.Dispose();
                             //GC.Collect();
-                            if (_cnt == 1000)
+                            if (_cnt == 500)
                             {
-                                byte[,,] data3Darray = new byte[1000, _width, 1];
+                                byte[,,] data3Darray = new byte[500, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
-                                // if (_strobe > 500_000) _strobe = 0;
+                                if (_strobe > 1_000_000) _strobe = 0;
                                 _cnt = 0;
                                 _needToProcessImage = true;
                             }
@@ -383,8 +388,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 if (_needToProcessImage)
                 {
-                    //try
-                    //{
                     if (_imageDataBuffer.TryDequeue(out byte[,,] dataBuffer))
                     {
                         _imageDataBuffer.Clear();
@@ -401,7 +404,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 }
                             }
                         }
-
+                        imgProcessingStopWatch.Stop();
+                        defectsProcessingStopWatch.Restart();
                         using (Image<Gray, byte> upImg = img.CopyBlank())
                         using (Image<Gray, byte> dnImg = img.CopyBlank())
                         {
@@ -414,6 +418,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                                                                                   CurrentCamera.WidthDescrete,
                                                                                                   CurrentCamera.HeightDescrete,
                                                                                                   _strobe, Shift);
+                            defectsProcessingStopWatch.Stop();
                             if (_currentVisualAnalizeIsActive)
                             {
                                 _resImage = img2; //img2.Clone();
@@ -426,7 +431,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 _needToDrawDefects = true;
                             _defects = defects;
                         }
-                        imgProcessingStopWatch.Stop();
                         _needToProcessImage = false;
                         GC.Collect();
                     }
@@ -538,6 +542,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     CurrentCamera.CalibrationMode = true;
                     CurrentCamera.OneShotForCalibration();
+                    CurrentCamera.StopGrabber();
                 }
                 else
                     FooterRepository.Text = "Нажмите стоп для калибровки камер";
@@ -569,6 +574,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.OneShotForCalibration();
                 _rawMode = true;
                 FooterRepository.Text = "Сырые данные сохранены";
+                CurrentCamera.StopGrabber();
             }
         }
 
@@ -581,6 +587,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.OneShotForCalibration();
                 _filterMode = true;
                 FooterRepository.Text = "Отфильтрованные данные сохранены";
+                CurrentCamera.StopGrabber();
             }
         }
 
@@ -625,8 +632,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _width = 6144;
             //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
 
-            tempImage = new Image<Gray, byte>(_width, 1000);
-            img = new Image<Gray, byte>(_width, 1000);
+            tempImage = new Image<Gray, byte>(_width, 500);
+            img = new Image<Gray, byte>(_width, 500);
         }
         #endregion
     }

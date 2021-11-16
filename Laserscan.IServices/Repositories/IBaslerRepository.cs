@@ -14,6 +14,7 @@ namespace Kogerent.Services.Interfaces
         float CanvasWidth { get; set; }
         float FullCamerasWidth { get; set; }
         ObservableCollection<MaterialModel> MaterialModelCollection { get; set; }
-        MaterialModel CurrentMaterial { get; set; }    
+        MaterialModel CurrentMaterial { get; set; }
+        bool AllDefectsFound { get; set; }
     }
 }
