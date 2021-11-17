@@ -21,7 +21,7 @@ namespace LaserScan.Core.NetStandart.Models
         public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
         [XmlIgnore]
-        public sbyte[] Deltas { get; set; }
+        public double[] Deltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
         public float LeftBoundWidth { get; set; }
@@ -130,7 +130,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
-            Camera.Parameters[PLCamera.TriggerMode].SetValue("On");                
+            Camera.Parameters[PLCamera.TriggerMode].SetValue("On");
             if (ID == "Центральная камера" || ID == "Правая камера")
             {
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);

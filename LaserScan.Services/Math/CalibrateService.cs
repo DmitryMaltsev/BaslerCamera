@@ -45,7 +45,7 @@ namespace Kogerent.Services.Implementation
         }
 
 
-        public sbyte[] CalibrateRaw(byte[] data)
+        public double[] CalibrateRaw(byte[] data)
         {
             if (data == null)
             {
@@ -55,10 +55,10 @@ namespace Kogerent.Services.Implementation
             {
                 throw new ArgumentException();
             }
-            sbyte[] raw = new sbyte[data.Length];
+            double[] raw = new double[data.Length];
             for (int i = 0; i < data.Length; i++)
             {
-                raw[i] = (sbyte)(127 - data[i]);
+                raw[i] = 127 / (double)data[i];
             }
             return raw;
         }
@@ -66,7 +66,7 @@ namespace Kogerent.Services.Implementation
         public (int, double) CalibrateExposureTimeRaw(byte[] data, int currentExposure)
         {
             double averageByte = data.Average();
-            if (averageByte < 90) currentExposure+=500;
+            if (averageByte < 90) currentExposure += 500;
             else
             if (averageByte > 160) currentExposure = currentExposure -= 500;
             return (currentExposure, averageByte);
