@@ -45,6 +45,7 @@
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="0" Content="Калибровка"  Command="{Binding ApplicationCommands.Calibrate}"
                                       IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
@@ -55,7 +56,10 @@
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="2" Content="XmlFilter"  Command="{Binding ApplicationCommands.CheckFilterAll}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
-                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="3" Content="CalibData"  Command="{Binding TakeCalibrationDataCommand}"/>
+                            <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"  Text="{Binding BaslerRepository.AddToPoint, StringFormat=Добавлено {0} байт}" 
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="4" Content="+Яркость"  Command="{Binding AddBrightnessCommand}"/>
+                            <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="4" Content="-Яркость"  Command="{Binding SubtractBrightnessCommand}"/>
 
                         </Grid>
                         <TextBlock Text="Калибровка" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>

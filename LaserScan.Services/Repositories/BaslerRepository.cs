@@ -19,6 +19,9 @@ namespace Kogerent.Services.Implementation
         {
             NonControlZonesRepository = nonControlZonesRepository;
         }
+
+        public INonControlZonesRepository NonControlZonesRepository { get; }
+
         private bool _allCamerasInitialized;
         public bool AllCamerasInitialized
         {
@@ -87,12 +90,22 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _fullCamerasWidth, value); }
         }
 
-        private  bool _allDefectsFount;
+
+
+        private  bool _allDefectsFound;
         public bool AllDefectsFound
         {
-            get { return _allDefectsFount; }
-            set { SetProperty(ref _allDefectsFount, value); }
+            get { return _allDefectsFound; }
+            set { SetProperty(ref _allDefectsFound, value); }
         }
-        public INonControlZonesRepository NonControlZonesRepository { get; }
+
+        private byte _addToPoint=0;
+        public byte AddToPoint
+        {
+            get { return _addToPoint; }
+            set { SetProperty(ref _addToPoint, value); }
+        }
+
+
     }
 }
