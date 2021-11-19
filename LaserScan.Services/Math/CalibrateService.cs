@@ -45,7 +45,26 @@ namespace Kogerent.Services.Implementation
         }
 
 
-        public double[] CalibrateRaw(byte[] data)
+        public sbyte[] CalibrateRaw(byte[] data)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (data.Length <= 0)
+            {
+                throw new ArgumentException();
+            }
+            sbyte[] raw = new sbyte[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                raw[i] = (sbyte)(127 - data[i]);
+               // raw[i] = (127 / (double)data[i]);
+            }
+            return raw;
+        }
+
+        public double[] CalibrateMultyRaw(byte[] data)
         {
             if (data == null)
             {
@@ -58,7 +77,7 @@ namespace Kogerent.Services.Implementation
             double[] raw = new double[data.Length];
             for (int i = 0; i < data.Length; i++)
             {
-                raw[i] = 127 / (double)data[i];
+                 raw[i] = (127 / (double)data[i]);
             }
             return raw;
         }

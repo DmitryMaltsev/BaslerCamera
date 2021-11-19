@@ -359,14 +359,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
             int index = lines.Count >= 5 ? 4 : 0;
-            //(CurrentCamera.P, deltas) = CalibrateService.Calibrate(lines[index].ToArray());
-            //(int exposureTimeRaw, double avgBrightness) = CalibrateService.CalibrateExposureTimeRaw(lines[index].ToArray(), CurrentCamera.CurrentExposureTimeRaw);
-            //CurrentCamera.SetCameraExposureTime(exposureTimeRaw);
-            //if (avgBrightness < 90 || avgBrightness > 160)
-            //{
-            //    return false;
-            //}
-            CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
+               CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
+           // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
         }
         private async void ProceesBuffersAction()
         {
@@ -459,12 +453,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private byte UsingCalibrationDeltas(byte currentByte, int i)
         {
-            if ((currentByte * CurrentCamera.Deltas[i]) >= 255)
+            if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
             {
                 currentByte = 255;
             }
             else
-                currentByte = (byte)(currentByte * CurrentCamera.Deltas[i]);
+                if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+            {
+                currentByte = 0;
+            }
+            else
+            {
+                currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
+            }
+            //if ((currentByte * CurrentCamera.Deltas[i] + BaslerRepository.AddToPoint) >= 255)
+            //{
+            //    currentByte = 255;
+            //}
+            //else
+            //    currentByte = (byte)(currentByte * CurrentCamera.Deltas[i] + BaslerRepository.AddToPoint);
             return currentByte;
         }
 
@@ -551,13 +558,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera.Initialized)
             {
                 if (CurrentCamera.GrabOver == false)
-                {
+                    CurrentCamera.StopGrabber();
+                
                     CurrentCamera.CalibrationMode = true;
                     CurrentCamera.OneShotForCalibration();
                     //   CurrentCamera.StopGrabber();
-                }
-                else
-                    FooterRepository.Text = "Нажмите стоп для калибровки камер";
+                
+                //else
+                //    FooterRepository.Text = "Нажмите стоп для калибровки камер";
             }
             else
             {
@@ -586,7 +594,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 CurrentCamera.OneShotForCalibration();
                 _rawMode = true;
                 FooterRepository.Text = "Сырые данные сохранены";
-                CurrentCamera.StopGrabber();
             }
         }
 
@@ -595,12 +602,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
-                // CurrentCamera.CalibrationMode = true;
-                ExecuteStartGrab();
-                // CurrentCamera.OneShotForCalibration();
+                //ExecuteStartGrab();
+                CurrentCamera.OneShotForCalibration();
                 _filterMode = true;
                 FooterRepository.Text = "Отфильтрованные данные сохранены";
-                //  ExecuteStopCamera();
             }
         }
 

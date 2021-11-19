@@ -4,7 +4,8 @@
     {
         (double[], int[]) Calibrate(byte[] data);
         (int, double) CalibrateExposureTimeRaw(byte[] data, int currentExposure);
-        double[] CalibrateRaw(byte[] data);
+        double[] CalibrateMultyRaw(byte[] data);
+        sbyte[] CalibrateRaw(byte[] data);
         sbyte[] DefaultCalibration(double[] p, int count);
     }
 }

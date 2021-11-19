@@ -512,6 +512,8 @@ namespace Kogerent.Services.Implementation
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
                         tempBmp.Draw(rectF, rectColor, 30);
+                       // c.Contour.d
+                       
                     }
                 }
             }

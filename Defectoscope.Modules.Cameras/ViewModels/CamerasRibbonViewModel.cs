@@ -35,6 +35,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _takeCalibrationDataCommand;
         public DelegateCommand TakeCalibrationDataCommand =>
             _takeCalibrationDataCommand ?? (_takeCalibrationDataCommand = new DelegateCommand(ExecuteTakeCalibrationDataCommand));
+        private DelegateCommand _subtractBrightnessCommand;
+        public DelegateCommand SubtractBrightnessCommand =>
+            _subtractBrightnessCommand ?? (_subtractBrightnessCommand = new DelegateCommand(ExecuteSubtractBrightnessCommand));
+        private DelegateCommand _addBrightnessCommand;
+        public DelegateCommand AddBrightnessCommand =>
+            _addBrightnessCommand ?? (_addBrightnessCommand = new DelegateCommand(ExecuteAddBrightnessCommand));
+
         #endregion
 
         public IRegionManager RegionManager { get; }
@@ -91,6 +98,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             else
             {
                 FooterRepository.Text = "Проведите инициализацию перед калибровкой и сохранитесь";
+            }
+        }
+
+        void ExecuteAddBrightnessCommand()
+        {
+            if (BaslerRepository.AllCamerasInitialized)
+            {
+                BaslerRepository.AddToPoint += 1;
+            }
+
+        }
+
+        void ExecuteSubtractBrightnessCommand()
+        {
+            if (BaslerRepository.AllCamerasInitialized)
+            {
+                BaslerRepository.AddToPoint -= 1;
             }
         }
 

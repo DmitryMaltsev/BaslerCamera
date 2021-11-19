@@ -28,7 +28,8 @@ namespace LaserScan.Core.NetStandart.Models
     public class CameraDelta:BindableBase
     {
         public string CameraId { get; set; }
-        public double[] Deltas { get; set; }
+        public sbyte[] Deltas { get; set; }
+        //public double[] Deltas { get; set; }
 
         private byte _upThreshhold;
         public byte UpThreshhold
