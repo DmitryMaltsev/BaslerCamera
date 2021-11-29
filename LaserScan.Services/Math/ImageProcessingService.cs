@@ -528,7 +528,6 @@ namespace Kogerent.Services.Implementation
                     //    CvInvoke.DrawContours(tempBmp, contours, contourNum, new MCvScalar(0, 0, 255), 20); ;
                     //}
                     tempBmp.Draw(rectangle, rectColor, 20);
-
                 }
             }
             return defects;
