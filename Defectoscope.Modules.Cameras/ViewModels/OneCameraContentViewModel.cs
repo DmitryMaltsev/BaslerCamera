@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -210,7 +211,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 if (_defects != null && _needToDrawDefects)
                 {
                     DefectRepository.DefectsCollection.AddRange(_defects);
-                    if (DefectRepository.DefectsCollection.Count > 1_000_000)
+
+                    if (DefectRepository.DefectsCollection.Count > 500_000)
                     {
                         DefectRepository.DefectsCollection.Clear();
                     }
@@ -243,19 +245,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 if (CurrentCamera.ID == "Левая камера")
                 {
                     BenchmarkRepository.LeftStrobe = _strobe;
-                    if (_strobe > 1_000_000) _strobe = 0;
+                    if (_strobe > 500_000) _strobe = 0;
                 }
                 else
                  if (CurrentCamera.ID == "Центральная камера")
                 {
                     BenchmarkRepository.CenterStrobe = _strobe;
-                    if (_strobe > 1_000_000) _strobe = 0;
+                    if (_strobe > 500_000) _strobe = 0;
                 }
                 else
                      if (CurrentCamera.ID == "Правая камера")
                 {
                     BenchmarkRepository.RightStrobe = _strobe;
-                    if (_strobe > 1_000_000) _strobe = 0;
+                    if (_strobe > 500_000) _strobe = 0;
                 }
 
             }
@@ -292,7 +294,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 //List<byte> lines = e.Data.ToList();
                 //filteredLines.AddRange(lines);
-                //if (filteredLines.Count > 1_000_000)
+                //if (filteredLines.Count > 500_000)
                 //{
                 //    List<byte> newLine = new();
                 //    string path = Path.Combine(SettingsDir, $"{_currentCamera.ID}_filterData.xml");
@@ -359,8 +361,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
             int index = lines.Count >= 5 ? 4 : 0;
-               CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
-           // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
+            CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
+            // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
         }
         private async void ProceesBuffersAction()
         {
@@ -384,7 +386,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 byte[,,] data3Darray = new byte[500, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
-                                if (_strobe > 1_000_000) _strobe = 0;
+                                if (_strobe > 500_000) _strobe = 0;
                                 _cnt = 0;
                                 _needToProcessImage = true;
                             }
@@ -441,7 +443,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 _resImage = img.Convert<Bgr, byte>();
                             }
                             if (defects.Any())
+                            {
                                 _needToDrawDefects = true;
+                                if (DefectRepository.CreateImages)
+                                {
+                                    ImageProcessing.DrawDefects(img2, CurrentCamera.ID);
+                                }
+                            }
+
                             _defects = defects;
                         }
                         _needToProcessImage = false;
@@ -450,6 +459,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 }
             }
         }
+
+
 
         private byte UsingCalibrationDeltas(byte currentByte, int i)
         {
@@ -559,11 +570,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 if (CurrentCamera.GrabOver == false)
                     CurrentCamera.StopGrabber();
-                
-                    CurrentCamera.CalibrationMode = true;
-                    CurrentCamera.OneShotForCalibration();
-                    //   CurrentCamera.StopGrabber();
-                
+
+                CurrentCamera.CalibrationMode = true;
+                CurrentCamera.OneShotForCalibration();
+                //   CurrentCamera.StopGrabber();
+
                 //else
                 //    FooterRepository.Text = "Нажмите стоп для калибровки камер";
             }

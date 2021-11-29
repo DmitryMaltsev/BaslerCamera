@@ -42,7 +42,14 @@ namespace Kogerent.Services.Implementation
         public bool VisualAnalizeIsActive
         {
             get { return _visualAnalizeIsActive; }
-            set { SetProperty(ref _visualAnalizeIsActive   , value); }
+            set { SetProperty(ref _visualAnalizeIsActive, value); }
+        }
+
+        private bool _createImages=false;
+        public bool CreateImages
+        {
+            get { return _createImages; }
+            set { SetProperty(ref _createImages, value); }
         }
     }
 }

@@ -3,8 +3,11 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 using Emgu.CV;
@@ -207,11 +210,11 @@ namespace Kogerent.Services.Implementation
             }
         }
 
-        public void GetContours(Image<Gray, byte> img, out List<ContourData> result)
+        private VectorOfVectorOfPoint GetContours(Image<Gray, byte> img, out List<ContourData> result)
         {
             List<ContourData> contours = new();
             VectorOfVectorOfPoint c = new();
-            CvInvoke.FindContours(img, c, null, RetrType.External, ChainApproxMethod.ChainApproxNone);
+            CvInvoke.FindContours(img, c, null, RetrType.External, ChainApproxMethod.ChainApproxSimple);
             if (c.Size > 0)
             {
                 for (int i = 0; i < c.Size; i++)
@@ -245,6 +248,7 @@ namespace Kogerent.Services.Implementation
             {
                 result = null;
             }
+            return c;
         }
 
         public void GetContours(Image<Gray, float> img, out List<ContourData> result)
@@ -318,23 +322,23 @@ namespace Kogerent.Services.Implementation
         {
             List<DefectProperties> defects = new();
             var defectCollection = new ConcurrentBag<DefectProperties>();
-            GetContours(imgUp, out List<ContourData> upContours);
-            GetContours(imgDn, out List<ContourData> dnContours);
+            //  GetContours(imgUp, out List<ContourData> upContours);
+            //  GetContours(imgDn, out List<ContourData> dnContours);
             var imgWidth = Math.Max(imgDn.Width, imgUp.Width);
             var imgHeight = Math.Max(imgDn.Height, imgUp.Height);
             var tempBmp = new Bitmap(imgWidth, imgHeight);
 
-            if (upContours != null && upContours.Count > 0)
-            {
-                defects.AddRange(DrawDefectProperties(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete, imgWidth, imgHeight, strobe,
-                                    upContours, tempBmp, true));
-            }
+            //if (upContours != null && upContours.Count > 0)
+            //{
+            //    defects.AddRange(DrawDefectProperties(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete, imgWidth, imgHeight, strobe,
+            //                        upContours, tempBmp, true));
+            //}
 
-            if (dnContours != null && dnContours.Count > 0)
-            {
-                defects.AddRange(DrawDefectProperties(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete, imgWidth, imgHeight, strobe,
-                                     dnContours, tempBmp, false));
-            }
+            //if (dnContours != null && dnContours.Count > 0)
+            //{
+            //    defects.AddRange(DrawDefectProperties(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete, imgWidth, imgHeight, strobe,
+            //                         dnContours, tempBmp, false));
+            // }
 
             return (tempBmp, defects.OrderBy(d => d.Время));
         }
@@ -370,21 +374,23 @@ namespace Kogerent.Services.Implementation
                                                                                   float heightDiscrete, int strobe, float Shift)
         {
             List<DefectProperties> defects = new();
-            GetContours(imgUp, out List<ContourData> upContours);
-            GetContours(imgDn, out List<ContourData> dnContours);
+            VectorOfVectorOfPoint upCnt = GetContours(imgUp, out List<ContourData> upContours);
+            VectorOfVectorOfPoint dnCnt = GetContours(imgDn, out List<ContourData> dnContours);
 
             int imgWidth = Math.Max(imgUp.Width, imgUp.Width);
             int imgHeight = Math.Max(imgDn.Height, imgUp.Height);
 
             Image<Bgr, byte> tempBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
             //Image<Bgr, byte> tempUpBmp = new Image<Bgr, byte>(upContours.G, imgHeight);
-            //Image<Bgr, byte> tempDownBmp = new Image<Bgr, byte>(imgWidth, imgHeight);         
+            //Image<Bgr, byte> tempDownBmp = new Image<Bgr, byte>(imgWidth, imgHeight);
+
+
             if (upContours != null && upContours.Count > 0)
             {
                 //foreach (ContourData upContour in upContours)
                 //{
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
-                                                         imgWidth, imgHeight, strobe, upContours, tempBmp, true, Shift));
+                                                         imgWidth, imgHeight, strobe, upContours, tempBmp, true, Shift, upCnt));
                 //}
             }
             if (dnContours != null && dnContours.Count > 0)
@@ -392,10 +398,9 @@ namespace Kogerent.Services.Implementation
                 //foreach (var dnContour in dnContours)
                 //{
                 defects.AddRange(DrawDefectPropertiesEmgu(widthThreshold, heightThreshold, widthDiscrete, heightDiscrete,
-                                                         imgWidth, imgHeight, strobe, dnContours, tempBmp, false, Shift));
+                                                         imgWidth, imgHeight, strobe, dnContours, tempBmp, false, Shift, dnCnt));
                 //}
             }
-
             return (tempBmp, defects.OrderBy(d => d.Время));
         }
         #endregion
@@ -457,16 +462,17 @@ namespace Kogerent.Services.Implementation
         private List<DefectProperties> DrawDefectPropertiesEmgu(float widthThreshold, float heightThreshold,
                                                             float widthDiscrete, float heightDiscrete, int imgWidth,
                                                             int imgHeight, int strobe, List<ContourData> dnContours,
-                                                            Image<Bgr, byte> tempBmp, bool up, float Shift)
+                                                            Image<Bgr, byte> tempBmp, bool up, float Shift, VectorOfVectorOfPoint contours)
         {
             List<DefectProperties> defects = new();
             Bgr rectColor = up ? _blueBgr : _redBgr;
             List<ContourData> largeContours = dnContours.Where(c => c.Width * widthDiscrete >= widthThreshold && c.Height * heightDiscrete >= heightThreshold).ToList();
-
+            VectorOfVectorOfPoint resultDefects = new();
             List<float> minObloysXs = Zones.Obloys.Select(o => o.MinimumX).ToList();
             List<float> maxObloysXs = Zones.Obloys.Select(o => o.MaximumX).ToList();
             List<float> minZonesXs = Zones.Zones.Select(z => z.MinimumX).ToList();
             List<float> maxZonesXs = Zones.Zones.Select(z => z.MaximumX).ToList();
+            int contourNum = 0;
             foreach (ContourData c in largeContours)
             {
                 Point center = new((int)c.RotRect.Center.X, (int)c.RotRect.Center.Y);
@@ -511,14 +517,43 @@ namespace Kogerent.Services.Implementation
                         defects.Add(defect);
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
-                        tempBmp.Draw(rectF, rectColor, 30);
-                       // c.Contour.d
-                       
+
                     }
+                    //if (up == true)
+                    //{
+                    //    CvInvoke.DrawContours(tempBmp, contours, contourNum, new MCvScalar(255, 0, 0), 20);
+                    //}
+                    //else
+                    //{
+                    //    CvInvoke.DrawContours(tempBmp, contours, contourNum, new MCvScalar(0, 0, 255), 20); ;
+                    //}
+                    tempBmp.Draw(rectangle, rectColor, 20);
+
                 }
+                //contourNum += 1;
+                // DrawDefects(tempBmp);
             }
+            // bool count = true;
             return defects;
         }
         #endregion
+
+        public void DrawDefects(Image<Bgr, byte> tempBmp, string name)
+        {
+            string currentDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Images", DateTime.Now.ToString("dd.MM.yyyy"));
+            if (Directory.Exists(currentDirectory))
+            {
+                string fileName = name + "_" + DateTime.Now.ToString("HH.mm.ss.ffffff") + ".bmp";
+                string imagesPath = Path.Combine(currentDirectory, fileName);
+                using (Bitmap bmpIm = tempBmp.ToBitmap())
+                {
+                    bmpIm.Save(imagesPath, ImageFormat.Bmp);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(currentDirectory);
+            }
+        }
     }
 }

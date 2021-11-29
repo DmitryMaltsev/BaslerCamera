@@ -211,7 +211,7 @@ namespace Kogerent.Services.Implementation
 
         public BitmapImage BitmapToImageSource(Bitmap bitmap) => ImageProcessingService.BitmapToImageSource(bitmap);
 
-        public void GetContours(Image<Gray, byte> img, out List<ContourData> result) => ImageProcessingService.GetContours(img, out result);
+       // public void GetContours(Image<Gray, byte> img, out List<ContourData> result) => ImageProcessingService.GetContours(img, out result);
 
 
         public void GetContours(Image<Gray, float> img, out List<ContourData> result) => ImageProcessingService.GetContours(img, out result);

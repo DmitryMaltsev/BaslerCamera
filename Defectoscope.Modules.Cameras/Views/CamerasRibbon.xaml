@@ -165,6 +165,7 @@
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Padding="5" Content="Очистить дефекты" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
                             <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding BenchmarkRepository.RawImage}"
@@ -175,7 +176,12 @@
                                       VerticalAlignment="Center">
                                 <TextBlock Text="Визуализация дефектов" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
-                            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="3">
+                            <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding DefectRepository.CreateImages}"
+                                      VerticalAlignment="Center">
+                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="Создание рисунков" Foreground="{StaticResource ControlForeground}"/>
+                            </CheckBox>
+                           
+                            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="4">
                                 <TextBox Width="60" Height="28" Margin="1" Text="{Binding BaslerRepository.CanvasWidth}" HorizontalAlignment="Left" TextAlignment="Center"/>
                                 <TextBlock  Margin="2,1,1,1" Text="Ширина полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             </StackPanel>

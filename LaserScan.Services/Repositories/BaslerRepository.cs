@@ -90,8 +90,6 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _fullCamerasWidth, value); }
         }
 
-
-
         private  bool _allDefectsFound;
         public bool AllDefectsFound
         {
@@ -105,7 +103,5 @@ namespace Kogerent.Services.Implementation
             get { return _addToPoint; }
             set { SetProperty(ref _addToPoint, value); }
         }
-
-
     }
 }

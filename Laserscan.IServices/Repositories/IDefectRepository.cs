@@ -26,5 +26,6 @@ namespace Kogerent.Services.Interfaces
         /// </summary>
         ObjectPool<List<PointF>> ListPool { get; set; }
         bool VisualAnalizeIsActive { get; set; }
+        bool CreateImages { get; set; }
     }
 }
