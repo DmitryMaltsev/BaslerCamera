@@ -530,10 +530,7 @@ namespace Kogerent.Services.Implementation
                     tempBmp.Draw(rectangle, rectColor, 20);
 
                 }
-                //contourNum += 1;
-                // DrawDefects(tempBmp);
             }
-            // bool count = true;
             return defects;
         }
         #endregion
