@@ -153,7 +153,6 @@ namespace LaserScan.Core.NetStandart.Models
                 {
                     // Если событие произошло, тогда выполняем метод через делегат
                     CameraImageEvent?.Invoke(this, GrabResult2Bmp(grabResult));
-
                 }
             }
         }
