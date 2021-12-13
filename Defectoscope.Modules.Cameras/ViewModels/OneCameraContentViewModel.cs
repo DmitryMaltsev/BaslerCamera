@@ -193,7 +193,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _drawingTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
             _drawingTimer.Tick += _drawingTimer_Tick;
             _drawingTimer.Start();
-
         }
 
         private void _drawingTimer_Tick(object sender, EventArgs e)
@@ -206,7 +205,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     bmp = _resImage.ToBitmap();
                     ImageSource = MathService.BitmapToImageSource(bmp);
                     bmp.Dispose();
-
                 }
                 if (_defects != null && _needToDrawDefects)
                 {
@@ -242,23 +240,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                if (CurrentCamera.ID == "Левая камера")
-                {
-                    BenchmarkRepository.LeftStrobe = _strobe;
-                    if (_strobe > 500_000) _strobe = 0;
-                }
-                else
-                 if (CurrentCamera.ID == "Центральная камера")
-                {
-                    BenchmarkRepository.CenterStrobe = _strobe;
-                    if (_strobe > 500_000) _strobe = 0;
-                }
-                else
-                     if (CurrentCamera.ID == "Правая камера")
-                {
-                    BenchmarkRepository.RightStrobe = _strobe;
-                    if (_strobe > 500_000) _strobe = 0;
-                }
+                //if (CurrentCamera.ID == "Левая камера")
+                //{
+                //    BenchmarkRepository.LeftStrobe = _strobe;
+                //    if (_strobe > 500_000) _strobe = 0;
+                //}
+                //else
+                // if (CurrentCamera.ID == "Центральная камера")
+                //{
+                //    BenchmarkRepository.CenterStrobe = _strobe;
+                //    if (_strobe > 500_000) _strobe = 0;
+                //}
+                //else
+                //     if (CurrentCamera.ID == "Правая камера")
+                //{
+                //    BenchmarkRepository.RightStrobe = _strobe;
+                //    if (_strobe > 500_000) _strobe = 0;
+                //}
 
             }
             catch (Exception ex)
@@ -362,6 +360,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
             int index = lines.Count >= 5 ? 4 : 0;
             CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
+            CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(lines[index].ToArray());
             // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
         }
         private async void ProceesBuffersAction()
@@ -411,13 +410,29 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         img.Data = dataBuffer;
                         if (!_currentRawImage)
                         {
-                            for (int y = 0; y < img.Height; y++)
+                            if (DefectRepository.KoefMultiplication)
                             {
-                                for (int x = 0; x < _width; x++)
+                                for (int y = 0; y < img.Height; y++)
                                 {
-                                    img.Data[y, x, 0] = UsingCalibrationDeltas(img.Data[y, x, 0], x);
+                                    for (int x = 0; x < _width; x++)
+                                    {
+
+                                        img.Data[y, x, 0] = UsingMultiCalibrationDeltas(img.Data[y, x, 0], x);
+                                    }
                                 }
                             }
+                            else
+                            {
+                                for (int y = 0; y < img.Height; y++)
+                                {
+                                    for (int x = 0; x < _width; x++)
+                                    {
+
+                                        img.Data[y, x, 0] = UsingCalibrationDeltas(img.Data[y, x, 0], x);
+                                    }
+                                }
+                            }
+
                         }
                         imgProcessingStopWatch.Stop();
                         defectsProcessingStopWatch.Restart();
@@ -461,6 +476,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
 
 
+        private byte UsingMultiCalibrationDeltas(byte currentByte, int i)
+        {
+            if ((currentByte * CurrentCamera.MultipleDeltas[i] + BaslerRepository.AddToPoint) >= 255)
+            {
+                currentByte = 255;
+            }
+            else
+                currentByte = (byte)(currentByte * CurrentCamera.MultipleDeltas[i] + BaslerRepository.AddToPoint);
+            return currentByte;
+        }
 
         private byte UsingCalibrationDeltas(byte currentByte, int i)
         {

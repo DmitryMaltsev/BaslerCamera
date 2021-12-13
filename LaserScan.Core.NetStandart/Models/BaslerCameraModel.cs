@@ -20,9 +20,8 @@ namespace LaserScan.Core.NetStandart.Models
         public float RightBorder { get; set; }
         public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
-        [XmlIgnore]
         public sbyte[] Deltas { get; set; }
-       // public double[] Deltas { get; set; }
+        public double[] MultipleDeltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
         public float LeftBoundWidth { get; set; }

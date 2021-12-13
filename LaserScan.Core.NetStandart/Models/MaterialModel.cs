@@ -21,15 +21,13 @@ namespace LaserScan.Core.NetStandart.Models
             get { return _materialName; }
             set { SetProperty(ref _materialName, value); }
         }
-       
-
     }
 
-    public class CameraDelta:BindableBase
+    public class CameraDelta : BindableBase
     {
         public string CameraId { get; set; }
         public sbyte[] Deltas { get; set; }
-        //public double[] Deltas { get; set; }
+        public double[] MultipleDeltas { get; set; }
 
         private byte _upThreshhold;
         public byte UpThreshhold

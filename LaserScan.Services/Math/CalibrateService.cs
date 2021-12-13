@@ -64,7 +64,7 @@ namespace Kogerent.Services.Implementation
             return raw;
         }
 
-        public double[] CalibrateMultyRaw(byte[] data)
+        public double[] CalibrateMultiRaw(byte[] data)
         {
             if (data == null)
             {
@@ -77,7 +77,7 @@ namespace Kogerent.Services.Implementation
             double[] raw = new double[data.Length];
             for (int i = 0; i < data.Length; i++)
             {
-                 raw[i] = (127 / (double)data[i]);
+                 raw[i] = 127 / (double)data[i];
             }
             return raw;
         }
