@@ -158,14 +158,14 @@
                         <Grid DockPanel.Dock="Top">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="1*" />
-
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="25" />
+                                <RowDefinition Height="32" /> 
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Padding="5" Content="Очистить дефекты" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
                             <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding BenchmarkRepository.RawImage}"
@@ -180,12 +180,14 @@
                                       VerticalAlignment="Center">
                                  <TextBlock Grid.Row="3" Grid.Column="1" Text="Создание рисунков" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
-                           
-                            <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="4">
+                            <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding DefectRepository.KoefMultiplication}"
+                                      VerticalAlignment="Center">
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Калибровка умн/слож" Foreground="{StaticResource ControlForeground}"/>
+                            </CheckBox>
+                            <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal">
                                 <TextBox Width="60" Height="28" Margin="1" Text="{Binding BaslerRepository.CanvasWidth}" HorizontalAlignment="Left" TextAlignment="Center"/>
                                 <TextBlock  Margin="2,1,1,1" Text="Ширина полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             </StackPanel>
-
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -247,4 +249,38 @@
             </TabItem>
         </TabControl>
     </Grid>
-</UserControl>
+</UserControl> 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        

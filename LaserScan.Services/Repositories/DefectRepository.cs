@@ -44,12 +44,21 @@ namespace Kogerent.Services.Implementation
             get { return _visualAnalizeIsActive; }
             set { SetProperty(ref _visualAnalizeIsActive, value); }
         }
-
+        /// <summary>
+        /// Создание картинок дефектов
+        /// </summary>
         private bool _createImages=false;
         public bool CreateImages
         {
             get { return _createImages; }
             set { SetProperty(ref _createImages, value); }
+        }
+
+        private bool _koefMultiplication=true;
+        public bool KoefMultiplication
+        {
+            get { return _koefMultiplication; }
+            set { SetProperty(ref _koefMultiplication, value); }
         }
     }
 }

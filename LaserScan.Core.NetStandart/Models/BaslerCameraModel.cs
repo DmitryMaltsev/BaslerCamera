@@ -128,8 +128,8 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(5_000);
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(945);
-            Camera.Parameters[PLCamera.GainRaw].SetValue(1500);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1400);
+            Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
             Camera.Parameters[PLCamera.TriggerMode].SetValue("On");

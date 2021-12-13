@@ -466,13 +466,18 @@ namespace Kogerent.Services.Implementation
         {
             List<DefectProperties> defects = new();
             Bgr rectColor = up ? _blueBgr : _redBgr;
+            MCvScalar currentColor;
+            if (up == true)
+                currentColor = new MCvScalar(255, 0, 0);
+            else
+                currentColor = new MCvScalar(0, 0, 255);
+
             List<ContourData> largeContours = dnContours.Where(c => c.Width * widthDiscrete >= widthThreshold && c.Height * heightDiscrete >= heightThreshold).ToList();
             VectorOfVectorOfPoint resultDefects = new();
             List<float> minObloysXs = Zones.Obloys.Select(o => o.MinimumX).ToList();
             List<float> maxObloysXs = Zones.Obloys.Select(o => o.MaximumX).ToList();
             List<float> minZonesXs = Zones.Zones.Select(z => z.MinimumX).ToList();
             List<float> maxZonesXs = Zones.Zones.Select(z => z.MaximumX).ToList();
-            int contourNum = 0;
             foreach (ContourData c in largeContours)
             {
                 Point center = new((int)c.RotRect.Center.X, (int)c.RotRect.Center.Y);
@@ -517,6 +522,8 @@ namespace Kogerent.Services.Implementation
                         defects.Add(defect);
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
+                        Point[] p = c.Contour.ToArray();
+                        CvInvoke.Polylines(tempBmp, p, true, currentColor, 20);
 
                     }
                     //if (up == true)
@@ -527,7 +534,7 @@ namespace Kogerent.Services.Implementation
                     //{
                     //    CvInvoke.DrawContours(tempBmp, contours, contourNum, new MCvScalar(0, 0, 255), 20); ;
                     //}
-                    tempBmp.Draw(rectangle, rectColor, 20);
+                    // tempBmp.Draw(rectangle, rectColor, 20);
                 }
             }
             return defects;
@@ -539,7 +546,7 @@ namespace Kogerent.Services.Implementation
             string currentDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Images", DateTime.Now.ToString("dd.MM.yyyy"));
             if (Directory.Exists(currentDirectory))
             {
-                string fileName = name + "_" + DateTime.Now.ToString("HH.mm.ss.ffffff") + ".bmp";
+                string fileName = DateTime.Now.ToString("HH.mm.ss.ffffff") + "_" + name + ".bmp";
                 string imagesPath = Path.Combine(currentDirectory, fileName);
                 using (Bitmap bmpIm = tempBmp.ToBitmap())
                 {
