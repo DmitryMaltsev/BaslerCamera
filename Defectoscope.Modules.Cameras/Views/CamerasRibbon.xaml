@@ -180,9 +180,9 @@
                                       VerticalAlignment="Center">
                                  <TextBlock Grid.Row="3" Grid.Column="1" Text="Создание рисунков" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
-                            <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding DefectRepository.KoefMultiplication}"
+                            <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding DefectRepository.KoefMultiplication, Mode=TwoWay}"
                                       VerticalAlignment="Center">
-                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Калибровка умн/слож" Foreground="{StaticResource ControlForeground}"/>
+                                <TextBlock Grid.Column="1" Text="Калибровка умн/слож" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
                             <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal">
                                 <TextBox Width="60" Height="28" Margin="1" Text="{Binding BaslerRepository.CanvasWidth}" HorizontalAlignment="Left" TextAlignment="Center"/>

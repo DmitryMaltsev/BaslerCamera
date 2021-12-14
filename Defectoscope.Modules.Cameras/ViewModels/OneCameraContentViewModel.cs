@@ -287,7 +287,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 PerformCalibration(e);
                 CurrentCamera.CalibrationMode = false;
             }
-
+            //Сохранеяем XML с обработанными данными
             if (_filterMode)
             {
                 //List<byte> lines = e.Data.ToList();
@@ -312,15 +312,20 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
                     List<byte> line = lines[0];
-                    List<byte> newLine = new();
-                    string path = Path.Combine(SettingsDir, $"{_currentCamera.ID}_filterData.xml");
+                    List<byte> filteredLine = new();
+                    List<byte> multipleFilteredLine = new();
+                    string path = Path.Combine("PointsData", $"{_currentCamera.ID}_filterData.xml");
+                    string multiplePath = Path.Combine("PointsData", $"{_currentCamera.ID}_multipleFilteredData.xml");
                     // XmlService.
                     for (int i = 0; i < line.Count; i++)
                     {
                         byte currentByte = UsingCalibrationDeltas(line[i], i);
-                        newLine.Add(currentByte);
+                        filteredLine.Add(currentByte);
+                        currentByte = UsingMultiCalibrationDeltas(line[i], i);
+                        multipleFilteredLine.Add(currentByte);
                     }
-                    XmlService.Write(path, newLine);
+                    XmlService.Write(path, filteredLine);
+                    XmlService.Write(multiplePath, multipleFilteredLine);
                     _filterMode = false;
                     //         ExecuteStopCamera();
                 }
@@ -332,6 +337,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     ExecuteStopCamera();
                 }
             }
+            //Сохраняем XML  с сырыми данными
             if (_rawMode)
             {
                 try
@@ -363,6 +369,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(lines[index].ToArray());
             // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
         }
+
         private async void ProceesBuffersAction()
         {
             while (true)
@@ -568,6 +575,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             string footerMessage = "";
             if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
+
             {
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
                 {

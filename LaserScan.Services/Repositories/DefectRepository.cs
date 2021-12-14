@@ -57,7 +57,7 @@ namespace Kogerent.Services.Implementation
         private bool _koefMultiplication=true;
         public bool KoefMultiplication
         {
-            get { return _koefMultiplication=true; }
+            get { return _koefMultiplication; }
             set { SetProperty(ref _koefMultiplication, value); }
         }
     }
