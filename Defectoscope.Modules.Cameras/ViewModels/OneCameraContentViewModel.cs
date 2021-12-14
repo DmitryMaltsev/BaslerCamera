@@ -344,7 +344,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
                     List<byte> line = lines[0];
-                    string path = Path.Combine(SettingsDir, $"{_currentCamera.ID}_RawData.xml");
+                    string path = Path.Combine("PointsData", $"{_currentCamera.ID}_RawData.xml");
                     // XmlService
                     XmlService.Write(path, line);
                     _rawMode = false;
