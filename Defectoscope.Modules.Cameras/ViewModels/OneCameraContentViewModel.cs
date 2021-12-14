@@ -533,12 +533,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
             }
-            //if ((currentByte * CurrentCamera.Deltas[i] + BaslerRepository.AddToPoint) >= 255)
-            //{
-            //    currentByte = 255;
-            //}
-            //else
-            //    currentByte = (byte)(currentByte * CurrentCamera.Deltas[i] + BaslerRepository.AddToPoint);
             return currentByte;
         }
 

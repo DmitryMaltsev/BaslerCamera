@@ -25,6 +25,7 @@
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="1" Content="Стоп"  Command="{Binding ApplicationCommands.StopAllSensors}"/>
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="АвтоЭкс" Command="{Binding ApplicationCommands.AutoExposition}"/>
+                            
                         </Grid>
                         <TextBlock Text="Управление" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
