@@ -127,7 +127,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(5_000);
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1400);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(200);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
@@ -137,6 +137,12 @@ namespace LaserScan.Core.NetStandart.Models
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
             }
             Initialized = true; // успешная инициализация
+        }
+
+        public void IncreaseCameraExposureTime()
+        {
+            long newvalue = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue()+10;
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(newvalue);
         }
 
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)

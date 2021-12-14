@@ -78,7 +78,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool _needToSave = true;
         private bool _currentRawImage;
         private bool _currentVisualAnalizeIsActive;
+        private bool _needIncreaseExposureTime = false;
         private int _cnt;
+        private int _currentHeight;
         private List<byte> filteredLines;
         #endregion
 
@@ -133,6 +135,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public DelegateCommand ChangeMaterialCalibrationCommand =>
             _changeMaterialCalibrationCommand ?? (_changeMaterialCalibrationCommand = new DelegateCommand(ExecuteChangeMaterialCalibrationCommand));
 
+        private DelegateCommand _autoExpositionCommand;
+        public DelegateCommand AutoExpositionCommand =>
+            _autoExpositionCommand ?? (_autoExpositionCommand = new DelegateCommand(ExecuteAutoExpositionCommand));
         #endregion
 
         #region Properties
@@ -166,7 +171,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.CheckFilterAll.RegisterCommand(TakeFilteredData);
             ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             ApplicationCommands.ChangeMaterialCalibration.RegisterCommand(ChangeMaterialCalibrationCommand);
-            // ApplicationCommands.ChangeMaterialDeltas.RegisterCommand(ChangeMaterialDeltasCommand);
+            ApplicationCommands.AutoExposition.RegisterCommand(AutoExpositionCommand);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -240,23 +245,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                //if (CurrentCamera.ID == "Левая камера")
-                //{
-                //    BenchmarkRepository.LeftStrobe = _strobe;
-                //    if (_strobe > 500_000) _strobe = 0;
-                //}
-                //else
-                // if (CurrentCamera.ID == "Центральная камера")
-                //{
-                //    BenchmarkRepository.CenterStrobe = _strobe;
-                //    if (_strobe > 500_000) _strobe = 0;
-                //}
-                //else
-                //     if (CurrentCamera.ID == "Правая камера")
-                //{
-                //    BenchmarkRepository.RightStrobe = _strobe;
-                //    if (_strobe > 500_000) _strobe = 0;
-                //}
+                if (CurrentCamera.ID == "Левая камера")
+                {
+                    BenchmarkRepository.LeftStrobe = _strobe;
+                    if (_strobe > 500_000) _strobe = 0;
+                }
+                else
+                 if (CurrentCamera.ID == "Центральная камера")
+                {
+                    BenchmarkRepository.CenterStrobe = _strobe;
+                    if (_strobe > 500_000) _strobe = 0;
+                }
+                else
+                     if (CurrentCamera.ID == "Правая камера")
+                {
+                    BenchmarkRepository.RightStrobe = _strobe;
+                    if (_strobe > 500_000) _strobe = 0;
+                }
 
             }
             catch (Exception ex)
@@ -375,7 +380,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             while (true)
             {
                 int count = _concurentVideoBuffer.Count;
-                if (count > 500)
+                if (count > _currentHeight)
                 {
                     for (int i = 0; i < count; i++)
                     {
@@ -387,9 +392,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             _strobe += bufferData.Height;
                             bufferData.Dispose();
                             //GC.Collect();
-                            if (_cnt == 500)
+                            if (_cnt == _currentHeight)
                             {
-                                byte[,,] data3Darray = new byte[500, _width, 1];
+                                byte[,,] data3Darray = new byte[_currentHeight, _width, 1];
                                 Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(data3Darray);
                                 if (_strobe > 500_000) _strobe = 0;
@@ -456,6 +461,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                                                                                   CurrentCamera.HeightDescrete,
                                                                                                   _strobe, Shift);
                             defectsProcessingStopWatch.Stop();
+                            if (_needIncreaseExposureTime)
+                            {
+                                double average = 0;
+                                for (int i = 0; i < 6144; i++)
+                                {
+                                     average += img.Data[i, 0, 0];
+                                }
+                                double result=average / 6144;
+                                if (result<127)
+                                {
+                                    CurrentCamera.IncreaseCameraExposureTime();
+                                }
+                                else
+                                {
+                                    _needIncreaseExposureTime = false;
+                                }
+                               // CurrentCamera.IncreaseCameraExposureTime();
+                            }
+
                             if (_currentVisualAnalizeIsActive)
                             {
                                 _resImage = img2; //img2.Clone();
@@ -616,6 +640,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Инициализируйте камеры перед калибровкой";
             }
         }
+        /// <summary>
+        /// Увеличиваем экспозицию после того, как положили материал
+        /// </summary>
+        void ExecuteAutoExpositionCommand()
+        {
+            _needIncreaseExposureTime = true;
+            ExecuteStartGrab();
+        }
 
         private void ExecuteCamerasOverlayCommand()
         {
@@ -693,9 +725,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             //_width = (int)(CurrentCamera.RightBorder - CurrentCamera.LeftBorder);
             _width = 6144;
             //deltas = CalibrateService.DefaultCalibration(CurrentCamera.P, _width);
-
-            tempImage = new Image<Gray, byte>(_width, 500);
-            img = new Image<Gray, byte>(_width, 500);
+            _currentHeight = 500;
+            tempImage = new Image<Gray, byte>(_width, _currentHeight);
+            img = new Image<Gray, byte>(_width, _currentHeight);
         }
     }
 }
