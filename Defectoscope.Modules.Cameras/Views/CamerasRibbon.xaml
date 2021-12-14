@@ -19,13 +19,18 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="0" Content="Инит"  Command="{Binding ApplicationCommands.InitAllSensors}"/>
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="0" Content="Старт"  Command="{Binding ApplicationCommands.StartAllSensors}" 
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="1" Content="Стоп"  Command="{Binding ApplicationCommands.StopAllSensors}"/>
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="АвтоЭкс" Command="{Binding ApplicationCommands.AutoExposition}"/>
-                            
+                            <TextBlock Grid.Column="0" Grid.Row="2" Text="Экспоз" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Grid.Row="2" Text="{Binding   BaslerRepository.BaslerCamerasCollection[0].ExposureTime}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Grid.Row="3" Text="Среднее" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding   BaslerRepository.BaslerCamerasCollection[0].CurrentAverage, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
                         </Grid>
                         <TextBlock Text="Управление" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>

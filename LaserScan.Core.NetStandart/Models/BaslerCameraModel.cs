@@ -27,6 +27,8 @@ namespace LaserScan.Core.NetStandart.Models
         public float LeftBoundWidth { get; set; }
         public float RightBoundWidth { get; set; }
         public bool DefectsFound { get; set; } = false;
+        //XmlIgnore
+        public long ExposureTimeCurrent { get; set; }
         #region Raised properties
         private string _ip;
         public string Ip
@@ -74,6 +76,18 @@ namespace LaserScan.Core.NetStandart.Models
         {
             get { return _heightThreshold; }
             set { SetProperty(ref _heightThreshold, value); }
+        }
+        private long _exposureTime;
+        public long ExposureTime
+        {
+            get { return _exposureTime; }
+            set { SetProperty(ref _exposureTime, value); }
+        }
+        private double _currentAverage;
+        public double CurrentAverage
+        {
+            get { return _currentAverage; }
+            set { SetProperty(ref _currentAverage, value); }
         }
         #endregion
 
@@ -138,11 +152,12 @@ namespace LaserScan.Core.NetStandart.Models
             }
             Initialized = true; // успешная инициализация
         }
-
+        //Увеливичваем экспозицию
         public void IncreaseCameraExposureTime()
         {
-            long newvalue = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue()+10;
+            long newvalue = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue()+20;
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(newvalue);
+            ExposureTimeCurrent = newvalue;
         }
 
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)

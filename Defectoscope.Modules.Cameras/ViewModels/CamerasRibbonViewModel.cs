@@ -72,6 +72,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         #region Execute methods delegates
         private void ExecuteSaveCamerasSettings()
         {
+          
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             foreach (BaslerCameraModel cameraModel in BaslerRepository.BaslerCamerasCollection)
             {

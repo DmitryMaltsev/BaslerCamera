@@ -82,6 +82,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private int _cnt;
         private int _currentHeight;
         private List<byte> filteredLines;
+        private double result;
         #endregion
 
         private BaslerCameraModel _currentCamera;
@@ -204,6 +205,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             try
             {
+                BaslerRepository.CurrentCamera.ExposureTime = BaslerRepository.CurrentCamera.ExposureTimeCurrent;
+                BaslerRepository.CurrentCamera.CurrentAverage = result;
                 if (_resImage != null)
                 {
                     Bitmap bmp = _resImage.ToBitmap();
@@ -466,9 +469,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 double average = 0;
                                 for (int i = 0; i < 6144; i++)
                                 {
-                                     average += img.Data[i, 0, 0];
+                                     average += img.Data[0, i, 0];
                                 }
-                                double result=average / 6144;
+                                 result=average / 6144;
                                 if (result<127)
                                 {
                                     CurrentCamera.IncreaseCameraExposureTime();
