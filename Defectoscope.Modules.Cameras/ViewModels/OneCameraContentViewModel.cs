@@ -415,11 +415,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         break;
                     }
                 }
-                CorrectCalibratedPoints(lines[0], 4220, 4320, 4320, 4421,0);
+                    CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 4320, 4421,0);
+                //    CorrectCalibratedPoints(lines[0], 4220, 4320, 4320, 4421,0);
             }
             if (CurrentCamera.ID == "Центральная камера")
             {
-                CorrectCalibratedPoints(lines[0], 2882, 2982, 2982, 3107,1);
+                   CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 2982, 3107,1);
+                //   CorrectCalibratedPoints(lines[0], 2882, 2982, 2982, 3107,1);
             }
             if (CurrentCamera.ID == "Правая камера")
             {
@@ -437,7 +439,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         break;
                     }
                 }
-                CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
+                CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 1700, 2000, 2);
+                // CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
             }
         }
         private void CorrectCalibratedPoints(List<byte> line, int leftBound, int rightBound, int leftChangePoint, int rightChangePoint, int cameraIndex)
