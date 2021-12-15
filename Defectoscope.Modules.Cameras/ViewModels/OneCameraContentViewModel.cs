@@ -215,7 +215,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 if (_needIncreaseExposureTime)
                 {
                     BaslerRepository.CurrentCamera.ExposureTime = BaslerRepository.CurrentCamera.ExposureTimeCurrent;
-                    BaslerRepository.CurrentCamera.CurrentAverage = result; 
+                    BaslerRepository.CurrentCamera.CurrentAverage = result;
                 }
                 if (_resImage != null)
                 {
@@ -309,8 +309,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             else
             if (CurrentCamera.FindBoundsMode)
             {
+                FooterRepository.Text = "Смотрим индексы";
                 FindBoundsIndexes(e);
-                CurrentCamera.FindBoundsMode = false;
             }
             //Сохранеяем XML с обработанными данными
             if (_filterMode)
@@ -400,10 +400,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         /// <param name="e"></param>
         private void FindBoundsIndexes(BufferData e)
         {
-
+            CurrentCamera.FindBoundsMode = false;
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
-            int index = lines.Count >= 5 ? 4 : 0;
-            List<byte> upBoundsList = new();
             byte currentByte;
             int rightBoundsCount = 0;
             if (CurrentCamera.ID == "Левая камера")
@@ -417,6 +415,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         break;
                     }
                 }
+                CorrectCalibratedPoints(lines[0], 4220, 4320, 4320, 4421,0);
+            }
+            if (CurrentCamera.ID == "Центральная камера")
+            {
+                CorrectCalibratedPoints(lines[0], 2882, 2982, 2982, 3107,1);
             }
             if (CurrentCamera.ID == "Правая камера")
             {
@@ -434,6 +437,24 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         break;
                     }
                 }
+                CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
+            }
+        }
+        private void CorrectCalibratedPoints(List<byte> line, int leftBound, int rightBound, int leftChangePoint, int rightChangePoint, int cameraIndex)
+        {
+            List<byte> filteredLine = line;
+            double average = 0;
+            double res;
+            for (int x = leftBound; x < rightBound; x++)
+            {
+                filteredLine[x] = UsingMultiCalibrationDeltas(filteredLine[x], x);
+                average += filteredLine[x];
+            }
+            res = average / (rightBound - leftBound);
+            for (int i = leftChangePoint; i < rightChangePoint; i++)
+            {
+                BaslerRepository.CurrentMaterial.CameraDeltaList[cameraIndex].MultipleDeltas[i] = res / line[i];
+                BaslerRepository.CurrentCamera.MultipleDeltas[i] = BaslerRepository.CurrentMaterial.CameraDeltaList[0].MultipleDeltas[i];
             }
         }
 
@@ -530,7 +551,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     average += img.Data[0, i, 0];
                                 }
-                                result = average / (CurrentCamera.RightBoundIndex-CurrentCamera.LeftBoundIndex);
+                                result = average / (CurrentCamera.RightBoundIndex - CurrentCamera.LeftBoundIndex);
                                 if (result < 127)
                                 {
                                     CurrentCamera.IncreaseCameraExposureTime();
@@ -597,7 +618,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 currentByte = 255;
             }
             else
-                if (currentByte + CurrentCamera.Deltas[i] <=0)
+                if (currentByte + CurrentCamera.Deltas[i] <= 0)
             {
                 currentByte = 0;
             }
@@ -631,7 +652,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 ExecuteStopCamera();
             }
         }
-
 
         private void ExecuteStartGrab()
         {
@@ -672,6 +692,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
                     {
                         CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                        CurrentCamera.MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
                         CurrentCamera.UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
                         CurrentCamera.DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
                     }
@@ -693,10 +714,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
-                //   CurrentCamera.StopGrabber();
-
-                //else
-                //    FooterRepository.Text = "Нажмите стоп для калибровки камер";
+                FooterRepository.Text = "Нажмите стоп для калибровки камер";
             }
             else
             {
@@ -714,6 +732,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 CurrentCamera.FindBoundsMode = true;
                 CurrentCamera.OneShotForCalibration();
+                FooterRepository.Text = "Данные для индексов";
             }
         }
 

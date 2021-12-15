@@ -21,7 +21,9 @@ namespace LaserScan.Core.NetStandart.Models
         public float RightBorder { get; set; }
         public float CanvasWidth { get; set; }
         public double[] P { get; set; } = new double[4];
+        [XmlIgnore]
         public sbyte[] Deltas { get; set; }
+        [XmlIgnore]
         public double[] MultipleDeltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
@@ -82,15 +84,16 @@ namespace LaserScan.Core.NetStandart.Models
             get { return _heightThreshold; }
             set { SetProperty(ref _heightThreshold, value); }
         }
-        [XmlIgnore]
-        private long _exposureTime=1400;
+        private long _exposureTime=200;
         [XmlIgnore]
         public long ExposureTime
         {
             get { return _exposureTime; }
             set { SetProperty(ref _exposureTime, value); }
         }
+        
         private double _currentAverage;
+        [XmlIgnore]
         public double CurrentAverage
         {
             get { return _currentAverage; }

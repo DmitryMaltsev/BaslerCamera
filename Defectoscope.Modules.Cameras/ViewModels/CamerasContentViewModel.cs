@@ -86,7 +86,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Task result = Task.WhenAll(tasks);
             await result;
             BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
-           
+
         }
 
         private void ExecuteDestroy()
@@ -141,11 +141,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
                 {
                     BaslerRepository.BaslerCamerasCollection[i].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                    BaslerRepository.BaslerCamerasCollection[i].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
                     BaslerRepository.BaslerCamerasCollection[i].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
                     BaslerRepository.BaslerCamerasCollection[i].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
                 }
             }
-         
+
             NonControlZonesRepository.AddZones(BaslerRepository);
             float shift = 0;
             OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();

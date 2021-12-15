@@ -89,6 +89,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     {
                         CameraId = camera.ID,
                         Deltas = camera.Deltas,
+                        MultipleDeltas=camera.MultipleDeltas,
                         UpThreshhold = camera.UpThreshold,
                         DownThreshhold = camera.DownThreshold
                     });
