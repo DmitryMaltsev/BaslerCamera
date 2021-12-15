@@ -175,5 +175,7 @@ namespace Kogerent.Core
         public CompositeCommand ChangeMaterialCalibration { get; } = new();
 
         public CompositeCommand AutoExposition { get; } = new();
+
+        public CompositeCommand FindBoundsIndexes { get; } = new();
     }
 }

@@ -139,6 +139,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _autoExpositionCommand;
         public DelegateCommand AutoExpositionCommand =>
             _autoExpositionCommand ?? (_autoExpositionCommand = new DelegateCommand(ExecuteAutoExpositionCommand));
+
+        private DelegateCommand _findBounsIndexesCommand;
+        public DelegateCommand FindBoundsIndexesCommand =>
+            _findBounsIndexesCommand ?? (_findBounsIndexesCommand = new DelegateCommand(ExecuteFindBoundsIndexes));
+
         #endregion
 
         #region Properties
@@ -173,6 +178,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.CheckCamerasOverLay.RegisterCommand(CamerasOverlayCommand);
             ApplicationCommands.ChangeMaterialCalibration.RegisterCommand(ChangeMaterialCalibrationCommand);
             ApplicationCommands.AutoExposition.RegisterCommand(AutoExpositionCommand);
+            ApplicationCommands.FindBoundsIndexes.RegisterCommand(FindBoundsIndexesCommand);
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -205,8 +211,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             try
             {
-                BaslerRepository.CurrentCamera.ExposureTime = BaslerRepository.CurrentCamera.ExposureTimeCurrent;
-                BaslerRepository.CurrentCamera.CurrentAverage = result;
+
+                if (_needIncreaseExposureTime)
+                {
+                    BaslerRepository.CurrentCamera.ExposureTime = BaslerRepository.CurrentCamera.ExposureTimeCurrent;
+                    BaslerRepository.CurrentCamera.CurrentAverage = result; 
+                }
                 if (_resImage != null)
                 {
                     Bitmap bmp = _resImage.ToBitmap();
@@ -285,15 +295,22 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
             }
-            if (!CurrentCamera.CalibrationMode)
+            if (!CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode)
             {
                 _concurentVideoBuffer.Enqueue(e);
                 // _strobe+= _concurentVideoBuffer.Count;
             }
             else
+            if (CurrentCamera.CalibrationMode)
             {
                 PerformCalibration(e);
                 CurrentCamera.CalibrationMode = false;
+            }
+            else
+            if (CurrentCamera.FindBoundsMode)
+            {
+                FindBoundsIndexes(e);
+                CurrentCamera.FindBoundsMode = false;
             }
             //Сохранеяем XML с обработанными данными
             if (_filterMode)
@@ -376,6 +393,48 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             CurrentCamera.Deltas = CalibrateService.CalibrateRaw(lines[index].ToArray());
             CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(lines[index].ToArray());
             // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
+        }
+        /// <summary>
+        /// Находим границы для увеличения экспозиции
+        /// </summary>
+        /// <param name="e"></param>
+        private void FindBoundsIndexes(BufferData e)
+        {
+
+            List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
+            int index = lines.Count >= 5 ? 4 : 0;
+            List<byte> upBoundsList = new();
+            byte currentByte;
+            int rightBoundsCount = 0;
+            if (CurrentCamera.ID == "Левая камера")
+            {
+                for (int i = 0; i < lines[0].Count; i++)
+                {
+                    currentByte = UsingMultiCalibrationDeltas(lines[0][i], i);
+                    if (currentByte < 80)
+                    {
+                        CurrentCamera.LeftBoundIndex = i - 1;
+                        break;
+                    }
+                }
+            }
+            if (CurrentCamera.ID == "Правая камера")
+            {
+                for (int i = 0; i < lines[0].Count; i++)
+                {
+                    currentByte = UsingMultiCalibrationDeltas(lines[0][i], i);
+                    if (currentByte > 80)
+                    {
+                        rightBoundsCount += 1;
+
+                    }
+                    if (rightBoundsCount > 300)
+                    {
+                        CurrentCamera.RightBoundIndex = i - rightBoundsCount;
+                        break;
+                    }
+                }
+            }
         }
 
         private async void ProceesBuffersAction()
@@ -467,12 +526,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             if (_needIncreaseExposureTime)
                             {
                                 double average = 0;
-                                for (int i = 0; i < 6144; i++)
+                                for (int i = CurrentCamera.LeftBoundIndex; i < CurrentCamera.RightBoundIndex; i++)
                                 {
-                                     average += img.Data[0, i, 0];
+                                    average += img.Data[0, i, 0];
                                 }
-                                 result=average / 6144;
-                                if (result<127)
+                                result = average / (CurrentCamera.RightBoundIndex-CurrentCamera.LeftBoundIndex);
+                                if (result < 127)
                                 {
                                     CurrentCamera.IncreaseCameraExposureTime();
                                 }
@@ -480,7 +539,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 {
                                     _needIncreaseExposureTime = false;
                                 }
-                               // CurrentCamera.IncreaseCameraExposureTime();
+                                // CurrentCamera.IncreaseCameraExposureTime();
                             }
 
                             if (_currentVisualAnalizeIsActive)
@@ -509,7 +568,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
-
+        /// <summary>
+        /// Калибровка умножением
+        /// </summary>
+        /// <param name="currentByte"></param>
+        /// <param name="i"></param>
+        /// <returns></returns>
         private byte UsingMultiCalibrationDeltas(byte currentByte, int i)
         {
             if ((currentByte * CurrentCamera.MultipleDeltas[i] + BaslerRepository.AddToPoint) >= 255)
@@ -520,15 +584,20 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 currentByte = (byte)(currentByte * CurrentCamera.MultipleDeltas[i] + BaslerRepository.AddToPoint);
             return currentByte;
         }
-
+        /// <summary>
+        /// Калибровка сложением
+        /// </summary>
+        /// <param name="currentByte"></param>
+        /// <param name="i"></param>
+        /// <returns></returns>
         private byte UsingCalibrationDeltas(byte currentByte, int i)
         {
-            if ((currentByte + CurrentCamera.Deltas[i]) >= CurrentCamera.UpThreshold)
+            if ((currentByte + CurrentCamera.Deltas[i]) >= 255)
             {
                 currentByte = 255;
             }
             else
-                if (currentByte + CurrentCamera.Deltas[i] <= CurrentCamera.DownThreshold)
+                if (currentByte + CurrentCamera.Deltas[i] <=0)
             {
                 currentByte = 0;
             }
@@ -622,9 +691,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
-                if (CurrentCamera.GrabOver == false)
-                    CurrentCamera.StopGrabber();
-
                 CurrentCamera.CalibrationMode = true;
                 CurrentCamera.OneShotForCalibration();
                 //   CurrentCamera.StopGrabber();
@@ -637,6 +703,20 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Инициализируйте камеры перед калибровкой";
             }
         }
+
+        /// <summary>
+        /// Находим границы элементов
+        /// </summary>
+        void ExecuteFindBoundsIndexes()
+        {
+            if (CurrentCamera == null) return;
+            if (CurrentCamera.Initialized)
+            {
+                CurrentCamera.FindBoundsMode = true;
+                CurrentCamera.OneShotForCalibration();
+            }
+        }
+
         /// <summary>
         /// Увеличиваем экспозицию после того, как положили материал
         /// </summary>

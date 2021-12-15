@@ -12,6 +12,7 @@ namespace LaserScan.Core.NetStandart.Models
     public class BaslerCameraModel : BindableBase
     {
         public bool CalibrationMode { get; set; } = false;
+        public bool FindBoundsMode { get; set; } = false;
         public float HeightDescrete { get; set; }
         public float WidthDescrete { get; set; }
         public int Hz { get; set; }
@@ -26,6 +27,10 @@ namespace LaserScan.Core.NetStandart.Models
         public int AllCamerasWidth { get; set; }
         public float LeftBoundWidth { get; set; }
         public float RightBoundWidth { get; set; }
+        [XmlIgnore]
+        public int LeftBoundIndex { get; set; } = 0;
+        [XmlIgnore]
+        public int RightBoundIndex { get; set; } = 6144;
         public bool DefectsFound { get; set; } = false;
         //XmlIgnore
         public long ExposureTimeCurrent { get; set; }
@@ -77,7 +82,9 @@ namespace LaserScan.Core.NetStandart.Models
             get { return _heightThreshold; }
             set { SetProperty(ref _heightThreshold, value); }
         }
-        private long _exposureTime;
+        [XmlIgnore]
+        private long _exposureTime=1400;
+        [XmlIgnore]
         public long ExposureTime
         {
             get { return _exposureTime; }
@@ -141,7 +148,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(5_000);
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(200);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
