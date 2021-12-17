@@ -403,44 +403,38 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             CurrentCamera.FindBoundsMode = false;
             List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
             byte currentByte;
-            int rightBoundsCount = 0;
             if (CurrentCamera.ID == "Левая камера")
             {
                 for (int i = 0; i < lines[0].Count; i++)
                 {
                     currentByte = UsingMultiCalibrationDeltas(lines[0][i], i);
-                    if (currentByte < 80)
+                    if (currentByte < 50)
                     {
-                        CurrentCamera.LeftBoundIndex = i - 1;
+                        CurrentCamera.LeftBoundIndex = i;
                         break;
                     }
                 }
-                    CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 4320, 4421,0);
-                //    CorrectCalibratedPoints(lines[0], 4220, 4320, 4320, 4421,0);
+                CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 4320, 4421, 0);
+                 //   CorrectCalibratedPoints(lines[0], 4220, 4320, 4320, 4421,0);
             }
             if (CurrentCamera.ID == "Центральная камера")
             {
-                   CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 2982, 3107,1);
-                //   CorrectCalibratedPoints(lines[0], 2882, 2982, 2982, 3107,1);
+               // CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 2982, 3107, 1);
+                 // CorrectCalibratedPoints(lines[0], 2882, 2982, 2982, 3107,1);
             }
             if (CurrentCamera.ID == "Правая камера")
             {
-                for (int i = 0; i < lines[0].Count; i++)
+                for (int i = lines[0].Count - 1; i > 0; i--)
                 {
                     currentByte = UsingMultiCalibrationDeltas(lines[0][i], i);
-                    if (currentByte > 80)
+                    if (currentByte < 50)
                     {
-                        rightBoundsCount += 1;
-
-                    }
-                    if (rightBoundsCount > 300)
-                    {
-                        CurrentCamera.RightBoundIndex = i - rightBoundsCount;
+                        CurrentCamera.RightBoundIndex = i - 1;
                         break;
                     }
                 }
-                CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 1700, 2000, 2);
-                // CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
+              //  CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 1700, 2000, 2);
+               //  CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
             }
         }
         private void CorrectCalibratedPoints(List<byte> line, int leftBound, int rightBound, int leftChangePoint, int rightChangePoint, int cameraIndex)
