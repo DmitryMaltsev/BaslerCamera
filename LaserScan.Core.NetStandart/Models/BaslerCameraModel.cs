@@ -60,7 +60,7 @@ namespace LaserScan.Core.NetStandart.Models
         private byte upThreshold = 60; // верхняя граница
         public byte UpThreshold
         {
-            get { return upThreshold; }
+            get { return upThreshold; } 
             set { SetProperty(ref upThreshold, value); }
         }
 
@@ -84,6 +84,8 @@ namespace LaserScan.Core.NetStandart.Models
             get { return _heightThreshold; }
             set { SetProperty(ref _heightThreshold, value); }
         }
+
+
         private long _exposureTime=200;
         [XmlIgnore]
         public long ExposureTime
@@ -98,6 +100,13 @@ namespace LaserScan.Core.NetStandart.Models
         {
             get { return _currentAverage; }
             set { SetProperty(ref _currentAverage, value); }
+        }
+
+        private byte _addBrightness=0;
+        public byte Addbrightness
+        {
+            get { return _addBrightness; }
+            set { SetProperty(ref _addBrightness, value); }
         }
         #endregion
 

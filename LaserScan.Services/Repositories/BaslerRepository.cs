@@ -96,12 +96,5 @@ namespace Kogerent.Services.Implementation
             get { return _allDefectsFound; }
             set { SetProperty(ref _allDefectsFound, value); }
         }
-
-        private byte _addToPoint=0;
-        public byte AddToPoint
-        {
-            get { return _addToPoint; }
-            set { SetProperty(ref _addToPoint, value); }
-        }
     }
 }

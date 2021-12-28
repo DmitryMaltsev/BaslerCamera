@@ -107,7 +107,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (BaslerRepository.AllCamerasInitialized)
             {
-                BaslerRepository.AddToPoint += 1;
+                BaslerRepository.CurrentCamera.Addbrightness += 1;
             }
 
         }
@@ -116,7 +116,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (BaslerRepository.AllCamerasInitialized)
             {
-                BaslerRepository.AddToPoint -= 1;
+                BaslerRepository.CurrentCamera.Addbrightness -= 1;
             }
         }
 

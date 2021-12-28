@@ -16,6 +16,5 @@ namespace Kogerent.Services.Interfaces
         ObservableCollection<MaterialModel> MaterialModelCollection { get; set; }
         MaterialModel CurrentMaterial { get; set; }
         bool AllDefectsFound { get; set; }
-        byte AddToPoint { get; set; }
     }
 }
