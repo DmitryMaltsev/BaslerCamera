@@ -85,7 +85,7 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _heightThreshold, value); }
         }
 
-        private long _exposureTime=240;
+        private long _exposureTime=1100;
         [XmlIgnore]
         public long ExposureTime
         {

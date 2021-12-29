@@ -58,6 +58,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool _needToDrawDefects;
         private Queue<byte[]> _videoBuffer;
         private ConcurrentQueue<BufferData> _concurentVideoBuffer;
+        private List<List<byte>> _concurentCalibrateBuffer;
         private ConcurrentQueue<byte[,,]> _imageDataBuffer;
         private int _width;
         private int _strobe;
@@ -79,11 +80,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool _currentRawImage;
         private bool _currentVisualAnalizeIsActive;
         private bool _needIncreaseExposureTime = false;
+        private bool createEtalonPoints = false;
         private int _cnt;
         private int _currentHeight;
         private List<byte> filteredLines;
         private double result;
-        private byte _addBrightness = 0;
+
         #endregion
 
         private BaslerCameraModel _currentCamera;
@@ -202,6 +204,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ImageSource = new BitmapImage(uriSource);
             _videoBuffer = new();
             _concurentVideoBuffer = new();
+            _concurentCalibrateBuffer = new();
             _imageDataBuffer = new();
 
             _processVideoWork = new Task(() => ProceesBuffersAction());
@@ -209,6 +212,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
             _processImageTask = new Task(() => ProcessImageAction());
             _processImageTask.Start();
+
+
 
             _drawingTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
             _drawingTimer.Tick += _drawingTimer_Tick;
@@ -386,7 +391,32 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     ExecuteStopCamera();
                 }
             }
+
+            if (createEtalonPoints)
+            {
+                List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
+                List<double> etalonBuffer = new();
+                _concurentCalibrateBuffer.AddRange(buffer);
+                if (_concurentCalibrateBuffer.Count >= 2_000)
+                {
+                    for (int strobenum = 0; strobenum < _concurentCalibrateBuffer[0].Count; strobenum++)
+                    {
+                        for (int i = 0; i < _concurentCalibrateBuffer[strobenum].Count; i++)
+                        {
+                            etalonBuffer[strobenum] += _concurentCalibrateBuffer[i][strobenum];
+                        }
+                    }
+                    List<byte> byteBuf = new();
+                    for (int i = 0; i < _concurentCalibrateBuffer[0].Count; i++)
+                    {
+                        byteBuf.Add((byte)(etalonBuffer[i] / _concurentCalibrateBuffer.Count));
+                    }
+
+
+                }
+            }
         }
+
 
         private void PerformCalibration(BufferData e)
         {
@@ -591,12 +621,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         /// <returns></returns>
         private byte UsingMultiCalibrationDeltas(byte currentByte, int i)
         {
-            if ((currentByte * CurrentCamera.MultipleDeltas[i] + _addBrightness) >= 255)
+            if ((currentByte * CurrentCamera.MultipleDeltas[i]) >= 255)
             {
                 currentByte = 255;
             }
             else
-                currentByte = (byte)(currentByte * CurrentCamera.MultipleDeltas[i] + _addBrightness);
+                currentByte = (byte)(currentByte * CurrentCamera.MultipleDeltas[i]);
             return currentByte;
         }
         /// <summary>
@@ -735,7 +765,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         /// </summary>
         void ExecuteAutoExpositionCommand()
         {
-            _needIncreaseExposureTime = true;
+            // _needIncreaseExposureTime = true;
             ExecuteStartGrab();
         }
 
