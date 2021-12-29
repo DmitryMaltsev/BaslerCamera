@@ -31,7 +31,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _deleteMaterialCommand;
         public DelegateCommand DeleteMaterialCommand =>
             _deleteMaterialCommand ?? (_deleteMaterialCommand = new DelegateCommand(ExecuteDeleteMaterialCommand));
-
         private DelegateCommand _takeCalibrationDataCommand;
         public DelegateCommand TakeCalibrationDataCommand =>
             _takeCalibrationDataCommand ?? (_takeCalibrationDataCommand = new DelegateCommand(ExecuteTakeCalibrationDataCommand));
@@ -107,7 +106,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (BaslerRepository.AllCamerasInitialized)
             {
-                BaslerRepository.CurrentCamera.Addbrightness += 1;
+             //   BaslerRepository.CurrentCamera.Addbrightness += 1;
             }
 
         }
@@ -116,7 +115,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (BaslerRepository.AllCamerasInitialized)
             {
-                BaslerRepository.CurrentCamera.Addbrightness -= 1;
+              //  BaslerRepository.CurrentCamera.Addbrightness -= 1;
             }
         }
 

@@ -85,8 +85,7 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _heightThreshold, value); }
         }
 
-
-        private long _exposureTime=200;
+        private long _exposureTime=240;
         [XmlIgnore]
         public long ExposureTime
         {
@@ -169,15 +168,16 @@ namespace LaserScan.Core.NetStandart.Models
             {
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
             }
-            Initialized = true; // успешная инициализация
+            Initialized = true; // успешная 
         }
-        //Увеливичваем экспозицию
-        public void IncreaseCameraExposureTime()
+
+        public void IncreaseExposureTime()
         {
-            long newvalue = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue()+20;
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(newvalue);
-            ExposureTimeCurrent = newvalue;
+            ExposureTime += 50;
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
         }
+
+
 
         private void StreamGrabber_GrabStarted(object sender, EventArgs e)
         {

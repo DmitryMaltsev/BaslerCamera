@@ -83,6 +83,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private int _currentHeight;
         private List<byte> filteredLines;
         private double result;
+        private byte _addBrightness = 0;
         #endregion
 
         private BaslerCameraModel _currentCamera;
@@ -97,6 +98,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             get { return _imageSource; }
             set { SetProperty(ref _imageSource, value); }
+        }
+
+        private long _exposureTime;
+        public long ExposureTime
+        {
+            get { return _exposureTime; }
+            set { SetProperty(ref _exposureTime, value); }
         }
 
         #region Delegate Commands
@@ -211,12 +219,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             try
             {
-
-                if (_needIncreaseExposureTime)
-                {
-                    BaslerRepository.CurrentCamera.ExposureTime = BaslerRepository.CurrentCamera.ExposureTimeCurrent;
-                    BaslerRepository.CurrentCamera.CurrentAverage = result;
-                }
+                BaslerRepository.CurrentCamera.CurrentAverage = result;
                 if (_resImage != null)
                 {
                     Bitmap bmp = _resImage.ToBitmap();
@@ -346,8 +349,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     {
                         byte currentByte = UsingCalibrationDeltas(line[i], i);
                         filteredLine.Add(currentByte);
-                        currentByte = UsingMultiCalibrationDeltas(line[i], i);
-                        multipleFilteredLine.Add(currentByte);
+                        byte currentByte2 = UsingMultiCalibrationDeltas(line[i], i);
+                        multipleFilteredLine.Add(currentByte2);
                     }
                     XmlService.Write(path, filteredLine);
                     XmlService.Write(multiplePath, multipleFilteredLine);
@@ -414,14 +417,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         break;
                     }
                 }
-              //  CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 4320, 4421, 0);
-                 //   CorrectCalibratedPoints(lines[0], 4220, 4320, 4320, 4421,0);
             }
-            //if (CurrentCamera.ID == "Центральная камера")
-            //{
-            //   // CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 2982, 3107, 1);
-            //     // CorrectCalibratedPoints(lines[0], 2882, 2982, 2982, 3107,1);
-            //}
+
             if (CurrentCamera.ID == "Правая камера")
             {
                 for (int i = lines[0].Count - 1; i > 0; i--)
@@ -433,8 +430,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         break;
                     }
                 }
-              //  CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 1700, 2000, 2);
-               //  CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
+                //  CorrectCalibratedPoints(lines[0], CurrentCamera.LeftBoundIndex, CurrentCamera.RightBoundIndex, 1700, 2000, 2);
+                //  CorrectCalibratedPoints(lines[0], 1500, 1700, 1700, 2000,2);
             }
         }
         private void CorrectCalibratedPoints(List<byte> line, int leftBound, int rightBound, int leftChangePoint, int rightChangePoint, int cameraIndex)
@@ -551,8 +548,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 result = average / (CurrentCamera.RightBoundIndex - CurrentCamera.LeftBoundIndex);
                                 if (result < 127)
                                 {
-                                    BaslerRepository.CurrentCamera.Addbrightness += 1;
-                                   // CurrentCamera.IncreaseCameraExposureTime();
+                                    CurrentCamera.IncreaseExposureTime();
                                 }
                                 else
                                 {
@@ -595,12 +591,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         /// <returns></returns>
         private byte UsingMultiCalibrationDeltas(byte currentByte, int i)
         {
-            if ((currentByte * CurrentCamera.MultipleDeltas[i] + BaslerRepository.CurrentCamera.Addbrightness) >= 255)
+            if ((currentByte * CurrentCamera.MultipleDeltas[i] + _addBrightness) >= 255)
             {
                 currentByte = 255;
             }
             else
-                currentByte = (byte)(currentByte * CurrentCamera.MultipleDeltas[i] + BaslerRepository.CurrentCamera.Addbrightness);
+                currentByte = (byte)(currentByte * CurrentCamera.MultipleDeltas[i] + _addBrightness);
             return currentByte;
         }
         /// <summary>
