@@ -523,18 +523,19 @@ namespace Kogerent.Services.Implementation
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
                         Point[] p = c.Contour.ToArray();
-                        CvInvoke.Polylines(tempBmp, p, true, currentColor, 20);
+                       // CvInvoke.Polylines(tempBmp, p, true, currentColor, 20);
 
                     }
-                    //if (up == true)
-                    //{
-                    //    CvInvoke.DrawContours(tempBmp, contours, contourNum, new MCvScalar(255, 0, 0), 20);
-                    //}
-                    //else
-                    //{
-                    //    CvInvoke.DrawContours(tempBmp, contours, contourNum, new MCvScalar(0, 0, 255), 20); ;
-                    //}
-                    // tempBmp.Draw(rectangle, rectColor, 20);
+
+                    if (up == true)
+                    {
+                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(255, 0, 0), 20);
+                    }
+                    else
+                    {
+                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(0, 0, 255), 20); ;
+                    }
+                    //tempBmp.Draw(rectangle, rectColor, 20);
                 }
             }
             return defects;
