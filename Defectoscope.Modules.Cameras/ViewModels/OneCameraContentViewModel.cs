@@ -300,8 +300,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
-            }
-            if (!createEtalonPointsMode && !CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode)
+            }          
+            if (!createEtalonPointsMode)
+            // && !CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode
             {
                 _concurentVideoBuffer.Enqueue(e);
                 // _strobe+= _concurentVideoBuffer.Count;
@@ -396,34 +397,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 collectionRawPoints.AddRange(buffer);
                 if (collectionRawPoints.Count >= 5_000)
                 {
-                    try
-                    {
                         resultEtalonPoints = new List<byte>();
-                        double[] bufferEtlonPoint = new double[6144];
+                        double[] bufferEtalonPoint = new double[6144];
                         for (int xpointsNum = 0; xpointsNum < collectionRawPoints[0].Count; xpointsNum++)
                         {
                             for (int yPointsNum = 0; yPointsNum < collectionRawPoints.Count; yPointsNum++)
                             {
-                                bufferEtlonPoint[xpointsNum] += collectionRawPoints[yPointsNum][xpointsNum];
+                                bufferEtalonPoint[xpointsNum] += collectionRawPoints[yPointsNum][xpointsNum];
                             }
                         }
-                        for (int i = 0; i < bufferEtlonPoint.Length; i++)
+                        for (int i = 0; i < bufferEtalonPoint.Length; i++)
                         {
-                            resultEtalonPoints.Add((byte)(bufferEtlonPoint[i] / collectionRawPoints.Count));
+                            resultEtalonPoints.Add((byte)(bufferEtalonPoint[i] / collectionRawPoints.Count));
                         }
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
                         XmlService.Write(path, resultEtalonPoints);
                              CurrentCamera.Deltas = CalibrateService.CalibrateRaw(resultEtalonPoints.ToArray());
                              CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(resultEtalonPoints.ToArray());
-                        createEtalonPointsMode = false;
-                    }
-                    catch (Exception ex)
-                    {
-                        string msg = $"{ex.Message}";
-                        Logger?.Error(msg);
-                        FooterRepository.Text = msg;
-                        ExecuteStopCamera();
-                    }
+                    FooterRepository.Text = "Обычный режим работы";
+                    createEtalonPointsMode = false;           
                 }
             }
         }
@@ -693,14 +685,15 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
-                //if (ChangeMaterialDeltas())
-                //{
                 if (!_drawingTimer.IsEnabled)
                 {
                     _drawingTimer.Start();
                 }
                 CurrentCamera.Start();
-                //}
+                if (!createEtalonPointsMode)
+                {
+                    FooterRepository.Text = "Обычный режим работы";
+                }
             }
         }
 
@@ -754,8 +747,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 //else
                 //{
                 //    FooterRepository.Text = "Инициализируйте камеры перед калибровкой";
-                createEtalonPointsMode = true;
                 FooterRepository.Text = "Создаем эталонные данные для калибровки";
+                createEtalonPointsMode = true;
+               // CurrentCamera.Start();
                 ExecuteStartGrab();
             }
         }

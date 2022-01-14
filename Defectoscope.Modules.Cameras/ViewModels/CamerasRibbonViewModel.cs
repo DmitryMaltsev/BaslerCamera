@@ -42,7 +42,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _addBrightnessCommand ?? (_addBrightnessCommand = new DelegateCommand(ExecuteAddBrightnessCommand));
 
         #endregion
-
         public IRegionManager RegionManager { get; }
         public IFooterRepository FooterRepository { get; }
         public IApplicationCommands ApplicationCommands { get; }
@@ -78,28 +77,28 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 cameraModel.CanvasWidth = BaslerRepository.CanvasWidth;
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
-            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            if (BaslerRepository.AllCamerasInitialized && BaslerRepository.CurrentMaterial.CameraDeltaList != null)
-            {
-                BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
-                foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
-                {
-                    BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
-                    {
-                        CameraId = camera.ID,
-                        Deltas = camera.Deltas,
-                        MultipleDeltas=camera.MultipleDeltas,
-                        UpThreshhold = camera.UpThreshold,
-                        DownThreshhold = camera.DownThreshold
-                    });
-                }
-                XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
+            //string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+            //if (BaslerRepository.AllCamerasInitialized && BaslerRepository.CurrentMaterial.CameraDeltaList != null)
+            //{
+            //    BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
+            //    foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
+            //    {
+            //        BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
+            //        {
+            //            CameraId = camera.ID,
+            //            Deltas = camera.Deltas,
+            //            MultipleDeltas=camera.MultipleDeltas,
+            //            UpThreshhold = camera.UpThreshold,
+            //            DownThreshhold = camera.DownThreshold
+            //        });
+            //    }
+            //    XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
                 FooterRepository.Text = $"Калибровочные данные сохранены в  {BaslerRepository.CurrentMaterial.MaterialName}";
-            }
-            else
-            {
-                FooterRepository.Text = "Проведите инициализацию перед калибровкой и сохранитесь";
-            }
+            //}
+            //else
+            //{
+            //    FooterRepository.Text = "Проведите инициализацию перед калибровкой и сохранитесь";
+            //}
         }
 
         void ExecuteAddBrightnessCommand()

@@ -239,7 +239,6 @@ namespace Kogerent.Services.Implementation
                             Width = rectangle.Width,
                             Height = rectangle.Height
                         });
-
                     }
                 }
                 result = contours;
@@ -492,6 +491,7 @@ namespace Kogerent.Services.Implementation
                     Тип = up ? "выпуклость" : "вдав",
                     Время = DateTime.Now
                 };
+
                 // int res = defects.RemoveAll(d => d.X >= min && d.X < max);
                 //float bufferMin = minXs.Find(p => p >= defect.X);
                 //float bufferMax = maxXs.Find(p => p <= defect.X);
@@ -522,21 +522,20 @@ namespace Kogerent.Services.Implementation
                         Size size = new(rectangle.Width, rectangle.Height);
                         Rectangle rectF = new Rectangle(rectangle.Location, size);
                         Point[] p = c.Contour.ToArray();
-                       // CvInvoke.Polylines(tempBmp, p, true, currentColor, 20);
-
-                    }
-
-                    if (up == true)
-                    {
-                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(255, 0, 0), 4,LineType.Filled);
-                    }
-                    else
-                    {
-                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(0, 0, 255), 4, LineType.Filled);
-                    }
-                    //tempBmp.Draw(rectangle, rectColor, 20);
+                      
+                        CvInvoke.Polylines(tempBmp, p, true, currentColor, 20);
+                    }            
+                    // tempBmp.Draw(rectangle, rectColor, 20);
                 }
             }
+            //if (up == true)
+            //{
+            //    CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(255, 0, 0), 20, LineType.Filled);
+            //}
+            //else
+            //{
+            //    CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(0, 0, 255), 20, LineType.Filled);
+            //}
             return defects;
         }
         #endregion
