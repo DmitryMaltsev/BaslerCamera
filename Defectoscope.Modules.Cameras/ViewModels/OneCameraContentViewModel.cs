@@ -301,7 +301,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
             }
-            if (!CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode)
+            if (!createEtalonPointsMode && !CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode)
             {
                 _concurentVideoBuffer.Enqueue(e);
                 // _strobe+= _concurentVideoBuffer.Count;
@@ -394,25 +394,36 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
                 collectionRawPoints.AddRange(buffer);
-                if (collectionRawPoints.Count >= 2_000)
+                if (collectionRawPoints.Count >= 5_000)
                 {
-                    resultEtalonPoints = new List<byte>();
-                    for (int xpointsNum = 0; xpointsNum < collectionRawPoints[0].Count; xpointsNum++)
+                    try
                     {
-                        for (int yPointsNum = 0; yPointsNum < collectionRawPoints.Count; yPointsNum++)
+                        resultEtalonPoints = new List<byte>();
+                        double[] bufferEtlonPoint = new double[6144];
+                        for (int xpointsNum = 0; xpointsNum < collectionRawPoints[0].Count; xpointsNum++)
                         {
-                            resultEtalonPoints[xpointsNum] += collectionRawPoints[yPointsNum][xpointsNum];
+                            for (int yPointsNum = 0; yPointsNum < collectionRawPoints.Count; yPointsNum++)
+                            {
+                                bufferEtlonPoint[xpointsNum] += collectionRawPoints[yPointsNum][xpointsNum];
+                            }
                         }
+                        for (int i = 0; i < bufferEtlonPoint.Length; i++)
+                        {
+                            resultEtalonPoints.Add((byte)(bufferEtlonPoint[i] / collectionRawPoints.Count));
+                        }
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
+                        XmlService.Write(path, resultEtalonPoints);
+                             CurrentCamera.Deltas = CalibrateService.CalibrateRaw(resultEtalonPoints.ToArray());
+                             CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(resultEtalonPoints.ToArray());
+                        createEtalonPointsMode = false;
                     }
-                    for (int i = 0; i < resultEtalonPoints.Count; i++)
+                    catch (Exception ex)
                     {
-                        resultEtalonPoints[i] = (byte)(resultEtalonPoints[i] / collectionRawPoints.Count);
+                        string msg = $"{ex.Message}";
+                        Logger?.Error(msg);
+                        FooterRepository.Text = msg;
+                        ExecuteStopCamera();
                     }
-                    string path  = Path.Combine("PointsData", $"{_currentCamera.ID}_etalonData.xml");
-                    XmlService.Write(path, resultEtalonPoints);
-               //     CurrentCamera.Deltas = CalibrateService.CalibrateRaw(resultEtalonPoints.ToArray());
-               //     CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(resultEtalonPoints.ToArray());
-                    ExecuteStopCamera();
                 }
             }
         }

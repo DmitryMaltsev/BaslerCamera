@@ -450,7 +450,6 @@ namespace Kogerent.Services.Implementation
                     }
 
                 }
-
             }
             catch (Exception ex)
             {
@@ -529,11 +528,11 @@ namespace Kogerent.Services.Implementation
 
                     if (up == true)
                     {
-                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(255, 0, 0), 20);
+                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(255, 0, 0), 4,LineType.Filled);
                     }
                     else
                     {
-                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(0, 0, 255), 20); ;
+                        CvInvoke.DrawContours(tempBmp, contours, -1, new MCvScalar(0, 0, 255), 4, LineType.Filled);
                     }
                     //tempBmp.Draw(rectangle, rectColor, 20);
                 }
