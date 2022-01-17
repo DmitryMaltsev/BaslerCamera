@@ -84,7 +84,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private bool createEtalonPointsMode = false;
         private int _cnt;
         private int _currentHeight;
-        private List<byte> filteredLines;
         private double result;
 
         #endregion
@@ -200,7 +199,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BenchmarkRepository = benchmarkRepository;
             CalibrateService = calibrateService;
             NonControlZonesRepository = nonControlZonesRepository;
-            filteredLines = new List<byte>();
             var uriSource = new Uri(@"/Defectoscope.Modules.Cameras;component/Images/ImageSurce_cam.png", UriKind.Relative);
             ImageSource = new BitmapImage(uriSource);
             _videoBuffer = new();
