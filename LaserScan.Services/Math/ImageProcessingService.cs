@@ -520,11 +520,11 @@ namespace Kogerent.Services.Implementation
 
                         defects.Add(defect);
                         Size size = new(rectangle.Width, rectangle.Height);
-                        Rectangle rectF = new Rectangle(rectangle.Location, size);
-                        Point[] p = c.Contour.ToArray();
-                      
-                        CvInvoke.Polylines(tempBmp, p, true, currentColor, 20);
-                    }            
+                        // Rectangle rectF = new Rectangle(rectangle.Location, size);
+                        //   Point[] p = c.Contour.ToArray();
+
+                        CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 20);
+                    }
                     // tempBmp.Draw(rectangle, rectColor, 20);
                 }
             }

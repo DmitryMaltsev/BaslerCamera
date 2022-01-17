@@ -34,6 +34,7 @@ namespace LaserScan.Core.NetStandart.Models
         public bool DefectsFound { get; set; } = false;
         //XmlIgnore
         public long ExposureTimeCurrent { get; set; }
+
         #region Raised properties
         private string _ip;
         public string Ip
