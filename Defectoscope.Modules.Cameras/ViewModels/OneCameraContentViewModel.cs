@@ -59,7 +59,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private Queue<byte[]> _videoBuffer;
         private ConcurrentQueue<BufferData> _concurentVideoBuffer;
         private List<List<byte>> collectionRawPoints;
-        private List<byte> resultEtalonPoints;
         private ConcurrentQueue<byte[,,]> _imageDataBuffer;
         private int _width;
         private int _strobe;
@@ -242,7 +241,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         if (CurrentCamera.ID == "Левая камера")
                         {
                             List<DefectProperties> leftDefects = _defects.ToList();
-                            float currentShift = 6144 * CurrentCamera.WidthDescrete;
+                            float currentShift = 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
                             BaslerRepository.BaslerCamerasCollection[1].LeftBorder = currentShift + (currentShift - (float)leftDefects[0].X);
                             BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth = currentShift - (float)leftDefects[0].X;
                             _overlayMode = false;
@@ -298,7 +297,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
-            }          
+            }
             if (!createEtalonPointsMode)
             // && !CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode
             {
@@ -306,6 +305,59 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 // _strobe+= _concurentVideoBuffer.Count;
             }
             else
+             //Создаем график сырых данных из массива массивов точек.
+             //Потом калибруем и записываем в XML файл
+             if (createEtalonPointsMode)
+            {
+                List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
+                collectionRawPoints.AddRange(buffer);
+                if (collectionRawPoints.Count >= 5_000)
+                {
+                    List<byte> resultEtalonPoints = new List<byte>();
+                    double[] bufferEtalonPoint = new double[6144];
+                    for (int xpointsNum = 0; xpointsNum < collectionRawPoints[0].Count; xpointsNum++)
+                    {
+                        for (int yPointsNum = 0; yPointsNum < collectionRawPoints.Count; yPointsNum++)
+                        {
+                            bufferEtalonPoint[xpointsNum] += collectionRawPoints[yPointsNum][xpointsNum];
+                        }
+                    }
+                    for (int i = 0; i < bufferEtalonPoint.Length; i++)
+                    {
+                        resultEtalonPoints.Add((byte)(bufferEtalonPoint[i] / collectionRawPoints.Count));
+                    }
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
+                    XmlService.Write(path, resultEtalonPoints);                  
+                    CurrentCamera.Deltas = CalibrateService.CalibrateRaw(resultEtalonPoints.ToArray());
+                    CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(resultEtalonPoints.ToArray());
+                    FooterRepository.Text = "Обычный режим работы";
+                    createEtalonPointsMode = false;
+                }
+            }
+         
+            //Сохраняем XML  с сырыми данными
+            if (_rawMode)
+            {
+                try
+                {
+                    List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
+                    List<byte> line = lines[0];
+                    string path = Path.Combine("PointsData", $"{_currentCamera.ID}_RawData.xml");
+                    // XmlService
+                    XmlService.Write(path, line);
+                    _rawMode = false;
+                    //   ExecuteStopCamera();
+                }
+                catch (Exception ex)
+                {
+                    string msg = $"{ex.Message}";
+                    Logger?.Error(msg);
+                    FooterRepository.Text = msg;
+                    ExecuteStopCamera();
+                }
+            }
+            else
+            //Старый метод калибровки
             if (CurrentCamera.CalibrationMode)
             {
                 PerformCalibration(e);
@@ -317,6 +369,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Смотрим индексы";
                 FindBoundsIndexes(e);
             }
+            else
             //Сохранеяем XML с обработанными данными
             if (_filterMode)
             {
@@ -367,55 +420,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     ExecuteStopCamera();
                 }
             }
-            //Сохраняем XML  с сырыми данными
-            if (_rawMode)
-            {
-                try
-                {
-                    List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
-                    List<byte> line = lines[0];
-                    string path = Path.Combine("PointsData", $"{_currentCamera.ID}_RawData.xml");
-                    // XmlService
-                    XmlService.Write(path, line);
-                    _rawMode = false;
-                    //   ExecuteStopCamera();
-                }
-                catch (Exception ex)
-                {
-                    string msg = $"{ex.Message}";
-                    Logger?.Error(msg);
-                    FooterRepository.Text = msg;
-                    ExecuteStopCamera();
-                }
-            }
-            //Создаем график сырых данных из массива массивов точек.
-            if (createEtalonPointsMode)
-            {
-                List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
-                collectionRawPoints.AddRange(buffer);
-                if (collectionRawPoints.Count >= 5_000)
-                {
-                        resultEtalonPoints = new List<byte>();
-                        double[] bufferEtalonPoint = new double[6144];
-                        for (int xpointsNum = 0; xpointsNum < collectionRawPoints[0].Count; xpointsNum++)
-                        {
-                            for (int yPointsNum = 0; yPointsNum < collectionRawPoints.Count; yPointsNum++)
-                            {
-                                bufferEtalonPoint[xpointsNum] += collectionRawPoints[yPointsNum][xpointsNum];
-                            }
-                        }
-                        for (int i = 0; i < bufferEtalonPoint.Length; i++)
-                        {
-                            resultEtalonPoints.Add((byte)(bufferEtalonPoint[i] / collectionRawPoints.Count));
-                        }
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
-                        XmlService.Write(path, resultEtalonPoints);
-                             CurrentCamera.Deltas = CalibrateService.CalibrateRaw(resultEtalonPoints.ToArray());
-                             CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(resultEtalonPoints.ToArray());
-                    FooterRepository.Text = "Обычный режим работы";
-                    createEtalonPointsMode = false;           
-                }
-            }
         }
 
         private void PerformCalibration(BufferData e)
@@ -427,6 +431,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(lines[index].ToArray());
             // CurrentCamera.Deltas = CalibrateService.CalibrateMultyRaw(lines[index].ToArray());
         }
+
         /// <summary>
         /// Находим границы для увеличения экспозиции
         /// </summary>
@@ -747,7 +752,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 //    FooterRepository.Text = "Инициализируйте камеры перед калибровкой";
                 FooterRepository.Text = "Создаем эталонные данные для калибровки";
                 createEtalonPointsMode = true;
-               // CurrentCamera.Start();
+                // CurrentCamera.Start();
                 ExecuteStartGrab();
             }
         }

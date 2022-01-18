@@ -3,6 +3,7 @@ using Kogerent.Services.Interfaces;
 
 using Prism.Mvvm;
 
+using System;
 using System.Collections.ObjectModel;
 
 namespace Kogerent.Services.Implementation
@@ -35,23 +36,24 @@ namespace Kogerent.Services.Implementation
             //Obloys.Add(new ObloyModel { Name = $"Облой п.", MinimumY = 0, MaximumY = 300, MinimumX = 1261, MaximumX = 1311 });
         }
 
-        
+
         public void AddZones(IBaslerRepository BaslerRepository)
         {
 
             float camera2Shift = 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
             float camera3Shift = camera2Shift + 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
-            float maximumX;
+            float leftCameraMaximumX;
             if (BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 < camera2Shift)
             {
+                //Отступ определения дефектов левой камеры. Доп отступ из-за пересечения камер
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 -
                     BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
-                maximumX = offsetLeft <= 0 ? 0 : offsetLeft;
+                leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
             }
             else
             {
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
-                maximumX = offsetLeft <= 0 ? 0 : offsetLeft;
+                leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
             }
 
             Obloys.Clear();
@@ -61,27 +63,29 @@ namespace Kogerent.Services.Implementation
                 MinimumY = 0,
                 MaximumY = 300,
                 MinimumX = 0,
-                MaximumX = maximumX
+                MaximumX = leftCameraMaximumX
             });
 
-            float minimumX;
+            float rightCameraMinimumX;
             if (BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 > camera3Shift)
             {
+                //Отступ определения дефектов правой камеры. Доп отступ из-за пересечения камер
                 float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 +
                     BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
-                minimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
+                rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
             }
             else
             {
                 float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;
-                minimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;                 
+                rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
             }
+
             Obloys.Add(new ObloyModel
             {
                 Name = $"Облой п.",
                 MinimumY = 0,
                 MaximumY = 300,
-                MinimumX = minimumX,
+                MinimumX = rightCameraMinimumX,
                 MaximumX = BaslerRepository.FullCamerasWidth
             });
 
