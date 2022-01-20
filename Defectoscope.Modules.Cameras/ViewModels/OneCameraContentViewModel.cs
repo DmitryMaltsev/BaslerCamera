@@ -343,7 +343,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
                     collectionRawPoints.AddRange(buffer);
-                    if (collectionRawPoints.Count >= 20_000)
+                    if (collectionRawPoints.Count >= 10_000)
                     {
 
                         string path = Path.Combine("PointsData", "Raw", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
@@ -383,7 +383,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     // XmlService.
                     List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
                     collectionRawPoints.AddRange(buffer);
-                    if (collectionRawPoints.Count >= 20_000)
+                    if (collectionRawPoints.Count >= 10_000)
                     {
                         List<List<byte>> resultEtalonPoints = new List<List<byte>>(collectionRawPoints.Count);
                         resultEtalonPoints.AddRange(collectionRawPoints);

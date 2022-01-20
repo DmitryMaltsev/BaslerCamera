@@ -106,7 +106,7 @@ namespace Kogerent.Services.Implementation
             formatter.Serialize(fs, settingsModel);
         }
 
-        public void WriteText(List<List<byte>> data, string path)
+        public async void WriteText(List<List<byte>> data, string path)
         {
             using (StreamWriter streamWriter = new StreamWriter(path))
             {
@@ -114,7 +114,7 @@ namespace Kogerent.Services.Implementation
                 {
                     for (int j = 0; j < data[0].Count; j++)
                     {
-                        streamWriter.WriteLine($"{j} {i} {data[i][j]}");
+                     await   streamWriter.WriteLineAsync($"{j} {i} {data[i][j]}");
                     }
                 }
                 streamWriter.Close();
