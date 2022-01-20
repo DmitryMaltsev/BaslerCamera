@@ -106,15 +106,31 @@ namespace Kogerent.Services.Implementation
             formatter.Serialize(fs, settingsModel);
         }
 
-        public async void WriteText(List<List<byte>> data, string path)
+        public async void WriteText(byte[,] data, string path)
         {
             using (StreamWriter streamWriter = new StreamWriter(path))
             {
-                for (int i = 0; i < data.Count; i+=50)
+                for (int i = 0; i < data.GetLength(0); i += 50)
+                {
+                    for (int j = 0; j < data.GetLength(1); j++)
+                    {
+                        await streamWriter.WriteLineAsync($"{i} {j} {data[i, j]}");
+                    }
+                }
+                streamWriter.Close();
+            }
+        }
+
+
+        public async void WriteListText(List<List<byte>> data, string path)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(path))
+            {
+                for (int i = 0; i < data.Count; i += 50)
                 {
                     for (int j = 0; j < data[0].Count; j++)
                     {
-                     await   streamWriter.WriteLineAsync($"{j} {i} {data[i][j]}");
+                        await streamWriter.WriteLineAsync($"{i} {j} {data[i][j]}");
                     }
                 }
                 streamWriter.Close();

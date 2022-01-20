@@ -347,7 +347,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     {
 
                         string path = Path.Combine("PointsData", "Raw", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                        XmlService.WriteText(collectionRawPoints, path);
+                        //   XmlService.WriteText(collectionRawPoints, path);
                         _rawMode = false;
                         collectionRawPoints = new List<List<byte>>();
                         //   ExecuteStopCamera();
@@ -383,20 +383,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     // XmlService.
                     List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
                     collectionRawPoints.AddRange(buffer);
-                    if (collectionRawPoints.Count >= 10_000)
+                    if (collectionRawPoints.Count >=7_000)
                     {
-                        List<List<byte>> resultEtalonPoints = new List<List<byte>>(collectionRawPoints.Count);
-                        resultEtalonPoints.AddRange(collectionRawPoints);
+
+                        byte[,] resultFilterOptions = new byte[collectionRawPoints.Count, collectionRawPoints[0].Count];
+                        byte[,] resultMultipleFilterOptions = new byte[collectionRawPoints.Count, collectionRawPoints[0].Count];
                         for (int xpointsNum = 0; xpointsNum < collectionRawPoints.Count; xpointsNum++)
                         {
-                            List<byte> points = new List<byte>();
                             for (int yPointsNum = 0; yPointsNum < collectionRawPoints[0].Count; yPointsNum++)
                             {
-                                resultEtalonPoints[xpointsNum][yPointsNum] = UsingCalibrationDeltas(collectionRawPoints[xpointsNum][yPointsNum], yPointsNum);
+                              //      resultFilterOptions[xpointsNum, yPointsNum] = UsingCalibrationDeltas(collectionRawPoints[xpointsNum][yPointsNum], yPointsNum);
+                                    resultMultipleFilterOptions[xpointsNum, yPointsNum] = UsingMultiCalibrationDeltas(collectionRawPoints[xpointsNum][yPointsNum], yPointsNum);
                             }
                         }
-                        string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                        XmlService.WriteText(resultEtalonPoints, path);
+                        string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                        string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                        string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                       //   XmlService.WriteText(collectionRawPoints, path);
+                       // XmlService.WriteText(resultFilterOptions, filterPath);
+                        XmlService.WriteText(resultMultipleFilterOptions, multipleFilterPath);
                         collectionRawPoints = new List<List<byte>>();
                         _filterMode = false;
                     }

@@ -49,6 +49,6 @@ namespace Kogerent.Services.Interfaces
         /// <param name="filePath">Куда сохранить</param>
         /// <param name="settingsModel">Объект для сериализации</param>
         void WriteJS<T>(string filePath, T settingsModel);
-        void WriteText(List<List<byte>> data, string path);
+        void WriteText(byte[,] data, string path);
     }
 }
