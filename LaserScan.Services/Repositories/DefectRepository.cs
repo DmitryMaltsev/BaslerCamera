@@ -54,7 +54,7 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _createImages, value); }
         }
 
-        private bool _koefMultiplication=true;
+        private bool _koefMultiplication=false;
         public bool KoefMultiplication
         {
             get { return _koefMultiplication; }

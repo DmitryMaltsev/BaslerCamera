@@ -327,26 +327,31 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         resultEtalonPoints.Add((byte)(bufferEtalonPoint[i] / collectionRawPoints.Count));
                     }
                     string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
-                    XmlService.Write(path, resultEtalonPoints);                  
+                    XmlService.Write(path, resultEtalonPoints);
                     CurrentCamera.Deltas = CalibrateService.CalibrateRaw(resultEtalonPoints.ToArray());
                     CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(resultEtalonPoints.ToArray());
                     FooterRepository.Text = "Обычный режим работы";
+                    collectionRawPoints = new List<List<byte>>();
                     createEtalonPointsMode = false;
                 }
             }
-         
+
             //Сохраняем XML  с сырыми данными
             if (_rawMode)
             {
                 try
                 {
-                    List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
-                    List<byte> line = lines[0];
-                    string path = Path.Combine("PointsData", $"{_currentCamera.ID}_RawData.xml");
-                    // XmlService
-                    XmlService.Write(path, line);
-                    _rawMode = false;
-                    //   ExecuteStopCamera();
+                    List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
+                    collectionRawPoints.AddRange(buffer);
+                    if (collectionRawPoints.Count >= 20_000)
+                    {
+
+                        string path = Path.Combine("PointsData", "Raw", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                        XmlService.WriteText(collectionRawPoints, path);
+                        _rawMode = false;
+                        collectionRawPoints = new List<List<byte>>();
+                        //   ExecuteStopCamera();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -373,44 +378,28 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             //Сохранеяем XML с обработанными данными
             if (_filterMode)
             {
-                //List<byte> lines = e.Data.ToList();
-                //filteredLines.AddRange(lines);
-                //if (filteredLines.Count > 500_000)
-                //{
-                //    List<byte> newLine = new();
-                //    string path = Path.Combine(SettingsDir, $"{_currentCamera.ID}_filterData.xml");
-                //    for (int i = 0; i < filteredLines.Count; i++)
-                //    {
-                //        byte k = UsingCalibrationDeltas(filteredLines[i], i % 6144);
-                //        newLine.Add(k);
-                //    }
-                //    List<List<byte>> resultList = newLine.
-                //           Select((x, i) => new { Index = i, Value = x })
-                //           .GroupBy(x => x.Index / 6144)
-                //           .Select(x => x.Select(v => v.Value).ToList())
-                //           .ToList();
-                //    XmlService.Write(path, resultList);     
-                //}
                 try
                 {
-                    List<List<byte>> lines = e.Data.SplitByCount(e.Width).ToList();
-                    List<byte> line = lines[0];
-                    List<byte> filteredLine = new();
-                    List<byte> multipleFilteredLine = new();
-                    string path = Path.Combine("PointsData", $"{_currentCamera.ID}_filterData.xml");
-                    string multiplePath = Path.Combine("PointsData", $"{_currentCamera.ID}_multipleFilteredData.xml");
                     // XmlService.
-                    for (int i = 0; i < line.Count; i++)
+                    List<List<byte>> buffer = e.Data.SplitByCount(e.Width).ToList();
+                    collectionRawPoints.AddRange(buffer);
+                    if (collectionRawPoints.Count >= 20_000)
                     {
-                        byte currentByte = UsingCalibrationDeltas(line[i], i);
-                        filteredLine.Add(currentByte);
-                        byte currentByte2 = UsingMultiCalibrationDeltas(line[i], i);
-                        multipleFilteredLine.Add(currentByte2);
+                        List<List<byte>> resultEtalonPoints = new List<List<byte>>(collectionRawPoints.Count);
+                        resultEtalonPoints.AddRange(collectionRawPoints);
+                        for (int xpointsNum = 0; xpointsNum < collectionRawPoints.Count; xpointsNum++)
+                        {
+                            List<byte> points = new List<byte>();
+                            for (int yPointsNum = 0; yPointsNum < collectionRawPoints[0].Count; yPointsNum++)
+                            {
+                                resultEtalonPoints[xpointsNum][yPointsNum] = UsingCalibrationDeltas(collectionRawPoints[xpointsNum][yPointsNum], yPointsNum);
+                            }
+                        }
+                        string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                        XmlService.WriteText(resultEtalonPoints, path);
+                        collectionRawPoints = new List<List<byte>>();
+                        _filterMode = false;
                     }
-                    XmlService.Write(path, filteredLine);
-                    XmlService.Write(multiplePath, multipleFilteredLine);
-                    _filterMode = false;
-                    //         ExecuteStopCamera();
                 }
                 catch (Exception ex)
                 {
@@ -574,24 +563,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                                                                                   CurrentCamera.HeightDescrete,
                                                                                                   _strobe, Shift);
                             defectsProcessingStopWatch.Stop();
-                            if (_needIncreaseExposureTime)
-                            {
-                                double average = 0;
-                                for (int i = CurrentCamera.LeftBoundIndex; i < CurrentCamera.RightBoundIndex; i++)
-                                {
-                                    average += img.Data[0, i, 0];
-                                }
-                                result = average / (CurrentCamera.RightBoundIndex - CurrentCamera.LeftBoundIndex);
-                                if (result < 127)
-                                {
-                                    CurrentCamera.IncreaseExposureTime();
-                                }
-                                else
-                                {
-                                    _needIncreaseExposureTime = false;
-                                }
-                                // CurrentCamera.IncreaseCameraExposureTime();
-                            }
 
                             if (_currentVisualAnalizeIsActive)
                             {
@@ -791,14 +762,17 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Наложение камер определено";
             }
         }
-
+        /// <summary>
+        /// Берем большой массив сырых данных для обработки
+        /// Во время основной работы
+        /// </summary>
         void ExecuteTakeRawData()
         {
             if (CurrentCamera == null) return;
             if (CurrentCamera.Initialized)
             {
                 // CurrentCamera.CalibrationMode = true;
-                CurrentCamera.OneShotForCalibration();
+                // CurrentCamera.Start();
                 _rawMode = true;
                 FooterRepository.Text = "Сырые данные сохранены";
             }
@@ -810,7 +784,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (CurrentCamera.Initialized)
             {
                 //ExecuteStartGrab();
-                CurrentCamera.OneShotForCalibration();
+                //CurrentCamera.OneShotForCalibration();
                 _filterMode = true;
                 FooterRepository.Text = "Отфильтрованные данные сохранены";
             }

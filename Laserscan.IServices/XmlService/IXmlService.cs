@@ -1,4 +1,6 @@
-﻿namespace Kogerent.Services.Interfaces
+﻿using System.Collections.Generic;
+
+namespace Kogerent.Services.Interfaces
 {
     /// <summary>
     /// Контракт на создание сервиса сериализации и десериализации
@@ -47,5 +49,6 @@
         /// <param name="filePath">Куда сохранить</param>
         /// <param name="settingsModel">Объект для сериализации</param>
         void WriteJS<T>(string filePath, T settingsModel);
+        void WriteText(List<List<byte>> data, string path);
     }
 }

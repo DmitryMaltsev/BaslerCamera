@@ -506,8 +506,8 @@ namespace Kogerent.Services.Implementation
                             continue;
                         }
                     }
-                    if (defectNotInZone)
-                    {
+                    //if (defectNotInZone)
+                   // {
                         if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)
                         {
                             defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
@@ -522,7 +522,7 @@ namespace Kogerent.Services.Implementation
                         Size size = new(rectangle.Width, rectangle.Height);
                         // Rectangle rectF = new Rectangle(rectangle.Location, size);
                         CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 20);
-                    }
+                  //  }
                     // tempBmp.Draw(rectangle, rectColor, 20);
                 }
             }

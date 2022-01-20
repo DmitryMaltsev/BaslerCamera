@@ -2,8 +2,9 @@
 using System.Xml.Serialization;
 using Kogerent.Services.Interfaces;
 using Microsoft.Win32;
-
 using Newtonsoft.Json;
+using IronXL;
+using System.Collections.Generic;
 
 namespace Kogerent.Services.Implementation
 {
@@ -103,6 +104,21 @@ namespace Kogerent.Services.Implementation
             if (File.Exists(filePath)) File.Delete(filePath);
             using FileStream fs = new(filePath, FileMode.CreateNew);
             formatter.Serialize(fs, settingsModel);
+        }
+
+        public void WriteText(List<List<byte>> data, string path)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(path))
+            {
+                for (int i = 0; i < data.Count; i+=50)
+                {
+                    for (int j = 0; j < data[0].Count; j++)
+                    {
+                        streamWriter.WriteLine($"{j} {i} {data[i][j]}");
+                    }
+                }
+                streamWriter.Close();
+            }
         }
     }
 }
