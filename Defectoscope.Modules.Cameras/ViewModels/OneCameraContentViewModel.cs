@@ -399,7 +399,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                         string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                         string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                       //   XmlService.WriteText(collectionRawPoints, path);
+                          XmlService.WriteListText(collectionRawPoints, path);
                        // XmlService.WriteText(resultFilterOptions, filterPath);
                         XmlService.WriteText(resultMultipleFilterOptions, multipleFilterPath);
                         collectionRawPoints = new List<List<byte>>();
