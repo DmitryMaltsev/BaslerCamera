@@ -12,7 +12,6 @@ namespace LaserScan.Core.NetStandart.Models
     public class BaslerCameraModel : BindableBase
     {
         public bool CalibrationMode { get; set; } = false;
-        public bool FindBoundsMode { get; set; } = false;
         public float HeightDescrete { get; set; }
         public float WidthDescrete { get; set; }
         public int Hz { get; set; }
