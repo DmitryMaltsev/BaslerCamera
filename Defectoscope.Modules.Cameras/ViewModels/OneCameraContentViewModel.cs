@@ -302,6 +302,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 case ImageGrabbedEnumModes.RecievePoints:
                     {
                         _concurentVideoBuffer.Enqueue(e);
+                        FooterRepository.Text = "Обычный режим работы";
                     }
                     break;
                 case ImageGrabbedEnumModes.CreateEtalonPoints:
@@ -524,7 +525,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     XmlService.Write(path, calibratedPointsList);
                                     CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
                                     CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
-                                    FooterRepository.Text = "Обычный режим работы";
                                     imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
                                 }
                             }
