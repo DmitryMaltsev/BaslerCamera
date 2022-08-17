@@ -130,22 +130,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-            BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth; ;
+            BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth; 
 
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             List<MaterialModel> materials = new();
             BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
-           //BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
-           // if (BaslerRepository.CurrentMaterial.CameraDeltaList != null)
-           // {
-           //     for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
-           //     {
-           //         BaslerRepository.BaslerCamerasCollection[i].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
-           //         BaslerRepository.BaslerCamerasCollection[i].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
-           //         BaslerRepository.BaslerCamerasCollection[i].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
-           //         BaslerRepository.BaslerCamerasCollection[i].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
-           //     }
-           // }
+
 
             NonControlZonesRepository.AddZones(BaslerRepository);
             float shift = 0;

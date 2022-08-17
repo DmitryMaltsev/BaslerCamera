@@ -299,14 +299,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = "Cameras aren't calibrated";
                 return;
             }
-            if (!createEtalonPointsMode)
-            // && !CurrentCamera.CalibrationMode && !CurrentCamera.FindBoundsMode
-            {
-                _concurentVideoBuffer.Enqueue(e);
-                // _strobe+= _concurentVideoBuffer.Count;
-            }
-            else
 
+            _concurentVideoBuffer.Enqueue(e);
 
             //Сохраняем XML  с сырыми данными
             if (_rawMode)
@@ -474,16 +468,17 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     }
                 }
                 else
+                //Создаем набор сырых данных из массива массивов точек с шириной .
+                //Потом калибруем и записываем в XML файл
                 {
-                    //Создаем график сырых данных из массива массивов точек.
-                    //Потом калибруем и записываем в XML файл
                     int bufCount = _concurentVideoBuffer.Count;
-                    if (bufCount > _currentHeight / countArraysInSection)
+                    int countArraysToAnalize = 5000;
+                    if (bufCount > countArraysToAnalize / countArraysInSection)
                     {
                         //Массив, в который получаем все элементы с concurrent коллекции, когда накопили достаточно значений
                         byte[,] rawPointsBuffer = new byte[bufCount * countArraysInSection, _width];
                         //Массив для суммирования всех значение для дальнейшего усреднения
-                        double[] doubleArrayPointsSumm = new double[_width];
+                        double[] pointsSumm = new double[_width];
                         //Результирующая коллекция для сохранения в Xml файл и использования для нахождения дефектов
                         List<byte> calibratedPointsList = new();
                         int _cnt = 0;
@@ -500,12 +495,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     {
                                         for (int yPointsNum = 0; yPointsNum < rawPointsBuffer.GetLength(0); yPointsNum++)
                                         {
-                                            doubleArrayPointsSumm[xpointsNum] += rawPointsBuffer[yPointsNum, xpointsNum];
+                                            pointsSumm[xpointsNum] += rawPointsBuffer[yPointsNum, xpointsNum];
                                         }
                                     }
                                     for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
                                     {
-                                        calibratedPointsList.Add((byte)(doubleArrayPointsSumm[xpointsNum] / rawPointsBuffer.GetLength(0)));
+                                        calibratedPointsList.Add((byte)(pointsSumm[xpointsNum] / rawPointsBuffer.GetLength(0)));
                                     }
                                     string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
                                     XmlService.Write(path, calibratedPointsList);
