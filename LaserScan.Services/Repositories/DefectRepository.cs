@@ -38,7 +38,7 @@ namespace Kogerent.Services.Implementation
         /// <summary>
         /// Активация отрисовки дефектов на картинках
         /// </summary>
-        private bool _visualAnalizeIsActive = true;
+        private bool _visualAnalizeIsActive = false;
         public bool VisualAnalizeIsActive
         {
             get { return _visualAnalizeIsActive; }

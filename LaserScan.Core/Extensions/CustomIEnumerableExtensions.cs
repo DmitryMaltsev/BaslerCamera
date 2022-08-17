@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -69,7 +70,7 @@ namespace Kogerent.Core
         /// <returns>Коллекцию подколлекций</returns>
         public static IEnumerable<List<T>> SplitByCount<T>(this T[] collection, int chunksize)
         {
-            var enumerator = collection.GetEnumerator();
+            IEnumerator enumerator = collection.GetEnumerator();
             int position = 0;
             while (position < collection.Length)
             {
