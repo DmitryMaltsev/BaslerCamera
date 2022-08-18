@@ -377,11 +377,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     resultFilterOptions.Add(resultFilterOption);
                                     resultMultipleFilterOptions.Add(resultMultipleFilterOption);
                                 }
-                                string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                                //     string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                XmlService.WriteListText(collectionRawPoints, path);
-                                //        XmlService.WriteListText(resultFilterOptions, filterPath);
+                                //      string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                                //      XmlService.WriteListText(collectionRawPoints, path);
+                                XmlService.WriteListText(resultFilterOptions, filterPath);
                                 //        XmlService.WriteListText(resultMultipleFilterOptions, multipleFilterPath);
                                 collectionRawPoints = new List<List<byte>>();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
@@ -494,41 +494,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     int countArraysToAnalize = 5000;
                     if (bufCount > countArraysToAnalize / countArraysInSection)
                     {
-                        //Массив, в который получаем все элементы с concurrent коллекции, когда накопили достаточно значений
-                        byte[,] rawPointsBuffer = new byte[bufCount * countArraysInSection, _width];
-                        //Массив для суммирования всех значение для дальнейшего усреднения
-                        double[] pointsSumm = new double[_width];
-                        //Результирующая коллекция для сохранения в Xml файл и использования для нахождения дефектов
-                        List<byte> calibratedPointsList = new();
-                        int _cnt = 0;
-                        for (int i = 0; i < bufCount; i++)
-                        {
-                            if (_concurentVideoBuffer.TryDequeue(out BufferData etalonPointsBuffer) && etalonPointsBuffer != default)
-                            {
-
-                                Buffer.BlockCopy(etalonPointsBuffer.Data, 0, rawPointsBuffer, _cnt * _width, etalonPointsBuffer.Data.Length);
-                                _cnt += countArraysInSection;
-                                if (_cnt == bufCount * countArraysInSection)
-                                {
-                                    for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
-                                    {
-                                        for (int yPointsNum = 0; yPointsNum < rawPointsBuffer.GetLength(0); yPointsNum++)
-                                        {
-                                            pointsSumm[xpointsNum] += rawPointsBuffer[yPointsNum, xpointsNum];
-                                        }
-                                    }
-                                    for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
-                                    {
-                                        calibratedPointsList.Add((byte)(pointsSumm[xpointsNum] / rawPointsBuffer.GetLength(0)));
-                                    }
-                                    string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
-                                    XmlService.Write(path, calibratedPointsList);
-                                    CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
-                                    CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
-                                    imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
-                                }
-                            }
-                        }
+                     //   List<byte> calibratedPointsList = CalibrateService.CreateAverageDataForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
+                        List<byte> calibratedPointsList = CalibrateService.CreateAveragElementsForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
+                        XmlService.Write(path, calibratedPointsList);
+                        CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
+                        CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
+                        imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
                     }
                 }
                 await Task.Delay(1);
