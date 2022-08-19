@@ -85,11 +85,25 @@ namespace Kogerent.Services.Implementation
 
 
 
-        private float _fullCamerasWidth = 3810;
+        private float _fullCamerasWidth = 3808;
         public float FullCamerasWidth
         {
             get { return _fullCamerasWidth; }
             set { SetProperty(ref _fullCamerasWidth, value); }
+        }
+
+        private int _leftBorderStart;
+        public int LeftBorderStart
+        {
+            get { return _leftBorderStart; }
+            set { SetProperty(ref _leftBorderStart, value); }
+        }
+
+        private int _rightBorderStart;
+        public int RightBorderStart
+        {
+            get { return _rightBorderStart; }
+            set { SetProperty(ref _rightBorderStart, value); }
         }
 
         private  bool _allDefectsFound;

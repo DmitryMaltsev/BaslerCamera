@@ -457,6 +457,42 @@ namespace Kogerent.Services.Implementation
             return defects;
         }
 
+        public void DrawBoundsWhereDefectsCanDefined(int leftBorderStart, int rightBorderStart,
+                                                                            Image<Bgr, byte> tempBmp, string cameraId)
+        {
+            MCvScalar currentColor = new MCvScalar(0, 215, 255);
+            if (leftBorderStart > 6144 && cameraId == "Центральная камера")
+            {
+                leftBorderStart -= 6144;
+                Point p1 = new() { X = leftBorderStart, Y = 0 }; Point p2 = new() { X = leftBorderStart, Y = 500 };
+                CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.Filled, 0);
+                //   float bound = baslerRepository.BaslerCamerasCollection[1].WidthDescrete * leftBound;
+            }
+            else
+                if (leftBorderStart < 6144 && cameraId == "Левая камера")
+            {
+                Point p1 = new() { X = leftBorderStart, Y = 0 }; Point p2 = new() { X = leftBorderStart, Y = 500 };
+                CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.EightConnected, 0);
+            }
+            if (rightBorderStart > 6144 * 2 && cameraId == "Правая камера")
+            {
+                rightBorderStart -= 6144 * 2;
+                Point p1 = new() { X = rightBorderStart, Y = 0 }; Point p2 = new() { X = rightBorderStart, Y = 500 };
+                CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.Filled, 0);
+                //   float bound = baslerRepository.BaslerCamerasCollection[1].WidthDescrete * leftBound;
+            }
+            else
+                if (rightBorderStart < 6144 * 2 && rightBorderStart > (6144 + 6144 / 2) && cameraId == "Центральная камера")
+            {
+                rightBorderStart -= 6144;
+                Point p1 = new() { X = rightBorderStart, Y = 0 }; Point p2 = new() { X = rightBorderStart, Y = 500 };
+                CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.EightConnected, 0);
+            }
+
+        }
+
+
+
         private List<DefectProperties> DrawDefectPropertiesEmgu(float widthThreshold, float heightThreshold,
                                                             float widthDiscrete, float heightDiscrete, int imgWidth,
                                                             int imgHeight, int strobe, List<ContourData> dnContours,
@@ -507,22 +543,22 @@ namespace Kogerent.Services.Implementation
                         }
                     }
                     //if (defectNotInZone)
-                   // {
-                        if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)
-                        {
-                            defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
-                        }
-                        else
-                        if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
-                        {
-                            defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
-                        }
+                    // {
+                    if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)
+                    {
+                        defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
+                    }
+                    else
+                    if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
+                    {
+                        defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
+                    }
 
-                        defects.Add(defect);
-                        Size size = new(rectangle.Width, rectangle.Height);
-                        // Rectangle rectF = new Rectangle(rectangle.Location, size);
-                        CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 20);
-                  //  }
+                    defects.Add(defect);
+                    Size size = new(rectangle.Width, rectangle.Height);
+                    // Rectangle rectF = new Rectangle(rectangle.Location, size);
+                    CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 20);
+                    //  }
                     // tempBmp.Draw(rectangle, rectColor, 20);
                 }
             }

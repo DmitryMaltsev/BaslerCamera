@@ -377,11 +377,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     resultFilterOptions.Add(resultFilterOption);
                                     resultMultipleFilterOptions.Add(resultMultipleFilterOption);
                                 }
-                                     string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                                string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                   string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                      XmlService.WriteListText(collectionRawPoints, path);
-                              //  XmlService.WriteListText(resultFilterOptions, filterPath);
+                                string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
+                                XmlService.WriteListText(collectionRawPoints, path);
+                                //  XmlService.WriteListText(resultFilterOptions, filterPath);
                                 //        XmlService.WriteListText(resultMultipleFilterOptions, multipleFilterPath);
                                 collectionRawPoints = new List<List<byte>>();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
@@ -563,11 +563,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
                             if (_currentVisualAnalizeIsActive)
                             {
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined(BaslerRepository.LeftBorderStart, BaslerRepository.RightBorderStart,
+                                                                                                                              img2, CurrentCamera.ID);
                                 _resImage = img2; //img2.Clone();
                             }
                             else
                             {
+
                                 _resImage = img.Convert<Bgr, byte>();
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined(BaslerRepository.LeftBorderStart, BaslerRepository.RightBorderStart,
+                                                                                                                            _resImage, CurrentCamera.ID);
                             }
                             if (defects.Any())
                             {

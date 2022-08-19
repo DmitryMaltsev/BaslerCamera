@@ -46,18 +46,18 @@ namespace Kogerent.Services.Implementation
             if (BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 < camera2Shift)
             {
                 //Отступ определения дефектов левой камеры. Доп отступ из-за пересечения камер
-                float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 -
-                    BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
+                float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
+                  //  -BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
                 leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
-                BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.FullCamerasWidth / 2 -
-                    BaslerRepository.CanvasWidth * 1_000 / 2;
+                BaslerRepository.LeftBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 -
+                    BaslerRepository.CanvasWidth * 1_000 / 2)*BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
             }
             else
             {
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
                 leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
-                BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.FullCamerasWidth / 2 -
-                   BaslerRepository.CanvasWidth * 1_000 / 2;
+                BaslerRepository.LeftBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 -
+                      BaslerRepository.CanvasWidth * 1_000 / 2) * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
 
             }
 
@@ -75,13 +75,17 @@ namespace Kogerent.Services.Implementation
             if (BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 > camera3Shift)
             {
                 //Отступ определения дефектов правой камеры. Доп отступ из-за пересечения камер
-                float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 +
-                    BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
+                float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;
+                BaslerRepository.RightBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 *
+                      BaslerRepository.BaslerCamerasCollection[0].WidthDescrete));
+                //+BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
                 rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
             }
             else
             {
                 float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;
+                BaslerRepository.RightBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2*
+                       BaslerRepository.BaslerCamerasCollection[0].WidthDescrete));
                 rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
             }
 
@@ -94,7 +98,7 @@ namespace Kogerent.Services.Implementation
                 MaximumX = BaslerRepository.FullCamerasWidth
             });
 
-            Zones.Clear();
+           // Zones.Clear();
             //Zones.Add(new ObloyModel
             //{
             //    Name = $"Зона л.",
