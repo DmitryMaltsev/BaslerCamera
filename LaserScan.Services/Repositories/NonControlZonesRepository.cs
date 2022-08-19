@@ -49,11 +49,16 @@ namespace Kogerent.Services.Implementation
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 -
                     BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
                 leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
+                BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.FullCamerasWidth / 2 -
+                    BaslerRepository.CanvasWidth * 1_000 / 2;
             }
             else
             {
                 float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
                 leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
+                BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.FullCamerasWidth / 2 -
+                   BaslerRepository.CanvasWidth * 1_000 / 2;
+
             }
 
             Obloys.Clear();

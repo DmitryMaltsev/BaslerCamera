@@ -27,14 +27,16 @@ namespace LaserScan.Core.NetStandart.Models
         public float LeftBoundWidth { get; set; }
         public float RightBoundWidth { get; set; }
         [XmlIgnore]
+        //Начало определения дефектов для текущей камеры
         public int LeftBoundIndex { get; set; } = 0;
         [XmlIgnore]
+        //Конец определения дефектов для текущей камеры
         public int RightBoundIndex { get; set; } = 6144;
         public bool DefectsFound { get; set; } = false;
         //XmlIgnore
         public long ExposureTimeCurrent { get; set; }
 
-        #region Raised properties
+        #region Raising properties
         private string _ip;
         public string Ip
         {
@@ -83,7 +85,7 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _heightThreshold, value); }
         }
 
-        private long _exposureTime=945;
+        private long _exposureTime;
         [XmlIgnore]
         public long ExposureTime
         {
@@ -157,22 +159,42 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(5_000);
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1300);
+           // Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2000);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
             Camera.Parameters[PLCamera.TriggerMode].SetValue("On");
-            if (ID == "Центральная камера" || ID == "Правая камера")
+            //if (ID == "Центральная камера" || ID == "Правая камера")
+            //{
+            //    Camera.Parameters[PLCamera.ReverseX].SetValue(true);
+            //}
+            if (ID == "Левая камера")
             {
+                Camera.Parameters[PLCamera.ReverseX].SetValue(false);
+                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2500);
+                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+            }
+            if (ID == "Центральная камера")
+            {
+                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2200);
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
+                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+            }
+            if (ID == "Правая камера")
+            {
+                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1900);
+                Camera.Parameters[PLCamera.ReverseX].SetValue(true);
+                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
             }
             Initialized = true; // успешная 
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1000);
         }
 
-        public void IncreaseExposureTime()
+        public void ChangeExposureTime(int value)
         {
-            ExposureTime += 50;
+            ExposureTime += value;
             Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
+            ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
         }
 
 

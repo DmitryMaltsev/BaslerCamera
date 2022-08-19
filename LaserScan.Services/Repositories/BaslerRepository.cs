@@ -83,6 +83,8 @@ namespace Kogerent.Services.Implementation
             }
         }
 
+
+
         private float _fullCamerasWidth = 3810;
         public float FullCamerasWidth
         {
