@@ -165,7 +165,7 @@ namespace Kogerent.Services.Implementation
                     _cnt += countArraysInSection;
                 }
             }
-          
+
             for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
             {
                 List<byte> bufferList = new();
@@ -174,9 +174,67 @@ namespace Kogerent.Services.Implementation
                     bufferList.Add(rawPointsBuffer[yPointsNum, xpointsNum]);
                 }
                 bufferList.Sort();
-                calibratedPointsList.Add(bufferList[bufferList.Count/2]);
+                calibratedPointsList.Add(bufferList[bufferList.Count / 2]);
             }
             return calibratedPointsList;
+        }
+
+        /// <summary>
+        /// Определяем, нужно ли нам менять экспозицию(сравниваем с гранизцами maxBoundsLight или minBoundsLight)
+        /// Если нужно, то возвращаем положительное или отрицательное изменение changeExpoisitionValue, которое
+        /// нужно добавить или отнять от текущей экспозиции.
+        /// </summary>
+        /// <param name="_concurentBuffer"></param>
+        /// <param name="countArraysInSection"></param>
+        /// <param name="width"></param>
+        /// <param name="xMinIndex"></param>
+        /// <param name="xMaxIndex"></param>
+        /// <param name="maxBoundsLight"></param>
+        /// <param name="minBoundsLight"></param>
+        /// <param name="expositionToChange"></param>
+        /// <param name="changeExpoisitionValue"></param>
+        /// <returns></returns>
+        public bool NeedChangeExposition(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width,
+            int xMinIndex, int xMaxIndex, int maxBoundsLight, int minBoundsLight, int expositionToChange, out int changeExpoisitionValue)
+        {
+            int bufCount = _concurentBuffer.Count;
+            byte[,] rawPointsBuffer = new byte[bufCount * countArraysInSection, width];
+            int _cnt = 0;
+            for (int i = 0; i < bufCount; i++)
+            {
+                if (_concurentBuffer.TryDequeue(out BufferData etalonPointsBuffer) && etalonPointsBuffer != default)
+                {
+                    Buffer.BlockCopy(etalonPointsBuffer.Data, 0, rawPointsBuffer, _cnt * width, etalonPointsBuffer.Data.Length);
+                    _cnt += countArraysInSection;
+                }
+            }
+
+            List<byte> pointsToFindMaxY = new();
+            for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
+            {
+                if (xpointsNum <= xMinIndex || xpointsNum >= xMaxIndex)
+                {
+                    pointsToFindMaxY.Add(0);
+                }
+                else
+                {
+                    pointsToFindMaxY.Add(rawPointsBuffer[0, xpointsNum]);
+                }
+            }
+            pointsToFindMaxY.Sort();
+            if (pointsToFindMaxY[pointsToFindMaxY.Count - 250] > maxBoundsLight)
+            {
+                changeExpoisitionValue = -50;
+                return true;
+            }
+            else
+               if (pointsToFindMaxY[pointsToFindMaxY.Count - 250] < minBoundsLight)
+            {
+                changeExpoisitionValue = 50;
+                return true;
+            }
+            changeExpoisitionValue = 0;
+            return false;
         }
     }
 }

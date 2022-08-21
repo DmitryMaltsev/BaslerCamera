@@ -58,6 +58,7 @@ namespace Kogerent.Services.Implementation
             
 
             }
+
             BaslerRepository.LeftBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 -
                   BaslerRepository.CanvasWidth * 1_000 / 2) / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
             Obloys.Clear();

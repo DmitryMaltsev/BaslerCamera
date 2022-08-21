@@ -14,6 +14,7 @@ namespace Kogerent.Core
         CreateXmlRaw,
         FindBounds,
         CreateFilterXml,
+        FindExpositionLevel,
         InActive
     }
 }

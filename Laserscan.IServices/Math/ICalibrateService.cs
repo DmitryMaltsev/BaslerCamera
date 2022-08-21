@@ -14,5 +14,6 @@ namespace Kogerent.Services.Interfaces
         List<byte> CreateAverageDataForCalibration(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width);
         List<byte> CreateAveragElementsForCalibration(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width);
         sbyte[] DefaultCalibration(double[] p, int count);
+        bool NeedChangeExposition(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width, int xMinIndex, int xMaxIndex, int maxBoundsLight, int minBoundsLight, int expositionToChange, out int changeExpoisitionValue);
     }
 }

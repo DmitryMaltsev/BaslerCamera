@@ -310,6 +310,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         _concurentVideoBuffer.Enqueue(e);
                     }
                     break;
+                case ImageGrabbedEnumModes.FindExpositionLevel:
+                    {
+                        _concurentVideoBuffer.Enqueue(e);
+                    }
+                    break;
                 case ImageGrabbedEnumModes.Calibrate:
                     {
                         //Старый метод калибровки
@@ -749,8 +754,18 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         /// </summary>
         void ExecuteAutoExpositionCommand()
         {
-            // _needIncreaseExposureTime = true;
-            ExecuteStartGrab();
+            if (CurrentCamera == null) return;
+            if (CurrentCamera.Initialized)
+            {
+
+                if (!_drawingTimer.IsEnabled)
+                {
+                    _drawingTimer.Start();
+                }
+                imageGrabbedEnumModes = ImageGrabbedEnumModes.FindExpositionLevel;
+                CurrentCamera.Start();
+                FooterRepository.Text = "Находим уровень экспозиции для каждой камеры";
+            }
         }
 
         /// <summary>
