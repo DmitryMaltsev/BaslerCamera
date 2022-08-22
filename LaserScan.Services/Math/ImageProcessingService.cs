@@ -511,15 +511,15 @@ namespace Kogerent.Services.Implementation
                     }
                     //if (defectNotInZone)
                     // {
-                    if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)
-                    {
-                        defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
-                    }
-                    else
-                    if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
-                    {
-                        defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
-                    }
+                    //if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)
+                    //{
+                    //    defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
+                    //}
+                    //else
+                    //if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
+                    //{
+                    //    defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
+                    //}
 
                     defects.Add(defect);
                     Size size = new(rectangle.Width, rectangle.Height);

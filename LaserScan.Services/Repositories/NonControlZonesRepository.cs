@@ -42,59 +42,40 @@ namespace Kogerent.Services.Implementation
 
             float camera2Shift = 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
             float camera3Shift = camera2Shift + 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
-            float leftCameraMaximumX;
-            if (BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2 < camera2Shift)
-            {
-                //Отступ определения дефектов левой камеры. Доп отступ из-за пересечения камер
-                float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
-                //  -BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth;
-                leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
-              
-            }
-            else
-            {
-                float offsetLeft = BaslerRepository.FullCamerasWidth / 2 - BaslerRepository.CanvasWidth * 1_000 / 2;
-                leftCameraMaximumX = offsetLeft <= 0 ? 0 : offsetLeft;
-            
 
-            }
-
-            BaslerRepository.LeftBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 -
-                  BaslerRepository.CanvasWidth * 1_000 / 2) / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
             Obloys.Clear();
             Obloys.Add(new ObloyModel
             {
                 Name = $"Облой л.",
                 MinimumY = 0,
                 MaximumY = 300,
-                MinimumX = 0,
-                MaximumX = leftCameraMaximumX
+                MinimumX = BaslerRepository.BaslerCamerasCollection[0].LeftBorder,
+                MaximumX = camera2Shift
             });
 
-            float rightCameraMinimumX;
-            if (BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 > camera3Shift)
-            {
-                //Отступ определения дефектов правой камеры. Доп отступ из-за пересечения камер
-                float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;              
-                //+BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
-                rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
-            }
-            else
-            {
-                float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;
-                rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
-            }
+            //float rightCameraMinimumX;
+            //if (BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2 > camera3Shift)
+            //{
+            //    //Отступ определения дефектов правой камеры. Доп отступ из-за пересечения камер
+            //    float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;              
+            //    //+BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
+            //    rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
+            //}
+            //else
+            //{
+            //    float offsetRight = BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2;
+            //    rightCameraMinimumX = offsetRight > BaslerRepository.FullCamerasWidth ? BaslerRepository.FullCamerasWidth : offsetRight;
+            //}
 
-            BaslerRepository.RightBorderStart = (int)((BaslerRepository.FullCamerasWidth / 2 + BaslerRepository.CanvasWidth * 1_000 / 2) /
-                     BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
+            //BaslerRepository.RightBorderStart = (int)(rightCameraMinimumX / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
 
             Obloys.Add(new ObloyModel
             {
                 Name = $"Облой п.",
                 MinimumY = 0,
                 MaximumY = 300,
-                MinimumX = rightCameraMinimumX,
-                MaximumX = BaslerRepository.FullCamerasWidth
+                MinimumX = camera3Shift,
+                MaximumX = BaslerRepository.BaslerCamerasCollection[0].RightBorder
             });
 
             // Zones.Clear();

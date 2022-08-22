@@ -24,8 +24,6 @@ namespace LaserScan.Core.NetStandart.Models
         public double[] MultipleDeltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
-        public float LeftBoundWidth { get; set; }
-        public float RightBoundWidth { get; set; }
         [XmlIgnore]
         //Начало определения дефектов для текущей камеры
         public int LeftBoundIndex { get; set; } = 0;
@@ -85,8 +83,7 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _heightThreshold, value); }
         }
 
-        private long _exposureTime;
-        [XmlIgnore]
+        private long _exposureTime=300;
         public long ExposureTime
         {
             get { return _exposureTime; }
@@ -158,12 +155,13 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.Height].SetValue(5);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
-            Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(5_000);
-           // Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2000);
+            Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(1000);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1300);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
             Camera.Parameters[PLCamera.TriggerMode].SetValue("On");
+
             //if (ID == "Центральная камера" || ID == "Правая камера")
             //{
             //    Camera.Parameters[PLCamera.ReverseX].SetValue(true);
@@ -171,30 +169,33 @@ namespace LaserScan.Core.NetStandart.Models
             if (ID == "Левая камера")
             {
                 Camera.Parameters[PLCamera.ReverseX].SetValue(false);
-                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2500);
-                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+                //Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2500);
+                //ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
             }
             if (ID == "Центральная камера")
             {
-                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2200);
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
-                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+                //Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(2200);
+                //ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
             }
             if (ID == "Правая камера")
             {
-                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1900);
+           //     Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1900);
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
-                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
             }
             Initialized = true; // успешная 
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1000);
+            ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
         }
 
         public void ChangeExposureTime(int value)
         {
-            ExposureTime += value;
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
-            ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+            if (ExposureTime<3500)
+            {
+                ExposureTime += value;
+                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
+                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+            }
+        
         }
 
 
@@ -265,6 +266,11 @@ namespace LaserScan.Core.NetStandart.Models
                 Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
                 Camera.StreamGrabber.Start(GrabStrategy.OneByOne, GrabLoop.ProvidedByStreamGrabber);
             }
+        }
+
+        public bool IsGrabbing()
+        {
+            return Camera.StreamGrabber.IsGrabbing;
         }
 
         // Останов захвата 

@@ -72,10 +72,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
           
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
-            foreach (BaslerCameraModel cameraModel in BaslerRepository.BaslerCamerasCollection)
-            {
-                cameraModel.CanvasWidth = BaslerRepository.CanvasWidth;
-            }
+     
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             //string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             //if (BaslerRepository.AllCamerasInitialized && BaslerRepository.CurrentMaterial.CameraDeltaList != null)

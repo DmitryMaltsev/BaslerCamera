@@ -94,6 +94,8 @@
                                 <RowDefinition Height="35" />
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="35" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="35" />
                             </Grid.RowDefinitions>
                             <TextBlock Width="110" Margin="1" Grid.Column="0" Grid.Row="0"  Text="Верхняя граница"/>
                             <TextBox Width="110" Margin="1" Grid.Column="0" Grid.Row="1" Text="{Binding BaslerRepository.CurrentCamera.UpThreshold}"/>
@@ -103,6 +105,14 @@
                             <TextBox Width="110" Margin="1" Grid.Column="0"  Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.WidthThreshold}"/>
                             <TextBlock Width="110" Margin="1" Grid.Column="1" Grid.Row="2" Text="Высота дефекта"/>
                             <TextBox Width="110" Margin="1" Grid.Column="1" Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.HeightThreshold}"/>
+                            <!--#region Левая граница полотна -->
+                            <TextBlock  Margin="1"  Grid.Column="0" Grid.Row="4"  Text="Лев гр полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBox Width="110"  Margin="1" Grid.Column="0" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].LeftBorder}" />
+                            <!--#endregion-->
+                            <!--#region Правая граница полотна -->
+                            <TextBlock  Margin="1"  Grid.Column="1" Grid.Row="4"  Text="Прав гр полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBox Width="110"  Margin="1" Grid.Column="1" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].RightBorder}"/>
+                            <!--#endregion-->
                         </Grid>
                         <TextBlock Text="Пороги" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -198,10 +208,7 @@
                                       VerticalAlignment="Center">
                                 <TextBlock Grid.Column="1" Text="Калибровка умн/слож" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
-                            <StackPanel Grid.Row="5" Grid.Column="0" Orientation="Horizontal">
-                                <TextBox Width="60" Height="28" Margin="1" Text="{Binding BaslerRepository.CanvasWidth}" HorizontalAlignment="Left" TextAlignment="Center"/>
-                                <TextBlock  Margin="2,1,1,1" Text="Ширина полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            </StackPanel>
+               
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>

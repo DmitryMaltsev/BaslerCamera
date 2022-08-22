@@ -28,13 +28,15 @@ namespace Kogerent.Services.Implementation
             get { return _allCamerasInitialized; }
             set { SetProperty(ref _allCamerasInitialized, value); }
         }
- 
+
         private BaslerCameraModel _currentCamera;
         public BaslerCameraModel CurrentCamera
         {
             get { return _currentCamera; }
-            set {
-                SetProperty(ref _currentCamera, value); }
+            set
+            {
+                SetProperty(ref _currentCamera, value);
+            }
         }
 
         private ObservableCollection<BaslerCameraModel> _baslerCameraModel;
@@ -58,7 +60,9 @@ namespace Kogerent.Services.Implementation
         public ObservableCollection<MaterialModel> MaterialModelCollection
         {
             get { return _materialModelCollection; }
-            set { SetProperty(ref _materialModelCollection, value);
+            set
+            {
+                SetProperty(ref _materialModelCollection, value);
             }
         }
 
@@ -69,19 +73,6 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _totalCount, value); }
         }
 
-        private float _canvasWidth;
-        public float CanvasWidth
-        {
-            get { return _canvasWidth; }
-            set
-            {
-                SetProperty(ref _canvasWidth, value);
-                if (NonControlZonesRepository.Obloys.Count > 1)
-                {
-                    NonControlZonesRepository.AddZones(this);
-                }
-            }
-        }
 
 
 
@@ -89,24 +80,17 @@ namespace Kogerent.Services.Implementation
         public float FullCamerasWidth
         {
             get { return _fullCamerasWidth; }
-            set { SetProperty(ref _fullCamerasWidth, value); }
+            set
+            {
+                SetProperty(ref _fullCamerasWidth, value);
+                if (NonControlZonesRepository.Obloys.Count > 1)
+                {
+                    NonControlZonesRepository.AddZones(this);
+                }
+            }
         }
 
-        private int _leftBorderStart;
-        public int LeftBorderStart
-        {
-            get { return _leftBorderStart; }
-            set { SetProperty(ref _leftBorderStart, value); }
-        }
-
-        private int _rightBorderStart;
-        public int RightBorderStart
-        {
-            get { return _rightBorderStart; }
-            set { SetProperty(ref _rightBorderStart, value); }
-        }
-
-        private  bool _allDefectsFound;
+        private bool _allDefectsFound;
         public bool AllDefectsFound
         {
             get { return _allDefectsFound; }

@@ -243,14 +243,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             List<DefectProperties> leftDefects = _defects.ToList();
                             float currentShift = 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
                             BaslerRepository.BaslerCamerasCollection[1].LeftBorder = currentShift + (currentShift - (float)leftDefects[0].X);
-                            BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth = currentShift - (float)leftDefects[0].X;
+                            //      BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth = currentShift - (float)leftDefects[0].X;
                             _overlayMode = false;
                         }
                         if (CurrentCamera.ID == "Правая камера")
                         {
                             List<DefectProperties> rightDefects = _defects.ToList();
                             BaslerRepository.BaslerCamerasCollection[1].RightBorder = Shift - ((float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift);
-                            BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift;
+                            //       BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth = (float)(rightDefects[0].X + rightDefects[0].Ширина) - Shift;
                             _overlayMode = false;
                         }
                     }
@@ -385,9 +385,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                XmlService.WriteListText(collectionRawPoints, path);
+                                //  XmlService.WriteListText(collectionRawPoints, path);
                                 //  XmlService.WriteListText(resultFilterOptions, filterPath);
-                                //        XmlService.WriteListText(resultMultipleFilterOptions, multipleFilterPath);
+                                XmlService.WriteListText(resultMultipleFilterOptions, multipleFilterPath);
                                 collectionRawPoints = new List<List<byte>>();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
                             }
@@ -461,52 +461,92 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             while (true)
             {
-                if (imageGrabbedEnumModes == ImageGrabbedEnumModes.RecievePoints)
+                switch (imageGrabbedEnumModes)
                 {
-                    int count = _concurentVideoBuffer.Count;
-                    if (count > _currentHeight / 5)
-                    {
-
-                        for (int i = 0; i < count; i++)
+                    case ImageGrabbedEnumModes.RecievePoints:
                         {
-                            bool res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
-                            if (res && bufferData != default)
+                            int count = _concurentVideoBuffer.Count;
+                            if (count > _currentHeight / 5)
                             {
-                                Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
-                                _cnt += bufferData.Height;
-                                _strobe += bufferData.Height;
-                                bufferData.Dispose();
-                                //GC.Collect();
-                                if (_cnt == _currentHeight)
+
+                                for (int i = 0; i < count; i++)
                                 {
-                                    byte[,,] data3Darray = new byte[_currentHeight, _width, 1];
-                                    Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
-                                    _imageDataBuffer.Enqueue(data3Darray);
-                                    if (_strobe > 500_000) _strobe = 0;
-                                    _cnt = 0;
-                                    _needToProcessImage = true;
+                                    bool res = _concurentVideoBuffer.TryDequeue(out BufferData bufferData);
+                                    if (res && bufferData != default)
+                                    {
+                                        Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
+                                        _cnt += bufferData.Height;
+                                        _strobe += bufferData.Height;
+                                        bufferData.Dispose();
+                                        //GC.Collect();
+                                        if (_cnt == _currentHeight)
+                                        {
+                                            byte[,,] data3Darray = new byte[_currentHeight, _width, 1];
+                                            Buffer.BlockCopy(tempImage.Data, 0, data3Darray, 0, tempImage.Data.Length);
+                                            _imageDataBuffer.Enqueue(data3Darray);
+                                            if (_strobe > 500_000) _strobe = 0;
+                                            _cnt = 0;
+                                            _needToProcessImage = true;
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-                else
-                //Создаем набор сырых данных из массива массивов точек с шириной .
-                //Потом калибруем и записываем в XML файл
-                if (imageGrabbedEnumModes == ImageGrabbedEnumModes.CreateEtalonPoints)
-                {
-                    int bufCount = _concurentVideoBuffer.Count;
-                    int countArraysToAnalize = 5000;
-                    if (bufCount > countArraysToAnalize / countArraysInSection)
-                    {
-                        //   List<byte> calibratedPointsList = CalibrateService.CreateAverageDataForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
-                        List<byte> calibratedPointsList = CalibrateService.CreateAveragElementsForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
-                        // XmlService.Write(path, calibratedPointsList);
-                        CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
-                        CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
-                        imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
-                    }
+                        break;
+                    case ImageGrabbedEnumModes.Calibrate:
+                        {
+                            int bufCount = _concurentVideoBuffer.Count;
+                            int countArraysToAnalize = 5000;
+                            if (bufCount > countArraysToAnalize / countArraysInSection)
+                            {
+                                //   List<byte> calibratedPointsList = CalibrateService.CreateAverageDataForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
+                                List<byte> calibratedPointsList = CalibrateService.CreateAverageElementsForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
+                                string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
+                                // XmlService.Write(path, calibratedPointsList);
+                                CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
+                                CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
+                                _concurentVideoBuffer.Clear();
+                                imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
+                            }
+                        }
+                        break;
+                    case ImageGrabbedEnumModes.FindExpositionLevel:
+                        {
+                            int bufCount = _concurentVideoBuffer.Count;
+                            int countArraysToAnalize = 5;
+                            if (bufCount > countArraysToAnalize / countArraysInSection)
+                            {
+                                int leftSideIndex = (int)(BaslerRepository.BaslerCamerasCollection[0].LeftBorder / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
+                                int rightSideIndex = (int)(BaslerRepository.BaslerCamerasCollection[0].RightBorder / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
+                                int _shift = (int)(Shift / CurrentCamera.WidthDescrete);
+                                if (leftSideIndex - _shift < 0)
+                                {
+                                    leftSideIndex = 0;
+                                }
+                                if (rightSideIndex - _shift > _width)
+                                {
+                                    rightSideIndex = _width;
+                                }
+                                else
+                                {
+                                    rightSideIndex -= _shift;
+                                }
+
+                                if (CalibrateService.NeedChangeExposition(_concurentVideoBuffer, 5, _width,
+                                    leftSideIndex, rightSideIndex, 180, 190, out int changeExspositionValue))
+                                {
+                                    CurrentCamera.ChangeExposureTime(changeExspositionValue);
+                                    _concurentVideoBuffer.Clear();
+                                }
+                                else
+                                {
+                                    imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
+                                }
+                                // string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
+                                await Task.Delay(200);
+                            }
+                        }
+                        break;
                 }
                 await Task.Delay(1);
             }
@@ -568,16 +608,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
                             if (_currentVisualAnalizeIsActive)
                             {
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined(BaslerRepository.LeftBorderStart, BaslerRepository.RightBorderStart,
-                                                                                                                              img2, CurrentCamera.ID);
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.BaslerCamerasCollection[0].LeftBorder / CurrentCamera.WidthDescrete),
+                                                  (int)(BaslerRepository.BaslerCamerasCollection[0].RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
                                 _resImage = img2; //img2.Clone();
                             }
                             else
                             {
 
                                 _resImage = img.Convert<Bgr, byte>();
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined(BaslerRepository.LeftBorderStart, BaslerRepository.RightBorderStart,
-                                                                                                                            _resImage, CurrentCamera.ID);
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.BaslerCamerasCollection[0].LeftBorder / CurrentCamera.WidthDescrete),
+                                                (int)(BaslerRepository.BaslerCamerasCollection[0].RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
                             }
                             if (defects.Any())
                             {
@@ -649,6 +689,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             try
             {
                 CurrentCamera.CameraInit();
+                //  CurrentCamera.ChangeExposureTime(0);
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
             }
@@ -673,7 +714,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     _drawingTimer.Start();
                 }
                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
-                CurrentCamera.Start();
+
+                if (!CurrentCamera.IsGrabbing())
+                {
+                    CurrentCamera.Start();
+                }
+
+
                 FooterRepository.Text = "Обычный режим работы";
             }
         }
@@ -763,7 +810,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     _drawingTimer.Start();
                 }
                 imageGrabbedEnumModes = ImageGrabbedEnumModes.FindExpositionLevel;
-                CurrentCamera.Start();
+                if (!CurrentCamera.IsGrabbing())
+                {
+                    CurrentCamera.Start();
+                }
                 FooterRepository.Text = "Находим уровень экспозиции для каждой камеры";
             }
         }

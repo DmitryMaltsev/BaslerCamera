@@ -130,7 +130,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-            BaslerRepository.CanvasWidth = BaslerRepository.BaslerCamerasCollection[0].CanvasWidth; 
 
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             List<MaterialModel> materials = new();
@@ -145,7 +144,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (Camera1VM != null)
             {
                 Camera1VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[0];
-                IRegion currentRegion = RegionManager.Regions[RegionNames.Camera1Region];
+               IRegion currentRegion = RegionManager.Regions[RegionNames.Camera1Region];
                 Camera1VM.Shift = shift;
                 currentRegion.Add(Camera1V);
                 currentRegion.Activate(Camera1V);

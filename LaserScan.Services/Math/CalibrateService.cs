@@ -10,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Kogerent.Services.Implementation
 {
@@ -147,7 +148,7 @@ namespace Kogerent.Services.Implementation
             return calibratedPointsList;
         }
 
-        public List<byte> CreateAveragElementsForCalibration(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width)
+        public List<byte> CreateAverageElementsForCalibration(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width)
         {
             int bufCount = _concurentBuffer.Count;
             //Массив, в который получаем все элементы с concurrent коллекции, когда накопили достаточно значений
@@ -163,6 +164,7 @@ namespace Kogerent.Services.Implementation
                 {
                     Buffer.BlockCopy(etalonPointsBuffer.Data, 0, rawPointsBuffer, _cnt * width, etalonPointsBuffer.Data.Length);
                     _cnt += countArraysInSection;
+                    etalonPointsBuffer.Dispose();
                 }
             }
 
@@ -191,11 +193,10 @@ namespace Kogerent.Services.Implementation
         /// <param name="xMaxIndex"></param>
         /// <param name="maxBoundsLight"></param>
         /// <param name="minBoundsLight"></param>
-        /// <param name="expositionToChange"></param>
         /// <param name="changeExpoisitionValue"></param>
         /// <returns></returns>
-        public bool NeedChangeExposition(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width,
-            int xMinIndex, int xMaxIndex, int maxBoundsLight, int minBoundsLight, int expositionToChange, out int changeExpoisitionValue)
+        public  bool NeedChangeExposition(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width,
+            int xMinIndex, int xMaxIndex, int minBoundsLight, int maxBoundsLight, out int changeExpoisitionValue)
         {
             int bufCount = _concurentBuffer.Count;
             byte[,] rawPointsBuffer = new byte[bufCount * countArraysInSection, width];
@@ -206,9 +207,11 @@ namespace Kogerent.Services.Implementation
                 {
                     Buffer.BlockCopy(etalonPointsBuffer.Data, 0, rawPointsBuffer, _cnt * width, etalonPointsBuffer.Data.Length);
                     _cnt += countArraysInSection;
+                    etalonPointsBuffer.Dispose();
+
                 }
             }
-
+          // _concurentBuffer.Clear();
             List<byte> pointsToFindMaxY = new();
             for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
             {
@@ -226,6 +229,7 @@ namespace Kogerent.Services.Implementation
             {
                 changeExpoisitionValue = -50;
                 return true;
+              
             }
             else
                if (pointsToFindMaxY[pointsToFindMaxY.Count - 250] < minBoundsLight)
