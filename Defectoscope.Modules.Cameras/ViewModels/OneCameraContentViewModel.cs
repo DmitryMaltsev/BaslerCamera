@@ -516,8 +516,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             int countArraysToAnalize = 5;
                             if (bufCount > countArraysToAnalize / countArraysInSection)
                             {
-                                int leftSideIndex = (int)(BaslerRepository.BaslerCamerasCollection[0].LeftBorder / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
-                                int rightSideIndex = (int)(BaslerRepository.BaslerCamerasCollection[0].RightBorder / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
+                                int leftSideIndex = (int)(BaslerRepository.LeftBorder / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
+                                int rightSideIndex = (int)(BaslerRepository.RightBorder / BaslerRepository.BaslerCamerasCollection[0].WidthDescrete);
                                 int _shift = (int)(Shift / CurrentCamera.WidthDescrete);
                                 if (leftSideIndex - _shift < 0)
                                 {
@@ -608,16 +608,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
                             if (_currentVisualAnalizeIsActive)
                             {
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.BaslerCamerasCollection[0].LeftBorder / CurrentCamera.WidthDescrete),
-                                                  (int)(BaslerRepository.BaslerCamerasCollection[0].RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
+                                                  (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
                                 _resImage = img2; //img2.Clone();
                             }
                             else
                             {
 
                                 _resImage = img.Convert<Bgr, byte>();
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.BaslerCamerasCollection[0].LeftBorder / CurrentCamera.WidthDescrete),
-                                                (int)(BaslerRepository.BaslerCamerasCollection[0].RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
+                                                (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), _resImage, CurrentCamera.ID);
                             }
                             if (defects.Any())
                             {

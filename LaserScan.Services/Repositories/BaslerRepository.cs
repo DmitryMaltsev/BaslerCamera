@@ -73,8 +73,25 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _totalCount, value); }
         }
 
+        private float _leftBorder;
+        public float LeftBorder
+        {
+            get { return _leftBorder; }
+            set { 
+                SetProperty(ref _leftBorder, value);
+                NonControlZonesRepository.AddZones(this);
+            }
+        }
 
-
+        private float _rightBorder;
+        public float RightBorder
+        {
+            get { return _rightBorder; }
+            set { 
+                SetProperty(ref _rightBorder, value);
+                NonControlZonesRepository.AddZones(this);
+            }
+        }
 
         private float _fullCamerasWidth = 3808;
         public float FullCamerasWidth

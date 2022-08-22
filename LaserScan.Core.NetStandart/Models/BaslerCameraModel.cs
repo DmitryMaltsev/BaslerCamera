@@ -184,7 +184,7 @@ namespace LaserScan.Core.NetStandart.Models
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
             }
             Initialized = true; // успешная 
-            ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+         //   ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
         }
 
         public void ChangeExposureTime(int value)
@@ -193,7 +193,7 @@ namespace LaserScan.Core.NetStandart.Models
             {
                 ExposureTime += value;
                 Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
-                ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+              //  ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
             }
         
         }

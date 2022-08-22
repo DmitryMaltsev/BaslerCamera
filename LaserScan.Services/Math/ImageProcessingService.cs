@@ -591,7 +591,6 @@ namespace Kogerent.Services.Implementation
                 Point p1 = new() { X = rightBorderStart, Y = 0 }; Point p2 = new() { X = rightBorderStart, Y = 500 };
                 CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.EightConnected, 0);
             }
-
         }
     }
 }

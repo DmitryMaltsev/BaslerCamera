@@ -49,8 +49,8 @@ namespace Kogerent.Services.Implementation
                 Name = $"Облой л.",
                 MinimumY = 0,
                 MaximumY = 300,
-                MinimumX = BaslerRepository.BaslerCamerasCollection[0].LeftBorder,
-                MaximumX = camera2Shift
+                MinimumX = 0,
+                MaximumX = BaslerRepository.LeftBorder
             });
 
             //float rightCameraMinimumX;
@@ -74,8 +74,8 @@ namespace Kogerent.Services.Implementation
                 Name = $"Облой п.",
                 MinimumY = 0,
                 MaximumY = 300,
-                MinimumX = camera3Shift,
-                MaximumX = BaslerRepository.BaslerCamerasCollection[0].RightBorder
+                MinimumX = BaslerRepository.RightBorder,
+                MaximumX = BaslerRepository.FullCamerasWidth
             });
 
             // Zones.Clear();

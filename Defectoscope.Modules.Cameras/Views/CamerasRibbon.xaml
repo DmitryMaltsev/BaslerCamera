@@ -32,12 +32,12 @@
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="1" Content="Стоп"  Command="{Binding ApplicationCommands.StopAllSensors}"/>
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="АвтоЭкс" Command="{Binding ApplicationCommands.AutoExposition}"/>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="2" Content="Границы" Command="{Binding ApplicationCommands.FindBoundsIndexes}"/>
-                            <TextBlock Grid.Column="0" Grid.Row="3" Text="{Binding   BaslerRepository.BaslerCamerasCollection[0].ExposureTime}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding   BaslerRepository.BaslerCamerasCollection[0].CurrentAverage, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="0" Grid.Row="4" Text="{Binding   BaslerRepository.BaslerCamerasCollection[1].ExposureTime}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding   BaslerRepository.BaslerCamerasCollection[1].CurrentAverage, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="0" Grid.Row="5" Text="{Binding   BaslerRepository.BaslerCamerasCollection[2].ExposureTime}" HorizontalAlignment="Center"/>
-                            <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding   BaslerRepository.BaslerCamerasCollection[2].CurrentAverage, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Grid.Row="3" Text="К1 эксп" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding   BaslerRepository.BaslerCamerasCollection[0].ExposureTime, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Grid.Row="4" Text="К2 эксп" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Grid.Row="4" Text="{Binding   BaslerRepository.BaslerCamerasCollection[1].ExposureTime, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Grid.Row="5" Text="К3 эксп" HorizontalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Grid.Row="5" Text="{Binding  BaslerRepository.BaslerCamerasCollection[2].ExposureTime, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
 
                         </Grid>
                         <TextBlock Text="Управление" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
@@ -107,11 +107,11 @@
                             <TextBox Width="110" Margin="1" Grid.Column="1" Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.HeightThreshold}"/>
                             <!--#region Левая граница полотна -->
                             <TextBlock  Margin="1"  Grid.Column="0" Grid.Row="4"  Text="Лев гр полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBox Width="110"  Margin="1" Grid.Column="0" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].LeftBorder}" />
+                            <TextBox Width="110"  Margin="1" Grid.Column="0" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.LeftBorder}" />
                             <!--#endregion-->
                             <!--#region Правая граница полотна -->
                             <TextBlock  Margin="1"  Grid.Column="1" Grid.Row="4"  Text="Прав гр полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBox Width="110"  Margin="1" Grid.Column="1" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].RightBorder}"/>
+                            <TextBox Width="110"  Margin="1" Grid.Column="1" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.RightBorder}"/>
                             <!--#endregion-->
                         </Grid>
                         <TextBlock Text="Пороги" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
@@ -189,7 +189,7 @@
                                 <RowDefinition Height="25" />
                                 <RowDefinition Height="25" />
                                 <RowDefinition Height="25" />
-                                <RowDefinition Height="32" /> 
+                                <RowDefinition Height="32" />
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Padding="5" Content="Очистить дефекты" Command="{Binding ApplicationCommands.SaveDefectsAndCrearTable}"/>
                             <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding BenchmarkRepository.RawImage}"
@@ -202,13 +202,13 @@
                             </CheckBox>
                             <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding DefectRepository.CreateImages}"
                                       VerticalAlignment="Center">
-                                 <TextBlock Grid.Row="3" Grid.Column="1" Text="Создание рисунков" Foreground="{StaticResource ControlForeground}"/>
+                                <TextBlock Grid.Row="3" Grid.Column="1" Text="Создание рисунков" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
                             <CheckBox Grid.Row="4" Grid.Column="0" IsChecked="{Binding DefectRepository.KoefMultiplication, Mode=TwoWay}"
                                       VerticalAlignment="Center">
                                 <TextBlock Grid.Column="1" Text="Калибровка умн/слож" Foreground="{StaticResource ControlForeground}"/>
                             </CheckBox>
-               
+
                         </Grid>
                         <TextBlock Text="Очистить" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
@@ -235,23 +235,23 @@
                             <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Очередь на принятие" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.TotalCount}" VerticalAlignment="Center"  HorizontalAlignment="Center"
                                         FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <!--<TextBlock  Grid.Row="1" Grid.Column="0"  Margin="1" Text="Очередь на обработку" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock  Grid.Row="1" Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.TempQueueCount}" Foreground="{StaticResource ControlForegroundWhite}"
                                         HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
-                            
+
                             <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="1" Text="Время обработки шаб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="1"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=N2}" 
                                          VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="2" Grid.Column="0"  Margin="1" Text="Время обработки деф" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.DefectsProcessingTimer, StringFormat=N2}"
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="3" Grid.Column="0"  Margin="1" Text="Левый строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="3"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.LeftStrobe}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="4" Grid.Column="0"  Margin="1" Text="Центральный строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="4"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.CenterStrobe}" 
                                        
