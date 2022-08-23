@@ -58,7 +58,7 @@ namespace LaserScan.Core.NetStandart.Models
         private byte upThreshold = 60; // верхняя граница
         public byte UpThreshold
         {
-            get { return upThreshold; } 
+            get { return upThreshold; }
             set { SetProperty(ref upThreshold, value); }
         }
 
@@ -83,13 +83,20 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _heightThreshold, value); }
         }
 
-        private long _exposureTime=300;
+        private int _strobeNum;
+        public int StrobeNum
+        {
+            get { return _strobeNum; }
+            set { SetProperty(ref _strobeNum, value); }
+        }
+
+        private long _exposureTime = 1300;
         public long ExposureTime
         {
             get { return _exposureTime; }
             set { SetProperty(ref _exposureTime, value); }
         }
-        
+
         private double _currentAverage;
         [XmlIgnore]
         public double CurrentAverage
@@ -98,7 +105,7 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _currentAverage, value); }
         }
 
-        private byte _addBrightness=0;
+        private byte _addBrightness = 0;
         public byte Addbrightness
         {
             get { return _addBrightness; }
@@ -156,7 +163,8 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(1000);
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1300);
+            ExposureTime = 1300;
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
@@ -180,22 +188,24 @@ namespace LaserScan.Core.NetStandart.Models
             }
             if (ID == "Правая камера")
             {
-           //     Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1900);
+                //     Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1900);
                 Camera.Parameters[PLCamera.ReverseX].SetValue(true);
             }
             Initialized = true; // успешная 
-         //   ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+                                //   ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
         }
 
-        public void ChangeExposureTime(int value)
+        public long ChangeExposureTime(int value)
         {
-            if (ExposureTime<3500)
+            long val = ExposureTime;
+            if (ExposureTime < 4000 && ExposureTime > 60 && IsGrabbing())
             {
-                ExposureTime += value;
-                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
-              //  ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+                val += value;
+                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(val);
+                //  ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+
             }
-        
+            return val;
         }
 
 

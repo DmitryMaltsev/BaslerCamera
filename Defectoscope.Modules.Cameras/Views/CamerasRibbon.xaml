@@ -249,15 +249,15 @@
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
 
                             <TextBlock   Grid.Row="3" Grid.Column="0"  Margin="1" Text="Левый строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Row="3"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.LeftStrobe}" 
+                            <TextBlock Grid.Row="3"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].StrobeNum}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
 
                             <TextBlock   Grid.Row="4" Grid.Column="0"  Margin="1" Text="Центральный строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Row="4"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.CenterStrobe}" 
+                            <TextBlock Grid.Row="4"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.BaslerCamerasCollection[1].StrobeNum}" 
                                        
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
                             <TextBlock   Grid.Row="5" Grid.Column="0"  Margin="1" Text="Правый строб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock Grid.Row="5"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.RightStrobe}" 
+                            <TextBlock Grid.Row="5"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.BaslerCamerasCollection[2].StrobeNum}" 
                                        
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
                         </Grid>

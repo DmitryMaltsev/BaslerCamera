@@ -54,6 +54,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
         #endregion
         public string SettingsDir => Directory.CreateDirectory($"{Environment.CurrentDirectory}\\Settings").FullName;
+
         #region Private Fields
         private bool _needToDrawDefects;
         private Queue<byte[]> _videoBuffer;
@@ -63,6 +64,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private ConcurrentQueue<byte[,,]> _imageDataBuffer;
         private int _width;
         private int _strobe;
+        private long _exposition;
         private readonly Task _processVideoWork;
         private readonly Task _processImageTask;
         private bool _needToProcessImage;
@@ -87,6 +89,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         #endregion
 
+        #region Rising properties
         private BaslerCameraModel _currentCamera;
         public BaslerCameraModel CurrentCamera
         {
@@ -106,7 +109,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             get { return _exposureTime; }
             set { SetProperty(ref _exposureTime, value); }
-        }
+        } 
+        #endregion
 
         #region Delegate Commands
         private DelegateCommand _init;
@@ -261,23 +265,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                if (CurrentCamera.ID == "Левая камера")
-                {
-                    BenchmarkRepository.LeftStrobe = _strobe;
-                    if (_strobe > 500_000) _strobe = 0;
-                }
-                else
-                 if (CurrentCamera.ID == "Центральная камера")
-                {
-                    BenchmarkRepository.CenterStrobe = _strobe;
-                    if (_strobe > 500_000) _strobe = 0;
-                }
-                else
-                     if (CurrentCamera.ID == "Правая камера")
-                {
-                    BenchmarkRepository.RightStrobe = _strobe;
-                    if (_strobe > 500_000) _strobe = 0;
-                }
+                 CurrentCamera.StrobeNum = _strobe;
+                CurrentCamera.ExposureTime = _exposition;
+                if (imageGrabbedEnumModes == ImageGrabbedEnumModes.RecievePoints) FooterRepository.Text = "Обычный режим работы";
+                 if (_strobe > 500_000) _strobe = 0;
             }
             catch (Exception ex)
             {
@@ -285,7 +276,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 Logger?.Error(msg);
                 FooterRepository.Text = msg;
                 ExecuteStopCamera();
-
             }
             // Thread.Sleep(300);
         }
@@ -302,7 +292,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 case ImageGrabbedEnumModes.RecievePoints:
                     {
                         _concurentVideoBuffer.Enqueue(e);
-                        FooterRepository.Text = "Обычный режим работы";
                     }
                     break;
                 case ImageGrabbedEnumModes.CreateEtalonPoints:
@@ -366,7 +355,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             collectionRawPoints.AddRange(buffer);
                             if (collectionRawPoints.Count >= 5_000)
                             {
-
                                 List<List<byte>> resultFilterOptions = new();
                                 List<List<byte>> resultMultipleFilterOptions = new();
                                 for (int xpointsNum = 0; xpointsNum < collectionRawPoints.Count; xpointsNum++)
@@ -493,7 +481,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             }
                         }
                         break;
-                    case ImageGrabbedEnumModes.Calibrate:
+                    case ImageGrabbedEnumModes.CreateEtalonPoints:
                         {
                             int bufCount = _concurentVideoBuffer.Count;
                             int countArraysToAnalize = 5000;
@@ -533,10 +521,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 }
 
                                 if (CalibrateService.NeedChangeExposition(_concurentVideoBuffer, 5, _width,
-                                    leftSideIndex, rightSideIndex, 180, 190, out int changeExspositionValue))
+                                    leftSideIndex, rightSideIndex, 180, 190, out int changeExspositionValue) && CurrentCamera.ExposureTime < 4000 && CurrentCamera.ExposureTime > 60)
                                 {
-                                    CurrentCamera.ChangeExposureTime(changeExspositionValue);
-                                    _concurentVideoBuffer.Clear();
+                                    _exposition=CurrentCamera.ChangeExposureTime(changeExspositionValue);
+                                      //  _concurentVideoBuffer.Clear();
                                 }
                                 else
                                 {
@@ -692,6 +680,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 //  CurrentCamera.ChangeExposureTime(0);
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
+                _exposition = CurrentCamera.ExposureTime;
             }
             catch (Exception ex)
             {
@@ -719,8 +708,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 {
                     CurrentCamera.Start();
                 }
-
-
                 FooterRepository.Text = "Обычный режим работы";
             }
         }
@@ -777,7 +764,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     _drawingTimer.Start();
                 }
                 imageGrabbedEnumModes = ImageGrabbedEnumModes.CreateEtalonPoints;
-                CurrentCamera.Start();
+                if (!CurrentCamera.IsGrabbing())
+                {
+                    CurrentCamera.Start();
+                }
                 FooterRepository.Text = "Создаем эталонные данные для калибровки";
             }
         }

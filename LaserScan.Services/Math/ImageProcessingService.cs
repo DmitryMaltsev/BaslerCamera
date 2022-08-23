@@ -500,15 +500,15 @@ namespace Kogerent.Services.Implementation
                 //float bufferMax = maxXs.Find(p => p <= defect.X);
                 if (defect != null && (maxObloysXs[0] < defect.X) && (minObloysXs[1] > defect.X))
                 {
-                    bool defectNotInZone = true;
-                    for (int i = 0; i < minZonesXs.Count; i++)
-                    {
-                        if (minZonesXs[i] <= defect.X && defect.X <= maxZonesXs[i])
-                        {
-                            defectNotInZone = false;
-                            continue;
-                        }
-                    }
+                    //bool defectNotInZone = true;
+                    //for (int i = 0; i < minZonesXs.Count; i++)
+                    //{
+                    //    if (minZonesXs[i] <= defect.X && defect.X <= maxZonesXs[i])
+                    //    {
+                    //        defectNotInZone = false;
+                    //        continue;
+                    //    }
+                    //}
                     //if (defectNotInZone)
                     // {
                     //if (BaslerRepository.BaslerCamerasCollection[1].LeftBorder < defect.X && defect.X < BaslerRepository.BaslerCamerasCollection[1].RightBorder)

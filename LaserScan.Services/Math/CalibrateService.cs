@@ -227,7 +227,7 @@ namespace Kogerent.Services.Implementation
             pointsToFindMaxY.Sort();
             if (pointsToFindMaxY[pointsToFindMaxY.Count - 250] > maxBoundsLight)
             {
-                changeExpoisitionValue = -50;
+                changeExpoisitionValue = -30;
                 return true;
               
             }
