@@ -70,28 +70,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         #region Execute methods delegates
         private void ExecuteSaveCamerasSettings()
         {
-          
+
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.LeftBorder;
             BaslerRepository.BaslerCamerasCollection[0].RightBorder = BaslerRepository.RightBorder;
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
-            //string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            //if (BaslerRepository.AllCamerasInitialized && BaslerRepository.CurrentMaterial.CameraDeltaList != null)
-            //{
-            //    BaslerRepository.CurrentMaterial.CameraDeltaList.Clear();
-            //    foreach (BaslerCameraModel camera in BaslerRepository.BaslerCamerasCollection)
-            //    {
-            //        BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new CameraDelta
-            //        {
-            //            CameraId = camera.ID,
-            //            Deltas = camera.Deltas,
-            //            MultipleDeltas=camera.MultipleDeltas,
-            //            UpThreshhold = camera.UpThreshold,
-            //            DownThreshhold = camera.DownThreshold
-            //        });
-            //    }
-            //    XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
-                FooterRepository.Text = $"Калибровочные данные сохранены в  {BaslerRepository.CurrentMaterial.MaterialName}";
+            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+            XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
+            FooterRepository.Text = $"Калибровочные данные сохранены в  {BaslerRepository.CurrentMaterial.MaterialName}";
             //}
             //else
             //{
@@ -103,7 +89,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (BaslerRepository.AllCamerasInitialized)
             {
-             //   BaslerRepository.CurrentCamera.Addbrightness += 1;
+                //   BaslerRepository.CurrentCamera.Addbrightness += 1;
             }
 
         }
@@ -112,7 +98,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             if (BaslerRepository.AllCamerasInitialized)
             {
-              //  BaslerRepository.CurrentCamera.Addbrightness -= 1;
+                //  BaslerRepository.CurrentCamera.Addbrightness -= 1;
             }
         }
 

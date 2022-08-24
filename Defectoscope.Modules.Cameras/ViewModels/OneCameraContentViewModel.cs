@@ -109,7 +109,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             get { return _exposureTime; }
             set { SetProperty(ref _exposureTime, value); }
-        } 
+        }
         #endregion
 
         #region Delegate Commands
@@ -210,6 +210,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             collectionRawPoints = new();
             _imageDataBuffer = new();
 
+
             _processVideoWork = new Task(() => ProceesBuffersAction());
             _processVideoWork.Start();
 
@@ -265,10 +266,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                 CurrentCamera.StrobeNum = _strobe;
+                CurrentCamera.StrobeNum = _strobe;
                 CurrentCamera.ExposureTime = _exposition;
-                if (imageGrabbedEnumModes == ImageGrabbedEnumModes.RecievePoints) FooterRepository.Text = "Обычный режим работы";
-                 if (_strobe > 500_000) _strobe = 0;
+                //       if (imageGrabbedEnumModes == ImageGrabbedEnumModes.RecievePoints) FooterRepository.Text = "Обычный режим работы";
+                if (_strobe > 500_000) _strobe = 0;
             }
             catch (Exception ex)
             {
@@ -488,13 +489,30 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             if (bufCount > countArraysToAnalize / countArraysInSection)
                             {
                                 //   List<byte> calibratedPointsList = CalibrateService.CreateAverageDataForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
+
                                 List<byte> calibratedPointsList = CalibrateService.CreateAverageElementsForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
                                 string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
+
                                 // XmlService.Write(path, calibratedPointsList);
                                 CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
                                 CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
+
+                                if (BaslerRepository.CurrentCamera != null)
+                                {
+                                    BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new()
+                                    {
+                                        CameraId = CurrentCamera.ID,
+                                        Deltas = CurrentCamera.Deltas,
+                                        MultipleDeltas = CurrentCamera.MultipleDeltas,
+                                        UpThreshhold = CurrentCamera.UpThreshold,
+                                        DownThreshhold = CurrentCamera.DownThreshold
+                                    });
+
+                                }
+
                                 _concurentVideoBuffer.Clear();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
+                                _strobe = 0;
                             }
                         }
                         break;
@@ -523,12 +541,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 if (CalibrateService.NeedChangeExposition(_concurentVideoBuffer, 5, _width,
                                     leftSideIndex, rightSideIndex, 180, 190, out int changeExspositionValue) && CurrentCamera.ExposureTime < 4000 && CurrentCamera.ExposureTime > 60)
                                 {
-                                    _exposition=CurrentCamera.ChangeExposureTime(changeExspositionValue);
-                                      //  _concurentVideoBuffer.Clear();
+                                    _exposition = CurrentCamera.ChangeExposureTime(changeExspositionValue);
+                                    //  _concurentVideoBuffer.Clear();
                                 }
                                 else
                                 {
                                     imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
+                                    _strobe = 0;
                                 }
                                 // string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
                                 await Task.Delay(200);
@@ -680,7 +699,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 //  CurrentCamera.ChangeExposureTime(0);
                 FooterRepository.Text = $"Initialized = {CurrentCamera.Initialized}";
                 BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
-                _exposition = CurrentCamera.ExposureTime;
+
             }
             catch (Exception ex)
             {
@@ -712,6 +731,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
         }
 
+
         private void ExecuteChangeMaterialCalibrationCommand()
         {
             if (BaslerRepository.CurrentMaterial == null)
@@ -719,34 +739,28 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
                 FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
             }
-            Task<string> changeMaterialsDeltasTask = new Task<string>(() => ChangeMaterialDeltas());
-            changeMaterialsDeltasTask.Start();
-            FooterRepository.Text = changeMaterialsDeltasTask.Result;
+            FooterRepository.Text= ChangeMaterialDeltas();
+
         }
 
-        private string ChangeMaterialDeltas()
+        private  string ChangeMaterialDeltas()
         {
-            string footerMessage = "";
             if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
-
             {
-                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+                CameraDelta materialCUrrentCamera = BaslerRepository.CurrentMaterial.CameraDeltaList.Where(d => d.CameraId == CurrentCamera.ID).First();
+                if (materialCUrrentCamera != null)
                 {
-                    if (CurrentCamera.ID == BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId)
-                    {
-                        CurrentCamera.Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
-                        CurrentCamera.MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
-                        CurrentCamera.UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
-                        CurrentCamera.DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
-                    }
+                    CurrentCamera.Deltas = materialCUrrentCamera.Deltas;
+                    CurrentCamera.MultipleDeltas = materialCUrrentCamera.MultipleDeltas;
+                    CurrentCamera.UpThreshold = materialCUrrentCamera.UpThreshhold;
+                    CurrentCamera.DownThreshold = materialCUrrentCamera.DownThreshhold;
+                    return $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
                 }
-                footerMessage = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
-                return footerMessage;
+                return "";
             }
             else
             {
-                footerMessage = $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
-                return footerMessage;
+               return $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
             }
         }
 
@@ -896,6 +910,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             tempImage = new Image<Gray, byte>(_width, _currentHeight);
             img = new Image<Gray, byte>(_width, _currentHeight);
             countArraysInSection = 5;
+            _exposition = CurrentCamera.ExposureTime;
         }
     }
 }

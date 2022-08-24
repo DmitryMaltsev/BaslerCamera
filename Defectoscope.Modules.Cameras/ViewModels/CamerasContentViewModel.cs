@@ -135,6 +135,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             List<MaterialModel> materials = new();
             BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
+            {
+                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+                {
+                    for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
+                    {
+                        if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
+                        {
+                            BaslerRepository.BaslerCamerasCollection[j].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
+                            BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
+                            BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                            BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
+                            break;
+                        }
+                    }
+                }
+            }
+
+
 
 
             NonControlZonesRepository.AddZones(BaslerRepository);
@@ -145,7 +164,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (Camera1VM != null)
             {
                 Camera1VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[0];
-               IRegion currentRegion = RegionManager.Regions[RegionNames.Camera1Region];
+                IRegion currentRegion = RegionManager.Regions[RegionNames.Camera1Region];
                 Camera1VM.Shift = shift;
                 currentRegion.Add(Camera1V);
                 currentRegion.Activate(Camera1V);
@@ -177,5 +196,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 currentRegion.Activate(Camera3V);
             }
         }
+
+
     }
 }
