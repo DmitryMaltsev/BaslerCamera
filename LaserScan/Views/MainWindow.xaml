@@ -99,6 +99,9 @@
         <ContentControl Grid.Row="1" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.RibbonRegion}" Grid.ColumnSpan="2" />
 
         <ContentControl Grid.Row="2" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.ContentRegion}" Grid.ColumnSpan="2" />
+        <ContentControl Grid.Row="2" Grid.Column="1" prism:RegionManager.RegionName="{x:Static c:RegionNames.Graph1Key}" Grid.ColumnSpan="2" />
+
+
 
         <StatusBar Grid.Row="3" Grid.ColumnSpan="3">
             <StatusBarItem Content="{Binding FooterRepository.HeaderText}" VerticalAlignment="Center"/>

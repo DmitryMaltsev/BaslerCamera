@@ -55,5 +55,19 @@ namespace Kogerent.Core
         public const string Camera2Region = "Camera2Region";
 
         public const string Camera3Region = "Camera3Region";
+
+        public const string Graph1Region = "Graph1Region";
+
+        public const string Graph2Region = "Graph2Region";
+
+        public const string Graph3Region = "Graph3Region";
+
+        public const string Graph1Key = "Graph1Key";
+
+        public const string Graph2Key = "Graph2Key";
+
+        public const string Graph3Key = "Graph3Key";
+
+        public const string GraphsRegion = "GraphsRegion";
     }
 }

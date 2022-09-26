@@ -15,9 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaserScan.Services", "Laser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Laserscan.IServices", "Laserscan.IServices\Laserscan.IServices.csproj", "{F2A0FE8E-03C9-48BB-86BA-35071ECA5732}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Defectoscope.Modules.Cameras", "Defectoscope.Modules.Cameras\Defectoscope.Modules.Cameras.csproj", "{6D103002-93DB-45FA-9557-0302148C2C7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Defectoscope.Modules.Cameras", "Defectoscope.Modules.Cameras\Defectoscope.Modules.Cameras.csproj", "{6D103002-93DB-45FA-9557-0302148C2C7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaserScan.Core.NetStandart", "LaserScan.Core.NetStandart\LaserScan.Core.NetStandart.csproj", "{DFD76465-EB37-425D-B4AC-88C6B35F9092}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaserScan.Core.NetStandart", "LaserScan.Core.NetStandart\LaserScan.Core.NetStandart.csproj", "{DFD76465-EB37-425D-B4AC-88C6B35F9092}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

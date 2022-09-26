@@ -21,7 +21,6 @@ namespace Defectoscope.Modules.Cameras
             RegionManager = regionManager;
             XmlService = xmlService;
             BaslerRepository = baslerRepository;
-            
         }
 
         public IRegionManager RegionManager { get; }

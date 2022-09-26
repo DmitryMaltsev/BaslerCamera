@@ -40,6 +40,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DelegateCommand _addBrightnessCommand;
         public DelegateCommand AddBrightnessCommand =>
             _addBrightnessCommand ?? (_addBrightnessCommand = new DelegateCommand(ExecuteAddBrightnessCommand));
+        private DelegateCommand _openGraphsCommand;
+        public DelegateCommand OpenGraphsCommand =>
+            _openGraphsCommand ?? (_openGraphsCommand = new DelegateCommand(ExecuteOpenGraphsCommand));
 
         #endregion
         public IRegionManager RegionManager { get; }
@@ -74,6 +77,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.LeftBorder;
             BaslerRepository.BaslerCamerasCollection[0].RightBorder = BaslerRepository.RightBorder;
+            //Сохраняем границы из камер в материал
+            for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+            {
+                for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
+                {
+                    if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
+                    {
+                        BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold = BaslerRepository.BaslerCamerasCollection[j].DownThreshold;
+                        BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold = BaslerRepository.BaslerCamerasCollection[j].UpThreshold;
+                        break;
+                    }
+                }
+            }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
@@ -127,6 +143,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             string path = Path.Combine(SettingsDir, "CalibrationData.xml");
             XmlService.Write(path, DefectRepository.DefectsCollection);
+        }
+
+        void ExecuteOpenGraphsCommand()
+        {
+            DialogService.ShowDialog("Graphs");
         }
 
         #endregion

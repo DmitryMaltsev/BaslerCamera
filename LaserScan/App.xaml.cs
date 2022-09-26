@@ -64,6 +64,7 @@ namespace LaserScan
             _ = containerRegistry.RegisterSingleton<ICalibrateService, CalibrateService>();
             containerRegistry.RegisterDialog<AddMaterialContext, AddMaterialContextViewModel>();
             containerRegistry.RegisterDialog<DeleteMaterialContext, DeleteMaterialContextViewModel>();
+            containerRegistry.RegisterDialog<Graphs, GraphsViewModel>();
         }
 
         /// <summary>
@@ -73,7 +74,6 @@ namespace LaserScan
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)
         {
             moduleCatalog.AddModule<CamerasModule>();
-
         }
 
         /// <summary>

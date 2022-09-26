@@ -31,7 +31,7 @@
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="1" Content="Стоп"  Command="{Binding ApplicationCommands.StopAllSensors}"/>
                             <Button Width="60" Margin="2" Grid.Column="1" Grid.Row="1" Content="АвтоЭкс" Command="{Binding ApplicationCommands.AutoExposition}"/>
-                            <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="2" Content="Границы" Command="{Binding ApplicationCommands.FindBoundsIndexes}"/>
+                            <Button Width="60" Margin="2" Grid.Column="0" Grid.Row="2" Content="График" Command="{Binding OpenGraphsCommand}"/>
                             <TextBlock Grid.Column="0" Grid.Row="3" Text="К1 эксп" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="1" Grid.Row="3" Text="{Binding   BaslerRepository.BaslerCamerasCollection[0].ExposureTime, StringFormat={}{0:0}}" HorizontalAlignment="Center"/>
                             <TextBlock Grid.Column="0" Grid.Row="4" Text="К2 эксп" HorizontalAlignment="Center"/>

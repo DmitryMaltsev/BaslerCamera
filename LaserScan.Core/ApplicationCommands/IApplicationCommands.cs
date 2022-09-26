@@ -47,5 +47,6 @@ namespace Kogerent.Core
         CompositeCommand ChangeMaterialCalibration { get; }
         CompositeCommand AutoExposition { get; }
         CompositeCommand FindBoundsIndexes { get; }
+        CompositeCommand ShowGraphs { get; }
     }
 }

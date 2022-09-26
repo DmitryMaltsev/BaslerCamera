@@ -192,6 +192,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.ChangeMaterialCalibration.RegisterCommand(ChangeMaterialCalibrationCommand);
             ApplicationCommands.AutoExposition.RegisterCommand(AutoExpositionCommand);
             ApplicationCommands.FindBoundsIndexes.RegisterCommand(FindBoundsIndexesCommand);
+          
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -374,8 +375,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                //  XmlService.WriteListText(collectionRawPoints, path);
-                                //  XmlService.WriteListText(resultFilterOptions, filterPath);
+                                 XmlService.WriteListText(collectionRawPoints, path);
+                                 XmlService.WriteListText(resultFilterOptions, filterPath);
                                 XmlService.WriteListText(resultMultipleFilterOptions, multipleFilterPath);
                                 collectionRawPoints = new List<List<byte>>();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
@@ -539,7 +540,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 }
 
                                 if (CalibrateService.NeedChangeExposition(_concurentVideoBuffer, 5, _width,
-                                    leftSideIndex, rightSideIndex, 180, 190, out int changeExspositionValue) && CurrentCamera.ExposureTime < 4000 && CurrentCamera.ExposureTime > 60)
+                                    leftSideIndex, rightSideIndex, 175, 185, out int changeExspositionValue) && CurrentCamera.ExposureTime < 4000 && CurrentCamera.ExposureTime > 60)
                                 {
                                     _exposition = CurrentCamera.ChangeExposureTime(changeExspositionValue);
                                     //  _concurentVideoBuffer.Clear();

@@ -177,5 +177,10 @@ namespace Kogerent.Core
         public CompositeCommand AutoExposition { get; } = new();
 
         public CompositeCommand FindBoundsIndexes { get; } = new();
+
+        /// <summary>
+        /// Отображение графиков сырых данных
+        /// </summary>
+        public CompositeCommand ShowGraphs { get; } = new();
     }
 }

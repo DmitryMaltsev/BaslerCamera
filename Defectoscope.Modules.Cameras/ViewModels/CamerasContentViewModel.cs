@@ -147,14 +147,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
                             BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
                             BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
+                  
                             break;
                         }
                     }
                 }
             }
-
-
-
 
             NonControlZonesRepository.AddZones(BaslerRepository);
             float shift = 0;
@@ -196,7 +194,5 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 currentRegion.Activate(Camera3V);
             }
         }
-
-
     }
 }
