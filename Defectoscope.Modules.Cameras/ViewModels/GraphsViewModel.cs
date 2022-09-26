@@ -25,16 +25,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             // Graphs = new();
 
             Graph firstGraph = _containerProvider.Resolve<Graph>();
-            (firstGraph.DataContext as GraphViewModel).Text = "Первый";
+            GraphViewModel fGraphViewModel = new GraphViewModel("Первый");
+            firstGraph.DataContext = fGraphViewModel;
             Graphs.Add(firstGraph);
 
             Graph secondGraph = _containerProvider.Resolve<Graph>();
-            (secondGraph.DataContext as GraphViewModel).Text = "Второй";
+            GraphViewModel sGraphViewModel = new GraphViewModel("Второй");
+            secondGraph.DataContext = sGraphViewModel;
             Graphs.Add(secondGraph);
-
             Graph thirdGraph = _containerProvider.Resolve<Graph>();
-            (thirdGraph.DataContext as GraphViewModel).Text = "Третий";
+            GraphViewModel tGraphViewModel = new GraphViewModel("Третий");
+            thirdGraph.DataContext = tGraphViewModel;
             Graphs.Add(thirdGraph);
+        }
+
+        private object GraphViewModel(GraphViewModel graphViewModel)
+        {
+            throw new NotImplementedException();
         }
 
         public string Title => "Графики сырых точек";
@@ -50,7 +57,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
 
         }
-        private ObservableCollection<Graph> _graphs=new();
+        private ObservableCollection<Graph> _graphs = new();
         public ObservableCollection<Graph> Graphs
         {
             get { return _graphs; }

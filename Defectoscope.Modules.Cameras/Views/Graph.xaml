@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:prism="http://prismlibrary.com/"          
              xmlns:oxy="http://oxyplot.org/wpf"
-             prism:ViewModelLocator.AutoWireViewModel="True">
+            >
     <Grid>
-        <oxy:PlotView Model="{Binding Model}">
-            
+        <oxy:PlotView Model="{Binding PlotModel}">
+          
         </oxy:PlotView>
     </Grid>
 </UserControl>
