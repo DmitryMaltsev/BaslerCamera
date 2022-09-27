@@ -1,5 +1,7 @@
 ﻿using Basler.Pylon;
 
+using OxyPlot;
+
 using Prism.Mvvm;
 
 using System;
@@ -24,6 +26,7 @@ namespace LaserScan.Core.NetStandart.Models
         public double[] MultipleDeltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
+        public List<DataPoint> GraphPoints { get; set; } = new List<DataPoint>();
         [XmlIgnore]
         //Начало определения дефектов для текущей камеры
         public int LeftBoundIndex { get; set; } = 0;
@@ -163,8 +166,8 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(1000);
-           // ExposureTime = 1300;
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(1000);
+            // ExposureTime = 1300;
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(4000);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");

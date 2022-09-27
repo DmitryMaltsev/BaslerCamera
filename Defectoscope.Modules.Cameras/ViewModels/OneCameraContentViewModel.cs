@@ -465,6 +465,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     if (res && bufferData != default)
                                     {
                                         Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
+                                        CurrentCamera.GraphPoints.Clear();
+                                       // ConcurrentQueue<List<DataPoint>> concurrentGraphPoint
+                                        for (int k = 0; k < tempImage.Width; k++)
+                                        {
+                                            CurrentCamera.GraphPoints.Add(new OxyPlot.DataPoint(k,tempImage.Data[0, k, 0]));
+                                        }
                                         _cnt += bufferData.Height;
                                         _strobe += bufferData.Height;
                                         bufferData.Dispose();

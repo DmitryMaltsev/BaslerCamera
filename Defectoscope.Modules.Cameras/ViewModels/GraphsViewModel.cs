@@ -1,6 +1,7 @@
 ﻿using Defectoscope.Modules.Cameras.Views;
 
 using Kogerent.Core;
+using Kogerent.Services.Interfaces;
 
 using Prism.Commands;
 using Prism.Ioc;
@@ -18,23 +19,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
     public class GraphsViewModel : RegionViewModelBase, IDialogAware
     {
         private readonly IContainerProvider _containerProvider;
+        private readonly IBaslerRepository _baslerRepository;
 
-        public GraphsViewModel(IRegionManager regionManager, IContainerProvider containerProvider) : base(regionManager)
+        public GraphsViewModel(IRegionManager regionManager, IContainerProvider containerProvider, IBaslerRepository baslerRepository) : base(regionManager)
         {
             _containerProvider = containerProvider;
+            _baslerRepository = baslerRepository;
             // Graphs = new();
 
             Graph firstGraph = _containerProvider.Resolve<Graph>();
-            GraphViewModel fGraphViewModel = new GraphViewModel("Первый");
+            GraphViewModel fGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[0]);
             firstGraph.DataContext = fGraphViewModel;
             Graphs.Add(firstGraph);
 
             Graph secondGraph = _containerProvider.Resolve<Graph>();
-            GraphViewModel sGraphViewModel = new GraphViewModel("Второй");
+            GraphViewModel sGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[1]);
             secondGraph.DataContext = sGraphViewModel;
             Graphs.Add(secondGraph);
             Graph thirdGraph = _containerProvider.Resolve<Graph>();
-            GraphViewModel tGraphViewModel = new GraphViewModel("Третий");
+            GraphViewModel tGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[2]);
             thirdGraph.DataContext = tGraphViewModel;
             Graphs.Add(thirdGraph);
         }

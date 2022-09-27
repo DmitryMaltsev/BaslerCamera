@@ -147,7 +147,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         void ExecuteOpenGraphsCommand()
         {
-            DialogService.ShowDialog("Graphs");
+            DialogService.Show("Graphs");
         }
 
         #endregion

@@ -127,72 +127,72 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
-            //string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
-            //List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
-            //BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-            //BaslerRepository.LeftBorder = BaslerRepository.BaslerCamerasCollection[0].LeftBorder;
-            //BaslerRepository.RightBorder = BaslerRepository.BaslerCamerasCollection[0].RightBorder;
-            //string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            //List<MaterialModel> materials = new();
-            //BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
-            //if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
-            //{
-            //    for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
-            //    {
-            //        for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
-            //        {
-            //            if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
-            //            {
-            //                BaslerRepository.BaslerCamerasCollection[j].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
-            //                BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
-            //                BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
-            //                BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
-                  
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
+            string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
+            List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
+            BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
+            BaslerRepository.LeftBorder = BaslerRepository.BaslerCamerasCollection[0].LeftBorder;
+            BaslerRepository.RightBorder = BaslerRepository.BaslerCamerasCollection[0].RightBorder;
+            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+            List<MaterialModel> materials = new();
+            BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
+            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
+            {
+                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+                {
+                    for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
+                    {
+                        if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
+                        {
+                            BaslerRepository.BaslerCamerasCollection[j].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
+                            BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
+                            BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                            BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
+                           
+                            break;
+                        }
+                    }
+                }
+            }
 
-          //  NonControlZonesRepository.AddZones(BaslerRepository);
-          //  float shift = 0;
-          //  OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();
-          //  OneCameraContentViewModel Camera1VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
-          //  Camera1V.DataContext = Camera1VM;
-          //  if (Camera1VM != null)
-          //  {
-          //  //    Camera1VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[0];
-          //      IRegion currentRegion = RegionManager.Regions[RegionNames.Camera1Region];
-          //      Camera1VM.Shift = shift;
-          //      currentRegion.Add(Camera1V);
-          //      currentRegion.Activate(Camera1V);
-          //  }
+            NonControlZonesRepository.AddZones(BaslerRepository);
+            float shift = 0;
+            OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();
+            OneCameraContentViewModel Camera1VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
+            Camera1V.DataContext = Camera1VM;
+            if (Camera1VM != null)
+            {
+                Camera1VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[0];
+                IRegion currentRegion = RegionManager.Regions[RegionNames.Camera1Region];
+                Camera1VM.Shift = shift;
+                currentRegion.Add(Camera1V);
+                currentRegion.Activate(Camera1V);
+            }
 
-          //  OneCameraContent Camera2V = ContainerProvider.Resolve<OneCameraContent>();
-          //  OneCameraContentViewModel Camera2VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
-          //  Camera2V.DataContext = Camera2VM;
-          //  if (Camera2VM != null)
-          //  {
-          //      shift += 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
-          ////      Camera2VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[1];
-          //      IRegion currentRegion = RegionManager.Regions[RegionNames.Camera2Region];
-          //      Camera2VM.Shift = shift;
-          //      currentRegion.Add(Camera2V);
-          //      currentRegion.Activate(Camera2V);
-          //  }
+            OneCameraContent Camera2V = ContainerProvider.Resolve<OneCameraContent>();
+            OneCameraContentViewModel Camera2VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
+            Camera2V.DataContext = Camera2VM;
+            if (Camera2VM != null)
+            {
+                shift += 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
+                Camera2VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[1];
+                IRegion currentRegion = RegionManager.Regions[RegionNames.Camera2Region];
+                Camera2VM.Shift = shift;
+                currentRegion.Add(Camera2V);
+                currentRegion.Activate(Camera2V);
+            }
 
-          //  OneCameraContent Camera3V = ContainerProvider.Resolve<OneCameraContent>();
-          //  OneCameraContentViewModel Camera3VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
-          //  Camera3V.DataContext = Camera3VM;
-          //  if (Camera3V != null)
-          //  {
-          //      shift += 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
-          ////      Camera3VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[2];
-          //      IRegion currentRegion = RegionManager.Regions[RegionNames.Camera3Region];
-          //      Camera3VM.Shift = shift;
-          //      currentRegion.Add(Camera3V);
-          //      currentRegion.Activate(Camera3V);
-          //  }
+            OneCameraContent Camera3V = ContainerProvider.Resolve<OneCameraContent>();
+            OneCameraContentViewModel Camera3VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
+            Camera3V.DataContext = Camera3VM;
+            if (Camera3V != null)
+            {
+                shift += 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
+                Camera3VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[2];
+                IRegion currentRegion = RegionManager.Regions[RegionNames.Camera3Region];
+                Camera3VM.Shift = shift;
+                currentRegion.Add(Camera3V);
+                currentRegion.Activate(Camera3V);
+            }
         }
     }
 }
