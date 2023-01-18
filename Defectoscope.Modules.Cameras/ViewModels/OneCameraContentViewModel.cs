@@ -7,6 +7,8 @@ using Kogerent.Services.Interfaces;
 
 using LaserScan.Core.NetStandart.Models;
 
+using OxyPlot;
+
 using Prism;
 using Prism.Commands;
 using Prism.Regions;
@@ -192,7 +194,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             ApplicationCommands.ChangeMaterialCalibration.RegisterCommand(ChangeMaterialCalibrationCommand);
             ApplicationCommands.AutoExposition.RegisterCommand(AutoExpositionCommand);
             ApplicationCommands.FindBoundsIndexes.RegisterCommand(FindBoundsIndexesCommand);
-          
+
             ImageProcessing = imageProcessing;
             DefectRepository = defectRepository;
             MathService = mathService;
@@ -375,8 +377,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 string path = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_raw_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string filterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_filter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
                                 string multipleFilterPath = Path.Combine("PointsData", "Filter", $"{_currentCamera.ID}_multiplefilter_{DateTime.Now.ToString("HH.mm.ss")}.txt");
-                                 XmlService.WriteListText(collectionRawPoints, path);
-                                 XmlService.WriteListText(resultFilterOptions, filterPath);
+                                XmlService.WriteListText(collectionRawPoints, path);
+                                XmlService.WriteListText(resultFilterOptions, filterPath);
                                 XmlService.WriteListText(resultMultipleFilterOptions, multipleFilterPath);
                                 collectionRawPoints = new List<List<byte>>();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
@@ -465,11 +467,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     if (res && bufferData != default)
                                     {
                                         Buffer.BlockCopy(bufferData.Data, 0, tempImage.Data, _cnt * _width, bufferData.Data.Length);
-                                        CurrentCamera.GraphPoints.Clear();
-                                       // ConcurrentQueue<List<DataPoint>> concurrentGraphPoint
-                                        for (int k = 0; k < tempImage.Width; k++)
+                                        if (CurrentCamera.GraphPointsQueue.Count == 0)
                                         {
-                                            CurrentCamera.GraphPoints.Add(new OxyPlot.DataPoint(k,tempImage.Data[0, k, 0]));
+                                            CurrentCamera.GraphPoints.Clear();
+                                            for (int k = 0; k < tempImage.Width; k++)
+                                            {
+                                                CurrentCamera.GraphPoints.Add(new DataPoint(k, tempImage.Data[0, k, 0]));
+                                            }
+                                            CurrentCamera.GraphPointsQueue.Enqueue(CurrentCamera.GraphPoints);
                                         }
                                         _cnt += bufferData.Height;
                                         _strobe += bufferData.Height;
@@ -514,7 +519,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                         UpThreshhold = CurrentCamera.UpThreshold,
                                         DownThreshhold = CurrentCamera.DownThreshold
                                     });
-
                                 }
 
                                 _concurentVideoBuffer.Clear();
@@ -546,7 +550,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 }
 
                                 if (CalibrateService.NeedChangeExposition(_concurentVideoBuffer, 5, _width,
-                                    leftSideIndex, rightSideIndex, 175, 185, out int changeExspositionValue) && CurrentCamera.ExposureTime < 4000 && CurrentCamera.ExposureTime > 60)
+                                    leftSideIndex, rightSideIndex, 175, 185, out int changeExspositionValue) && CurrentCamera.ExposureTime < 40_000 && CurrentCamera.ExposureTime > 60)
                                 {
                                     _exposition = CurrentCamera.ChangeExposureTime(changeExspositionValue);
                                     //  _concurentVideoBuffer.Clear();
@@ -746,11 +750,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
                 FooterRepository.Text = $"Для калибровки используется {BaslerRepository.CurrentMaterial.MaterialName} материал";
             }
-            FooterRepository.Text= ChangeMaterialDeltas();
+            FooterRepository.Text = ChangeMaterialDeltas();
 
         }
 
-        private  string ChangeMaterialDeltas()
+        private string ChangeMaterialDeltas()
         {
             if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
             {
@@ -767,7 +771,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             }
             else
             {
-               return $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
+                return $"{BaslerRepository.CurrentMaterial.MaterialName} не откалиброван";
             }
         }
 

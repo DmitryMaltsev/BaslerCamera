@@ -5,6 +5,7 @@ using OxyPlot;
 using Prism.Mvvm;
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Serialization;
@@ -26,7 +27,11 @@ namespace LaserScan.Core.NetStandart.Models
         public double[] MultipleDeltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
-        public List<DataPoint> GraphPoints { get; set; } = new List<DataPoint>();
+        [XmlIgnore]
+       public List<DataPoint> GraphPoints = new List<DataPoint>();
+        [XmlIgnore]
+        public ConcurrentQueue<List<DataPoint>> GraphPointsQueue=new ConcurrentQueue<List<DataPoint>>();
+
         [XmlIgnore]
         //Начало определения дефектов для текущей камеры
         public int LeftBoundIndex { get; set; } = 0;
@@ -167,7 +172,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(1000);
             // ExposureTime = 1300;
-            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(4000);
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(ExposureTime);
             Camera.Parameters[PLCamera.GainRaw].SetValue(1000);
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
@@ -201,13 +206,9 @@ namespace LaserScan.Core.NetStandart.Models
         public long ChangeExposureTime(int value)
         {
             long val = ExposureTime;
-            if (ExposureTime < 4000 && ExposureTime > 60 && IsGrabbing())
-            {
-                val += value;
-                Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(val);
-                //  ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
-
-            }
+            val += value;
+            Camera.Parameters[PLCamera.ExposureTimeRaw].SetValue(val);
+            //  ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
             return val;
         }
 

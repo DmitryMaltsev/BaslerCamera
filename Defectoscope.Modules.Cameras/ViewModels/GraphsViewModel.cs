@@ -21,6 +21,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private readonly IContainerProvider _containerProvider;
         private readonly IBaslerRepository _baslerRepository;
 
+        private ObservableCollection<Graph> _graphs = new();
+        public ObservableCollection<Graph> Graphs
+        {
+            get { return _graphs; }
+            set { SetProperty(ref _graphs, value); }
+        }
+
         public GraphsViewModel(IRegionManager regionManager, IContainerProvider containerProvider, IBaslerRepository baslerRepository) : base(regionManager)
         {
             _containerProvider = containerProvider;
@@ -60,12 +67,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
 
         }
-        private ObservableCollection<Graph> _graphs = new();
-        public ObservableCollection<Graph> Graphs
-        {
-            get { return _graphs; }
-            set { SetProperty(ref _graphs, value); }
-        }
+
 
 
         public void OnDialogOpened(IDialogParameters parameters)
