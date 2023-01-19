@@ -177,7 +177,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
             Camera.Parameters[PLCamera.TriggerMode].SetValue("On");
-
+            
             //if (ID == "Центральная камера" || ID == "Правая камера")
             //{
             //    Camera.Parameters[PLCamera.ReverseX].SetValue(true);
@@ -201,6 +201,16 @@ namespace LaserScan.Core.NetStandart.Models
             }
             Initialized = true; // успешная 
                                 //   ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
+        }
+
+        public long WritePipeResetCount()
+        {
+            return Camera.Parameters[PLTransportLayer.Statistic_Write_Pipe_Reset_Count].GetValue();
+        }
+
+        public long ReadPipeResetCount()
+        {
+            return Camera.Parameters[PLTransportLayer.Statistic_Read_Pipe_Reset_Count].GetValue();
         }
 
         public long ChangeExposureTime(int value)

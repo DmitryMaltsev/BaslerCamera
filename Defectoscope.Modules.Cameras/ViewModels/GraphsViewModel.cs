@@ -21,8 +21,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private readonly IContainerProvider _containerProvider;
         private readonly IBaslerRepository _baslerRepository;
 
-        private ObservableCollection<Graph> _graphs = new();
-        public ObservableCollection<Graph> Graphs
+        private ObservableCollection<Graph2> _graphs = new();
+        public ObservableCollection<Graph2> Graphs
         {
             get { return _graphs; }
             set { SetProperty(ref _graphs, value); }
@@ -32,21 +32,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             _containerProvider = containerProvider;
             _baslerRepository = baslerRepository;
-            // Graphs = new();
 
             Graph firstGraph = _containerProvider.Resolve<Graph>();
             GraphViewModel fGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[0]);
             firstGraph.DataContext = fGraphViewModel;
-            Graphs.Add(firstGraph);
+            Graph2 fnamedGraph = new Graph2() { Graph = firstGraph, Header = _baslerRepository.BaslerCamerasCollection[0].ID};
+            Graphs.Add(fnamedGraph);
 
             Graph secondGraph = _containerProvider.Resolve<Graph>();
-            GraphViewModel sGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[1]);
-            secondGraph.DataContext = sGraphViewModel;
-            Graphs.Add(secondGraph);
+            GraphViewModel secondGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[1]);
+            secondGraph.DataContext = secondGraphViewModel;
+            Graph2 snamedGraph= new Graph2() { Graph = secondGraph, Header = _baslerRepository.BaslerCamerasCollection[1].ID };
+            Graphs.Add(snamedGraph);
             Graph thirdGraph = _containerProvider.Resolve<Graph>();
             GraphViewModel tGraphViewModel = new GraphViewModel(_baslerRepository.BaslerCamerasCollection[2]);
             thirdGraph.DataContext = tGraphViewModel;
-            Graphs.Add(thirdGraph);
+            Graph2 tdnamedGraph = new Graph2() { Graph = thirdGraph, Header = _baslerRepository.BaslerCamerasCollection[2].ID };
+            Graphs.Add(tdnamedGraph);
         }
 
         private object GraphViewModel(GraphViewModel graphViewModel)
@@ -74,6 +76,23 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
 
 
+        }
+
+        public class Graph2 : BindableBase
+        {
+            private Graph _graph = new();
+            public Graph Graph
+            {
+                get { return _graph; }
+                set { SetProperty(ref _graph, value); }
+            }
+
+            private string _header;
+            public string Header
+            {
+                get { return _header; }
+                set { SetProperty(ref _header, value); }
+            }
         }
     }
 }

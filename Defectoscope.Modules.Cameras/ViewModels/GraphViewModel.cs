@@ -17,6 +17,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 {
     public class GraphViewModel : BindableBase
     {
+        private int _graphPointsCounter;
+        public int GraphPointsCounter
+        {
+            get { return _graphPointsCounter; }
+            set { SetProperty(ref _graphPointsCounter, value); }
+        }
         /// <summary>
         /// Настройки текущей камеры
         /// </summary>
@@ -39,13 +45,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             get { return _plotModel; }
             set { SetProperty(ref _plotModel, value); }
         }
-        Timer uiTimer;
 
+        Timer uiTimer;
+        DispatcherTimer _visualTimer;
         public GraphViewModel(BaslerCameraModel currentCamera)
         {
             CurrentCamera = currentCamera;
             PlotModel = new PlotModel() { Title = CurrentCamera.ID, Background = OxyColors.White };
-            LinearAxis xAxes = new LinearAxis() { Position = AxisPosition.Bottom, Minimum = 0, Maximum = 6144 };
+            LinearAxis xAxes = new LinearAxis() { Position = AxisPosition.Bottom, Minimum = 0, Maximum = 70 };
             PlotModel.Axes.Add(xAxes);
             LinearAxis yAxes = new LinearAxis() { Position = AxisPosition.Left, Minimum = 0, Maximum = 255 };
             PlotModel.Axes.Add(yAxes);
@@ -61,40 +68,74 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             PlotModel.Series[0].Title = Text;
 
             //  (PlotModel.Series[0] as LineSeries).Points.AddRange(points);
-            uiTimer = new Timer(500);
+            uiTimer = new Timer(400);
             uiTimer.Elapsed += UiTimer_Tick;
             uiTimer.Start();
+
+
+            _visualTimer = new DispatcherTimer() { Interval = TimeSpan.FromSeconds(1) };
+            _visualTimer.Tick += _visualTimer_Tick;
+            _visualTimer.Start();
+        }
+
+
+
+        int _counter = 0;
+        private void _visualTimer_Tick(object sender, EventArgs e)
+        {
+            GraphPointsCounter = _counter;
         }
 
         private void UiTimer_Tick(object sender, EventArgs e)
         {
+            //Выключение таймера
+            try
+            {
+                uiTimer.Enabled = false;
+            }
+            catch
+            {
+                return;
+            }
+
             if (PlotModel.PlotView != null)
             {
                 List<DataPoint> points = new List<DataPoint>();
-                if (CurrentCamera.GraphPointsQueue.TryDequeue(out points) && points.Count > 0)
+                if (CurrentCamera.GraphPointsQueue.Count > 0 && CurrentCamera.GraphPointsQueue.TryDequeue(out points))
                 {
+                    _counter += 1;
                     (PlotModel.Series[0] as LineSeries).Points.Clear();
                     (PlotModel.Series[1] as LineSeries).Points.Clear();
-                    //Верхняя граница
-                    (PlotModel.Series[2] as LineSeries).Points.Clear();
-                    //Нижняя граница
-                    (PlotModel.Series[3] as LineSeries).Points.Clear();
-                    (PlotModel.Series[4] as LineSeries).Points.Clear();
 
+                    (PlotModel.Series[2] as LineSeries).Points.Clear();
+                    //Верхняя граница
+                    (PlotModel.Series[3] as LineSeries).Points.Clear();
+                    //Нижняя граница
+                    (PlotModel.Series[4] as LineSeries).Points.Clear();
                     (PlotModel.Series[0] as LineSeries).Points.AddRange(points);
                     for (int k = 0; k < points.Count; k++)
                     {
-                        DataPoint multiPoint = new DataPoint(k, UsingMultiCalibrationDeltas(points[k].Y, k));
-                        (PlotModel.Series[1] as LineSeries).Points.Add(multiPoint);
-                        DataPoint summPoints = new DataPoint(k, UsingCalibrationDeltas(CurrentCamera.GraphPoints[k].Y, k));
-                        (PlotModel.Series[2] as LineSeries).Points.Add(summPoints);
+                        //     DataPoint multiPoint = new DataPoint(k, UsingMultiCalibrationDeltas(points[k].Y, k));
+                        //     (PlotModel.Series[1] as LineSeries).Points.Add(multiPoint);
+                        //      DataPoint summPoints = new DataPoint(k, UsingCalibrationDeltas(CurrentCamera.GraphPoints[k].Y, k));
+                        //      (PlotModel.Series[2] as LineSeries).Points.Add(summPoints);
                         (PlotModel.Series[3] as LineSeries).Points.Add(new DataPoint(k, CurrentCamera.UpThreshold));
                         (PlotModel.Series[4] as LineSeries).Points.Add(new DataPoint(k, CurrentCamera.DownThreshold));
+                        //  CurrentCamera.GraphPointsQueue.Clear();
                     }
-                    PlotModel.PlotView.InvalidatePlot();
+                    //    CurrentCamera.GraphPointsQueue.Clear();
+                    PlotModel.InvalidatePlot(true);
                 }
             }
-
+            //включение таймера
+            try
+            {
+                uiTimer.Enabled = true;
+            }
+            catch
+            {
+                return;
+            }
         }
 
         /// <summary>

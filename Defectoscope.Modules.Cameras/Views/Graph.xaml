@@ -5,8 +5,16 @@
              xmlns:oxy="http://oxyplot.org/wpf"
             >
     <Grid>
-        <oxy:PlotView Model="{Binding PlotModel}">
-          
-        </oxy:PlotView>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+        <StackPanel  Grid.Row="0" Orientation="Horizontal">
+            <TextBlock Text="Счетчик="  FontSize="20"/>
+            <TextBlock Text="{Binding GraphPointsCounter}" FontSize="20" />
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible">
+            <oxy:PlotView Grid.Row="1" Model="{Binding PlotModel}" />
+        </ScrollViewer>
     </Grid>
 </UserControl>
