@@ -10,6 +10,7 @@ using Defectoscope.Modules.Cameras.Views;
 using System.Windows.Media;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Threading;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
@@ -55,7 +56,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IBenchmarkRepository BenchmarkRepository { get; }
         public IDefectRepository DefectRepository { get; }
         public IDialogService DialogService { get; }
-
+        private DispatcherTimer _timerForStats;
         public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository,
             IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,
             IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository,
@@ -70,6 +71,32 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             DefectRepository = defectRepository;
             DialogService = dialogService;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
+
+            _timerForStats = new() { Interval = TimeSpan.FromSeconds(1) };
+            _timerForStats.Tick += Timer_Tick;
+            _timerForStats.Start();
+
+            //CamerasStatisticsData = new();
+            //for (int i = 0; i < _baslerRepository.BaslerCamerasCollection.Count; i++)
+            //{
+            //    CamerasStatisticsData.Add(new CameraStatisticsData()
+            //    {
+            //        CameraName = _baslerRepository.BaslerCamerasCollection[i].ID,
+            //        TotalBufferCount = "total started",
+            //        FailedBufferCount = "failed started"
+            //    });
+            //}
+        }
+
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+
+            for (int i = 0; i < BaslerRepository.BaslerCamerasCollection.Count; i++)
+            {
+                BaslerRepository.BaslerCamerasCollection[i].CameraStatisticsData.TotalBufferCount = BaslerRepository.BaslerCamerasCollection[i].GetTotalBufferCount();
+                BaslerRepository.BaslerCamerasCollection[i].CameraStatisticsData.FailedBufferCount = BaslerRepository.BaslerCamerasCollection[i].GetFailedBufferCount();
+            }
         }
 
         #region Execute methods delegates
@@ -163,6 +190,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public override void OnNavigatedFrom(NavigationContext navigationContext)
         {
             base.OnNavigatedFrom(navigationContext);
+            _timerForStats.Stop();
         }
 
         public override void OnNavigatedTo(NavigationContext navigationContext)

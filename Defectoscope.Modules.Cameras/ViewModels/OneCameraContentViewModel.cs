@@ -278,7 +278,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
-                CurrentCamera.StrobeNum = _strobe;
+                CurrentCamera.CameraStatisticsData.StrobesCount = _strobe;
                 CurrentCamera.ExposureTime = _exposition;
                 //       if (imageGrabbedEnumModes == ImageGrabbedEnumModes.RecievePoints) FooterRepository.Text = "Обычный режим работы";
                 if (_strobe > 500_000) _strobe = 0;

@@ -91,12 +91,12 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref _heightThreshold, value); }
         }
 
-        private int _strobeNum;
-        public int StrobeNum
-        {
-            get { return _strobeNum; }
-            set { SetProperty(ref _strobeNum, value); }
-        }
+        //private int _strobeNum;
+        //public int StrobeNum
+        //{
+        //    get { return _strobeNum; }
+        //    set { SetProperty(ref _strobeNum, value); }
+        //}
 
         private long _exposureTime = 1300;
         public long ExposureTime
@@ -128,6 +128,8 @@ namespace LaserScan.Core.NetStandart.Models
         public Camera Camera { get; set; }
         // Управляем процессом получения изображений камерой
         public bool GrabOver = false;
+        [XmlIgnore]
+        public CameraStatisticsData CameraStatisticsData { get; set; } = new CameraStatisticsData();
 
         // Инициализация камеры
         public void CameraInit()
@@ -167,7 +169,7 @@ namespace LaserScan.Core.NetStandart.Models
             //Открываем камеру
             Camera.Open();
 
-            Camera.Parameters[PLCamera.Height].SetValue(5);
+            Camera.Parameters[PLCamera.Height].SetValue(CameraStatisticsData.StrobesHeight);
             Camera.Parameters[PLCamera.BlackLevelRaw].SetValue(0);
             Camera.Parameters[PLCamera.AcquisitionMode].SetValue(PLCamera.AcquisitionMode.Continuous);
             Camera.Parameters[PLCamera.AcquisitionLineRateAbs].SetValue(1000);
@@ -203,48 +205,38 @@ namespace LaserScan.Core.NetStandart.Models
                                 //   ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
         }
 
-        public string GetTotalBufferCount()
+        public long GetTotalBufferCount()
         {
-            string message = string.Empty;
+            long count = -1;
             try
             {
                 if (Camera != null)
                 {
-                    message = Camera.Parameters[PLStream.Statistic_Total_Buffer_Count].GetValue().ToString();
+                    count = Camera.Parameters[PLStream.Statistic_Total_Buffer_Count].GetValue();
                 }
-                else
-                {
-                    message = "Camera is null";
-                }
-                return message;
+                return count;
             }
-            catch (Exception ex)
+            catch
             {
-                message = ex.Message;
-                return message;
+                return count;
             }
         }
 
-        public string GetFailedBufferCount()
+        public long GetFailedBufferCount()
         {
-            string message = string.Empty;
+            long count = -1;
             try
             {
                 if (Camera != null)
                 {
-                    message = Camera.Parameters[PLStream.Statistic_Failed_Buffer_Count].GetValue().ToString();
-                }
-                else
-                {
-                    message = "Camera is null";
+                    count = Camera.Parameters[PLStream.Statistic_Failed_Buffer_Count].GetValue();
                 }
 
-                return message;
+                return count;
             }
-            catch (Exception ex)
+            catch
             {
-                message = ex.Message;
-                return message;
+                return count;
             }
         }
 

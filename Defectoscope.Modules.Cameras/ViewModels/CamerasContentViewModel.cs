@@ -133,27 +133,27 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
             BaslerRepository.LeftBorder = BaslerRepository.BaslerCamerasCollection[0].LeftBorder;
             BaslerRepository.RightBorder = BaslerRepository.BaslerCamerasCollection[0].RightBorder;
-            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            List<MaterialModel> materials = new();
-            BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
-            if (BaslerRepository.CurrentMaterial.CameraDeltaList != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
-            {
-                for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
-                {
-                    for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
-                    {
-                        if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
-                        {
-                            BaslerRepository.BaslerCamerasCollection[j].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
-                            BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
-                            BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
-                            BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
+            //string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+            //List<MaterialModel> materials = new();
+            //BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
+            //if (BaslerRepository.CurrentCamera.Deltas != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
+            //{
+            //    for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+            //    {
+            //        for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
+            //        {
+            //            if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
+            //            {
+            //                BaslerRepository.BaslerCamerasCollection[j].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
+            //                BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
+            //                BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+            //                BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
                            
-                            break;
-                        }
-                    }
-                }
-            }
+            //                break;
+            //            }
+            //        }
+            //    }
+            //}
 
             NonControlZonesRepository.AddZones(BaslerRepository);
             float shift = 0;
