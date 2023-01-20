@@ -24,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -111,6 +112,13 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             get { return _exposureTime; }
             set { SetProperty(ref _exposureTime, value); }
+        }
+
+        private Stretch _imageStretch=Stretch.None;
+        public Stretch ImageStretch
+        {
+            get { return _imageStretch; }
+            set { SetProperty(ref _imageStretch, value); }
         }
         #endregion
 
@@ -226,6 +234,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void _drawingTimer_Tick(object sender, EventArgs e)
         {
+  
             try
             {
                 BaslerRepository.CurrentCamera.CurrentAverage = result;

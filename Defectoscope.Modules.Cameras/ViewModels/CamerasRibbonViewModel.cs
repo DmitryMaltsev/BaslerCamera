@@ -7,6 +7,9 @@ using System;
 using System.IO;
 using Prism.Services.Dialogs;
 using Defectoscope.Modules.Cameras.Views;
+using System.Windows.Media;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
@@ -15,7 +18,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public string SettingsDir => Directory.CreateDirectory($"{Environment.CurrentDirectory}\\Settings").FullName;
 
         #region Rising properties
-
         #endregion
 
         #region Delegate commands

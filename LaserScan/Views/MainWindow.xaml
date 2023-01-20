@@ -8,7 +8,7 @@
         WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
-        Height="720" Width="1400"
+        Height="1000" Width="1400"
         Name="mainWindow"
         WindowStartupLocation="CenterScreen" 
         Background="#333">
@@ -26,7 +26,7 @@
     </Window.Resources>
     <Grid Margin="5">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="30" />
             <RowDefinition Height="230"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>

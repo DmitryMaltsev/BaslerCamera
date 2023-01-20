@@ -28,9 +28,9 @@ namespace LaserScan.Core.NetStandart.Models
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
         [XmlIgnore]
-       public List<DataPoint> GraphPoints = new List<DataPoint>();
+        public List<DataPoint> GraphPoints = new List<DataPoint>();
         [XmlIgnore]
-        public ConcurrentQueue<List<DataPoint>> GraphPointsQueue=new ConcurrentQueue<List<DataPoint>>();
+        public ConcurrentQueue<List<DataPoint>> GraphPointsQueue = new ConcurrentQueue<List<DataPoint>>();
 
         [XmlIgnore]
         //Начало определения дефектов для текущей камеры
@@ -177,7 +177,7 @@ namespace LaserScan.Core.NetStandart.Models
             Camera.Parameters[PLCamera.TriggerSource].SetValue("Line1");
             Camera.Parameters[PLCamera.TriggerSelector].SetValue("FrameStart");
             Camera.Parameters[PLCamera.TriggerMode].SetValue("On");
-            
+
             //if (ID == "Центральная камера" || ID == "Правая камера")
             //{
             //    Camera.Parameters[PLCamera.ReverseX].SetValue(true);
@@ -203,14 +203,49 @@ namespace LaserScan.Core.NetStandart.Models
                                 //   ExposureTime = Camera.Parameters[PLCamera.ExposureTimeRaw].GetValue();
         }
 
-        public long WritePipeResetCount()
+        public string GetTotalBufferCount()
         {
-            return Camera.Parameters[PLTransportLayer.Statistic_Write_Pipe_Reset_Count].GetValue();
+            string message = string.Empty;
+            try
+            {
+                if (Camera != null)
+                {
+                    message = Camera.Parameters[PLStream.Statistic_Total_Buffer_Count].GetValue().ToString();
+                }
+                else
+                {
+                    message = "Camera is null";
+                }
+                return message;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return message;
+            }
         }
 
-        public long ReadPipeResetCount()
+        public string GetFailedBufferCount()
         {
-            return Camera.Parameters[PLTransportLayer.Statistic_Read_Pipe_Reset_Count].GetValue();
+            string message = string.Empty;
+            try
+            {
+                if (Camera != null)
+                {
+                    message = Camera.Parameters[PLStream.Statistic_Failed_Buffer_Count].GetValue().ToString();
+                }
+                else
+                {
+                    message = "Camera is null";
+                }
+
+                return message;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return message;
+            }
         }
 
         public long ChangeExposureTime(int value)

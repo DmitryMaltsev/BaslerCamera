@@ -7,22 +7,31 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0">
-            <ContentControl  prism:RegionManager.RegionName="{x:Static c:RegionNames.Camera1Region}"/>
-        </Border>
-        <Border Grid.Column="1">
-            <ContentControl prism:RegionManager.RegionName="{x:Static c:RegionNames.Camera2Region}"/>
-        </Border>
-        <Border Grid.Column="2">
-            <ContentControl prism:RegionManager.RegionName="{x:Static c:RegionNames.Camera3Region}"/>
-        </Border>
-        <Border Grid.Column="3" BorderThickness="2" BorderBrush="{StaticResource ControlBorderBrush}" CornerRadius="3">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+
+
+        <TextBlock Text="{Binding BaslerRepository.BaslerCamerasCollection[0].ID}" FontSize="16" HorizontalAlignment="Center" Background="WhiteSmoke" Grid.Row="0" Grid.Column="0"/>
+        <ContentControl  prism:RegionManager.RegionName="{x:Static c:RegionNames.Camera1Region}"  Grid.Row="1" Grid.Column="0" />
+
+        <TextBlock Text="{Binding BaslerRepository.BaslerCamerasCollection[1].ID}" FontSize="16" HorizontalAlignment="Center" Background="WhiteSmoke" Grid.Row="2" Grid.Column="0"/>
+        <ContentControl  prism:RegionManager.RegionName="{x:Static c:RegionNames.Camera2Region}" Grid.Row="3" Grid.Column="0"/>
+
+        <TextBlock Text="{Binding BaslerRepository.BaslerCamerasCollection[2].ID}" FontSize="16" HorizontalAlignment="Center" Background="WhiteSmoke" Grid.Row="4" Grid.Column="0"/>
+        <ContentControl  prism:RegionManager.RegionName="{x:Static c:RegionNames.Camera3Region}" Grid.Row="5" Grid.Column="0"/>
+        
+       
+        <Border Grid.Column="1" BorderThickness="2" BorderBrush="{StaticResource ControlBorderBrush}" CornerRadius="3" Grid.Row="0" Grid.RowSpan="6">
             <DataGrid ItemsSource="{Binding DefectRepository.DefectsCollection}" ColumnWidth="*" AutoGenerateColumns="True">
-                
+
             </DataGrid>
         </Border>
     </Grid>

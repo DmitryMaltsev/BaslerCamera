@@ -15,8 +15,9 @@ using System.Windows.Threading;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
-    public class GraphViewModel : BindableBase
+    public class GraphViewModel : BindableBase,IDisposable
     {
+        
         private int _graphPointsCounter;
         public int GraphPointsCounter
         {
@@ -52,7 +53,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
             CurrentCamera = currentCamera;
             PlotModel = new PlotModel() { Title = CurrentCamera.ID, Background = OxyColors.White };
-            LinearAxis xAxes = new LinearAxis() { Position = AxisPosition.Bottom, Minimum = 0, Maximum = 70 };
+            LinearAxis xAxes = new LinearAxis() { Position = AxisPosition.Bottom, Minimum = 0, Maximum = 1_000 };
             PlotModel.Axes.Add(xAxes);
             LinearAxis yAxes = new LinearAxis() { Position = AxisPosition.Left, Minimum = 0, Maximum = 255 };
             PlotModel.Axes.Add(yAxes);
@@ -176,6 +177,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
             }
             return currentByte;
+        }
+
+        public void Dispose()
+        {
+            _visualTimer.Stop();
+            _visualTimer.Stop();
+
+
         }
     }
 }

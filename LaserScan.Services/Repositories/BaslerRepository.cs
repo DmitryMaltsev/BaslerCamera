@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 using Kogerent.Services.Interfaces;
 
@@ -77,7 +78,8 @@ namespace Kogerent.Services.Implementation
         public float LeftBorder
         {
             get { return _leftBorder; }
-            set { 
+            set
+            {
                 SetProperty(ref _leftBorder, value);
                 NonControlZonesRepository.AddZones(this);
             }
@@ -87,7 +89,8 @@ namespace Kogerent.Services.Implementation
         public float RightBorder
         {
             get { return _rightBorder; }
-            set { 
+            set
+            {
                 SetProperty(ref _rightBorder, value);
                 NonControlZonesRepository.AddZones(this);
             }

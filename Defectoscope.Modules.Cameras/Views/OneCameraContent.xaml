@@ -4,8 +4,9 @@
              xmlns:prism="http://prismlibrary.com/"             
              xmlns:c="http://kogerent.org">
     <Grid>
-        <!--<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Foreground="{StaticResource ControlForegroundWhite}" Text="{Binding CurrentCamera.ID}"/>-->
+        <!--<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="24" Foreground="{StaticResource ControlForegroundWhite}"
+        {Binding BaslerRepository.CurrentImageStretch, UpdateSourceTrigger=PropertyChanged}
+        Text="{Binding CurrentCamera.ID}"/>-->
         <Image Source="{Binding ImageSource}" Stretch="Fill"/>
-
     </Grid>
 </UserControl>
