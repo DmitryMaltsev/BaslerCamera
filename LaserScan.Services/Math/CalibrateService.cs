@@ -9,6 +9,7 @@ using MathNet.Numerics;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -195,7 +196,7 @@ namespace Kogerent.Services.Implementation
         /// <param name="minBoundsLight"></param>
         /// <param name="changeExpoisitionValue"></param>
         /// <returns></returns>
-        public  bool NeedChangeExposition(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width,
+        public bool NeedChangeExposition(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width,
             int xMinIndex, int xMaxIndex, int minBoundsLight, int maxBoundsLight, out int changeExpoisitionValue)
         {
             int bufCount = _concurentBuffer.Count;
@@ -211,7 +212,7 @@ namespace Kogerent.Services.Implementation
 
                 }
             }
-          // _concurentBuffer.Clear();
+            // _concurentBuffer.Clear();
             List<byte> pointsToFindMaxY = new();
             for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
             {
@@ -229,7 +230,7 @@ namespace Kogerent.Services.Implementation
             {
                 changeExpoisitionValue = -30;
                 return true;
-              
+
             }
             else
                if (pointsToFindMaxY[pointsToFindMaxY.Count - 250] < minBoundsLight)
@@ -239,6 +240,50 @@ namespace Kogerent.Services.Implementation
             }
             changeExpoisitionValue = 0;
             return false;
+        }
+
+
+        public void AddCalibrateSettingsToMaterial(ObservableCollection<BaslerCameraModel> baslerCameraCollection,
+                                                  BaslerCameraModel currentCamera,
+                                                   ObservableCollection<MaterialModel> materialModelCollection)
+        {
+            if (currentCamera != null)
+            {
+                int index = -1;
+                for (int i = 0; i < baslerCameraCollection.Count; i++)
+                {
+                    if (baslerCameraCollection[i] == currentCamera)
+                    {
+                        index = i;
+                    }
+                }
+
+                materialModelCollection[0].CameraDeltaList[index] = (new()
+                {
+                    CameraId = currentCamera.ID,
+                    Deltas = currentCamera.Deltas,
+                    MultipleDeltas = currentCamera.MultipleDeltas,
+                    UpThreshhold = currentCamera.UpThreshold,
+                    DownThreshhold = currentCamera.DownThreshold
+                });
+            }
+
+        }
+
+
+        public ObservableCollection<MaterialModel> CreateDefaultMaterialCollection()
+        {
+
+            ObservableCollection<MaterialModel> materialModelCollection = new ObservableCollection<MaterialModel>();
+            materialModelCollection.Add(new MaterialModel()
+            {
+                MaterialName = "Default",
+                CameraDeltaList = new List<CameraDelta>()
+            });
+            materialModelCollection[0].CameraDeltaList.Add(new CameraDelta());
+            materialModelCollection[0].CameraDeltaList.Add(new CameraDelta());
+            materialModelCollection[0].CameraDeltaList.Add(new CameraDelta());
+            return materialModelCollection;
         }
     }
 }

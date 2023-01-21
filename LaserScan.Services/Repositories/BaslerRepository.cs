@@ -16,6 +16,14 @@ namespace Kogerent.Services.Implementation
 {
     public class BaslerRepository : BindableBase, IBaslerRepository
     {
+
+        private double _calibrationTimer;
+        public double CalibrationTimer
+        {
+            get { return _calibrationTimer; }
+            set { SetProperty(ref _calibrationTimer, value); }
+        }
+
         public BaslerRepository(INonControlZonesRepository nonControlZonesRepository)
         {
             NonControlZonesRepository = nonControlZonesRepository;

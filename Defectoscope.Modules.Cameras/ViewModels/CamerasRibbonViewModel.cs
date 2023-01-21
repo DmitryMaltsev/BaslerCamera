@@ -107,22 +107,19 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.LeftBorder;
             BaslerRepository.BaslerCamerasCollection[0].RightBorder = BaslerRepository.RightBorder;
             //Сохраняем границы из камер в материал
-            for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
+            for (int i = 0; i < BaslerRepository.MaterialModelCollection[0].CameraDeltaList.Count; i++)
             {
-                for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
+                if (BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[i].ID)
                 {
-                    if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
-                    {
-                        BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold = BaslerRepository.BaslerCamerasCollection[j].DownThreshold;
-                        BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold = BaslerRepository.BaslerCamerasCollection[j].UpThreshold;
-                        break;
-                    }
+                    BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].DownThreshhold = BaslerRepository.BaslerCamerasCollection[i].DownThreshold;
+                    BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].UpThreshhold = BaslerRepository.BaslerCamerasCollection[i].UpThreshold;
                 }
+
             }
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
-            FooterRepository.Text = $"Калибровочные данные сохранены в  {BaslerRepository.CurrentMaterial.MaterialName}";
+            FooterRepository.Text = $"Калибровочные данные сохранены в  { BaslerRepository.MaterialModelCollection[0].MaterialName}";
             //}
             //else
             //{

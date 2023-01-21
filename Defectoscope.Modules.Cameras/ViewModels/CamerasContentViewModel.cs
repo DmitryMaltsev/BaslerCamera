@@ -47,11 +47,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IDefectRepository DefectRepository { get; }
         public IXmlService XmlService { get; }
         public INonControlZonesRepository NonControlZonesRepository { get; }
+        public ICalibrateService CalibrateService { get; }
         #endregion
 
         public CamerasContentViewModel(IRegionManager regionManager, IApplicationCommands applicationCommands, IBaslerService baslerService,
             IBaslerRepository baslerRepository, IContainerProvider containerProvider, IDefectRepository defectRepository, IXmlService xmlService,
-            INonControlZonesRepository nonControlZonesRepository) : base(regionManager)
+            INonControlZonesRepository nonControlZonesRepository, ICalibrateService calibrateService) : base(regionManager)
         {
             ApplicationCommands = applicationCommands;
             BaslerService = baslerService;
@@ -60,6 +61,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             DefectRepository = defectRepository;
             XmlService = xmlService;
             NonControlZonesRepository = nonControlZonesRepository;
+            CalibrateService = calibrateService;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
             //ApplicationCommands.InitAllSensors.RegisterCommand(InitCameras);
             //ApplicationCommands.StartAllSensors.RegisterCommand(StartAllCameras);
@@ -133,29 +135,24 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
             BaslerRepository.LeftBorder = BaslerRepository.BaslerCamerasCollection[0].LeftBorder;
             BaslerRepository.RightBorder = BaslerRepository.BaslerCamerasCollection[0].RightBorder;
-            //string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
-            //List<MaterialModel> materials = new();
-            //BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, materials));
-            //if (BaslerRepository.CurrentCamera.Deltas != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
-            //{
-            //    for (int i = 0; i < BaslerRepository.CurrentMaterial.CameraDeltaList.Count; i++)
-            //    {
-            //        for (int j = 0; j < BaslerRepository.BaslerCamerasCollection.Count; j++)
-            //        {
-            //            if (BaslerRepository.CurrentMaterial.CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[j].ID)
-            //            {
-            //                BaslerRepository.BaslerCamerasCollection[j].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
-            //                BaslerRepository.BaslerCamerasCollection[j].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
-            //                BaslerRepository.BaslerCamerasCollection[j].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
-            //                BaslerRepository.BaslerCamerasCollection[j].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
-                           
-            //                break;
-            //            }
-            //        }
-            //    }
-            //}
+            string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
+           // BaslerRepository.MaterialModelCollection = CalibrateService.CreateDefaultMaterialCollection();
+            BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, new List<MaterialModel>()));
+            if (BaslerRepository.CurrentCamera.Deltas != null && BaslerRepository.MaterialModelCollection[0].CameraDeltaList.Count > 0)
+            {
+                for (int i = 0; i < BaslerRepository.BaslerCamerasCollection.Count; i++)
+                {
+
+                    BaslerRepository.BaslerCamerasCollection[i].DownThreshold = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].DownThreshhold;
+                    BaslerRepository.BaslerCamerasCollection[i].UpThreshold = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].UpThreshhold;
+                    BaslerRepository.BaslerCamerasCollection[i].Deltas = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].Deltas;
+                    BaslerRepository.BaslerCamerasCollection[i].MultipleDeltas = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].MultipleDeltas;
+                }
+            }
 
             NonControlZonesRepository.AddZones(BaslerRepository);
+
+            #region Add cameras views
             float shift = 0;
             OneCameraContent Camera1V = ContainerProvider.Resolve<OneCameraContent>();
             OneCameraContentViewModel Camera1VM = ContainerProvider.Resolve<OneCameraContentViewModel>();
@@ -194,6 +191,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 currentRegion.Add(Camera3V);
                 currentRegion.Activate(Camera3V);
             }
+            #endregion
         }
     }
 }

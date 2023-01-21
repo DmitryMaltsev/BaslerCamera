@@ -234,11 +234,7 @@
                             <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Очередь на принятие" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.TotalCount}" VerticalAlignment="Center"  HorizontalAlignment="Center"
                                         FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-
-                            <!--<TextBlock  Grid.Row="1" Grid.Column="0"  Margin="1" Text="Очередь на обработку" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
-                            <TextBlock  Grid.Row="1" Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.TempQueueCount}" Foreground="{StaticResource ControlForegroundWhite}"
-                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
-
+                            
                             <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="1" Text="Время обработки шаб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="1"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=N2}" 
                                          VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
@@ -246,6 +242,11 @@
                             <TextBlock   Grid.Row="2" Grid.Column="0"  Margin="1" Text="Время обработки деф" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.DefectsProcessingTimer, StringFormat=N2}"
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+
+                            <TextBlock   Grid.Row="3" Grid.Column="0"  Margin="1" Text="Время клибровки" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
+                            <TextBlock Grid.Row="3"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.CalibrationTimer, StringFormat=N2}"
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+
                         </Grid>
                         <TextBlock Text="Метрика" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>

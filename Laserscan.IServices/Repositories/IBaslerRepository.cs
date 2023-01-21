@@ -17,5 +17,6 @@ namespace Kogerent.Services.Interfaces
         bool AllDefectsFound { get; set; }
         float LeftBorder { get; set; }
         float RightBorder { get; set; }
+        double CalibrationTimer { get; set; }
     }
 }

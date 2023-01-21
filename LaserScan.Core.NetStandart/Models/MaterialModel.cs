@@ -15,12 +15,14 @@ namespace LaserScan.Core.NetStandart.Models
             get { return _cameraDeltaList; }
             set { SetProperty(ref _cameraDeltaList, value); }
         }
+
         private string _materialName;
         public string MaterialName
         {
             get { return _materialName; }
             set { SetProperty(ref _materialName, value); }
         }
+
     }
 
     public class CameraDelta : BindableBase

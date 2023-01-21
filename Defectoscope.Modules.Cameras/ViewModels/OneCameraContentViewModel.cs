@@ -77,6 +77,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private DispatcherTimer _drawingTimer;
         private Stopwatch imgProcessingStopWatch = new();
         private Stopwatch defectsProcessingStopWatch = new();
+        private Stopwatch calibrationStopWatch = new();
         private Image<Gray, byte> img;
         private Image<Gray, byte> tempImage;
         private byte[,,] imgData;
@@ -114,7 +115,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             set { SetProperty(ref _exposureTime, value); }
         }
 
-        private Stretch _imageStretch=Stretch.None;
+        private Stretch _imageStretch = Stretch.None;
         public Stretch ImageStretch
         {
             get { return _imageStretch; }
@@ -234,7 +235,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         private void _drawingTimer_Tick(object sender, EventArgs e)
         {
-  
+
             try
             {
                 BaslerRepository.CurrentCamera.CurrentAverage = result;
@@ -277,9 +278,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.TotalCount = _concurentVideoBuffer.Count;
                 BenchmarkRepository.ImageProcessingSpeedCounter = imgProcessingStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.DefectsProcessingTimer = defectsProcessingStopWatch.ElapsedTicks / 10_000d;
+                BaslerRepository.CalibrationTimer = calibrationStopWatch.ElapsedTicks / 10_000d;
                 BenchmarkRepository.TempQueueCount = _imageDataBuffer.Count;
                 CurrentCamera.CameraStatisticsData.StrobesCount = _strobe;
                 CurrentCamera.ExposureTime = _exposition;
+
                 //       if (imageGrabbedEnumModes == ImageGrabbedEnumModes.RecievePoints) FooterRepository.Text = "Обычный режим работы";
                 if (_strobe > 500_000) _strobe = 0;
             }
@@ -458,6 +461,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         }
 
 
+
         private async void ProceesBuffersAction()
         {
             while (true)
@@ -506,33 +510,24 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     case ImageGrabbedEnumModes.CreateEtalonPoints:
                         {
                             int bufCount = _concurentVideoBuffer.Count;
-                            int countArraysToAnalize = 5000;
+                            int countArraysToAnalize = 1000;
                             if (bufCount > countArraysToAnalize / countArraysInSection)
                             {
+                                calibrationStopWatch.Restart();
                                 //   List<byte> calibratedPointsList = CalibrateService.CreateAverageDataForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
 
                                 List<byte> calibratedPointsList = CalibrateService.CreateAverageElementsForCalibration(_concurentVideoBuffer, countArraysInSection, _width);
-                                string path = Path.Combine(Directory.GetCurrentDirectory(), "PointsData", $"{_currentCamera.ID}_etalonData.xml");
 
                                 // XmlService.Write(path, calibratedPointsList);
                                 CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
                                 CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
-
-                                if (BaslerRepository.CurrentCamera != null)
-                                {
-                                    BaslerRepository.CurrentMaterial.CameraDeltaList.Add(new()
-                                    {
-                                        CameraId = CurrentCamera.ID,
-                                        Deltas = CurrentCamera.Deltas,
-                                        MultipleDeltas = CurrentCamera.MultipleDeltas,
-                                        UpThreshhold = CurrentCamera.UpThreshold,
-                                        DownThreshhold = CurrentCamera.DownThreshold
-                                    });
-                                }
-
+                                
+                                CalibrateService.AddCalibrateSettingsToMaterial(BaslerRepository.BaslerCamerasCollection, CurrentCamera,
+                                                                                             BaslerRepository.MaterialModelCollection);
                                 _concurentVideoBuffer.Clear();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
                                 _strobe = 0;
+                                calibrationStopWatch.Stop();
                             }
                         }
                         break;
@@ -929,7 +924,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _currentHeight = 500;
             tempImage = new Image<Gray, byte>(_width, _currentHeight);
             img = new Image<Gray, byte>(_width, _currentHeight);
-            countArraysInSection = 5;
+            countArraysInSection = CurrentCamera.CameraStatisticsData.StrobesHeight;
             _exposition = CurrentCamera.ExposureTime;
         }
     }
