@@ -9,6 +9,7 @@ using Kogerent.LaserScan.Views;
 using Kogerent.Logger;
 using Kogerent.Services.Implementation;
 using Kogerent.Services.Interfaces;
+using Kogerent.Services.Repositories;
 
 using LaserScan.Core.NetStandart.Services;
 using LaserScan.Views;
@@ -62,6 +63,7 @@ namespace LaserScan
             _ = containerRegistry.RegisterSingleton<IBaslerService, BaslerService>();
             _ = containerRegistry.RegisterSingleton<IBenchmarkRepository, BenchmarkRepository>();
             _ = containerRegistry.RegisterSingleton<ICalibrateService, CalibrateService>();
+            _ = containerRegistry.RegisterSingleton<IFilesRepository, FilesRepository>();
             containerRegistry.RegisterDialog<AddMaterialContext, AddMaterialContextViewModel>();
             containerRegistry.RegisterDialog<DeleteMaterialContext, DeleteMaterialContextViewModel>();
             containerRegistry.RegisterDialog<Graphs, GraphsViewModel>();

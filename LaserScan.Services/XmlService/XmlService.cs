@@ -5,14 +5,17 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using IronXL;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Prism.Mvvm;
 
 namespace Kogerent.Services.Implementation
 {
     /// <summary>
     /// Сервис сериализации и десериализации
     /// </summary>
-    public class XmlService : IXmlService
+    public class XmlService :BindableBase, IXmlService
     {
+
         /// <summary>
         /// Десериализует xml-файл в объект и сохраняет путь
         /// </summary>

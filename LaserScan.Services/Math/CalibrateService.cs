@@ -244,30 +244,19 @@ namespace Kogerent.Services.Implementation
 
 
         public void AddCalibrateSettingsToMaterial(ObservableCollection<BaslerCameraModel> baslerCameraCollection,
-                                                  BaslerCameraModel currentCamera,
-                                                   ObservableCollection<MaterialModel> materialModelCollection)
+                                                  MaterialModel currentMaterial)
         {
-            if (currentCamera != null)
+            for (int i = 0; i < baslerCameraCollection.Count; i++)
             {
-                int index = -1;
-                for (int i = 0; i < baslerCameraCollection.Count; i++)
+                currentMaterial.CameraDeltaList[i] = (new()
                 {
-                    if (baslerCameraCollection[i] == currentCamera)
-                    {
-                        index = i;
-                    }
-                }
-
-                materialModelCollection[0].CameraDeltaList[index] = (new()
-                {
-                    CameraId = currentCamera.ID,
-                    Deltas = currentCamera.Deltas,
-                    MultipleDeltas = currentCamera.MultipleDeltas,
-                    UpThreshhold = currentCamera.UpThreshold,
-                    DownThreshhold = currentCamera.DownThreshold
+                    CameraId = baslerCameraCollection[i].ID,
+                    Deltas = baslerCameraCollection[i].Deltas,
+                    MultipleDeltas = baslerCameraCollection[i].MultipleDeltas,
+                    UpThreshhold = baslerCameraCollection[i].UpThreshold,
+                    DownThreshhold = baslerCameraCollection[i].DownThreshold
                 });
             }
-
         }
 
 

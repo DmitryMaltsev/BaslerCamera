@@ -6,20 +6,6 @@
               xmlns:c="http://kogerent.org"
              Width="1800" Height="800">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="10*" />
-            <RowDefinition Height="3*" />
-        </Grid.RowDefinitions>
-        <!--<Border Grid.Column="0"  BorderBrush="Black" CornerRadius="5" BorderThickness="1">
-            <ContentControl Content="{Binding Graphs[0]}"/>
-        </Border>
-        <Border Grid.Column="1" BorderBrush="Black" CornerRadius="5"  BorderThickness="1">
-            <ContentControl Content="{Binding Graphs[1]}"/>
-        </Border>
-        <Border Grid.Column="2" BorderBrush="Black" CornerRadius="5"  BorderThickness="1">
-            <ContentControl Content="{Binding Graphs[2]}"/>
-        </Border>-->
-
         <TabControl  ItemsSource="{Binding Graphs}" Grid.Row="0">
             <TabControl.ItemTemplate>
                 <DataTemplate>
@@ -32,26 +18,5 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Background="White" Margin="10,0">
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10,10">
-                <TextBlock Text="{Binding CamerasStatisticsData[0].CameraName}" FontSize="20"/>
-                <TextBlock Text="{Binding CamerasStatisticsData[0].TotalBufferCount, StringFormat=Total buffer count:{0}}" FontSize="20"/>
-                <TextBlock Text="{Binding  CamerasStatisticsData[0].FailedBufferCount, StringFormat=Failed buffer count:{0}}" FontSize="20"/>
-            </StackPanel>
-            
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="150,10">
-
-                <TextBlock Text="{Binding CamerasStatisticsData[1].CameraName}" FontSize="20"/>
-                <TextBlock Text="{Binding CamerasStatisticsData[1].TotalBufferCount, StringFormat=Total buffer count:{0}}" FontSize="20"/>
-                <TextBlock Text="{Binding CamerasStatisticsData[1].FailedBufferCount, StringFormat=Failed buffer count:{0}}" FontSize="20"/>
-            </StackPanel>
-       
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="150,10">
-                <TextBlock Text="{Binding CamerasStatisticsData[2].CameraName}" FontSize="20"/>
-                <TextBlock Text="{Binding CamerasStatisticsData[2].TotalBufferCount, StringFormat=Total buffer count:{0}}" FontSize="20"/>
-                <TextBlock Text="{Binding CamerasStatisticsData[2].FailedBufferCount, StringFormat=Failed buffer count:{0}}" FontSize="20"/>
-            </StackPanel>
-        </StackPanel>
     </Grid>
 </UserControl>

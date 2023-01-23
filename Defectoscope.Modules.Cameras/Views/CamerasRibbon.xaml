@@ -66,7 +66,7 @@
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="0" Content="Накл. камер"  Command="{Binding  ApplicationCommands.CheckCamerasOverLay}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="1" Content="Сохранить"  Command="{Binding SaveCamerasSettings}"/>
-                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="2" Content="XmlRaw" Command="{Binding ApplicationCommands.CheckNoCalibrateAll}"  
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="2" Content="SaveRawPoints" Command="{Binding ApplicationCommands.CheckNoCalibrateAll}"  
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="2" Content="XmlFilter"  Command="{Binding ApplicationCommands.CheckFilterAll}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
@@ -234,7 +234,7 @@
                             <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Очередь на принятие" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="0" Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.TotalCount}" VerticalAlignment="Center"  HorizontalAlignment="Center"
                                         FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="1" Text="Время обработки шаб" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="1"  Grid.Column="1"  Margin="1" Text="{Binding BenchmarkRepository.ImageProcessingSpeedCounter, StringFormat=N2}" 
                                          VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
@@ -267,26 +267,26 @@
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
-            
-             
+
+
                             </Grid.RowDefinitions>
 
                             <TextBlock   Grid.Row="0" Grid.Column="0"  Margin="1" Text="Пакетов c камеры" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="0"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].CameraStatisticsData.TotalBufferCount}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="1" Grid.Column="0"  Margin="1" Text="Пакетов с ошибкой" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="1"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].CameraStatisticsData.FailedBufferCount}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="2" Grid.Column="0"  Margin="1" Text="Стробов в пакете" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="2"  Grid.Column="1"  Margin="1" Text="{Binding  BaslerRepository.BaslerCamerasCollection[0].CameraStatisticsData.StrobesHeight}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="3" Grid.Column="0"  Margin="1" Text="С учетом кол-ва рядов" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="3"  Grid.Column="1"  Margin="1" Text="{Binding  BaslerRepository.BaslerCamerasCollection[0].CameraStatisticsData.BufferCountWithHeight}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            
+
                             <TextBlock   Grid.Row="4" Grid.Column="0"  Margin="1" Text="Принято" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14"/>
                             <TextBlock Grid.Row="4"  Grid.Column="1"  Margin="1" Text="{Binding BaslerRepository.BaslerCamerasCollection[0].CameraStatisticsData.StrobesCount}" 
                                         VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
@@ -384,6 +384,58 @@
                     <!--#endregion-->
 
                 </StackPanel>
+            </TabItem>
+
+            <TabItem Header="Запись файлов">
+                <StackPanel Orientation="Horizontal">
+                    <DockPanel LastChildFill="False">
+                        <Grid DockPanel.Dock="Top">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="0" Content="SaveRawPoints" Command="{Binding ApplicationCommands.CheckNoCalibrateAll}"  
+                                    IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="2" Content="XmlFilter"  Command="{Binding ApplicationCommands.CheckFilterAll}"
+                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
+                        </Grid>
+                        <TextBlock Text="Калибровка" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
+                    </DockPanel>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <!--#endregion-->
+
+                    <!--#region CheckLeftStrobesCount -->
+                    <DockPanel LastChildFill="False">
+                        <Grid DockPanel.Dock="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0"    Margin="1" Text="{Binding    FilesRepository.FilesRawCount[0], StringFormat = Время записи  {0} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock Grid.Row="1"   Margin="1" Text="{Binding  FilesRepository.FilesRawCount[0], StringFormat = Записанных строк {0} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                        </Grid>
+                        <TextBlock Text="Запись левой камеры" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
+                    </DockPanel>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <!--#endregion-->
+                </StackPanel>
+                <!--#region Calibrate/save -->
+
             </TabItem>
         </TabControl>
     </Grid>

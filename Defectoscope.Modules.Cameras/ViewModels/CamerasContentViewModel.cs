@@ -89,7 +89,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Task result = Task.WhenAll(tasks);
             await result;
             BaslerRepository.AllCamerasInitialized = BaslerRepository.BaslerCamerasCollection.All(c => c.Initialized);
-
         }
 
         private void ExecuteDestroy()
@@ -138,15 +137,16 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
            // BaslerRepository.MaterialModelCollection = CalibrateService.CreateDefaultMaterialCollection();
             BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, new List<MaterialModel>()));
-            if (BaslerRepository.CurrentCamera.Deltas != null && BaslerRepository.MaterialModelCollection[0].CameraDeltaList.Count > 0)
+            BaslerRepository.CurrentMaterial = BaslerRepository.MaterialModelCollection[0];
+            if (BaslerRepository.CurrentCamera.Deltas != null && BaslerRepository.CurrentMaterial.CameraDeltaList.Count > 0)
             {
                 for (int i = 0; i < BaslerRepository.BaslerCamerasCollection.Count; i++)
                 {
 
-                    BaslerRepository.BaslerCamerasCollection[i].DownThreshold = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].DownThreshhold;
-                    BaslerRepository.BaslerCamerasCollection[i].UpThreshold = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].UpThreshhold;
-                    BaslerRepository.BaslerCamerasCollection[i].Deltas = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].Deltas;
-                    BaslerRepository.BaslerCamerasCollection[i].MultipleDeltas = BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].MultipleDeltas;
+                    BaslerRepository.BaslerCamerasCollection[i].DownThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].DownThreshhold;
+                    BaslerRepository.BaslerCamerasCollection[i].UpThreshold = BaslerRepository.CurrentMaterial.CameraDeltaList[i].UpThreshhold;
+                    BaslerRepository.BaslerCamerasCollection[i].Deltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].Deltas;
+                    BaslerRepository.BaslerCamerasCollection[i].MultipleDeltas = BaslerRepository.CurrentMaterial.CameraDeltaList[i].MultipleDeltas;
                 }
             }
 

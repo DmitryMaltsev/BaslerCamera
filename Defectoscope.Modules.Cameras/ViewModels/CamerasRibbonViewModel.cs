@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Threading;
+using Kogerent.Services.Repositories;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
@@ -55,27 +56,33 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IXmlService XmlService { get; }
         public IBenchmarkRepository BenchmarkRepository { get; }
         public IDefectRepository DefectRepository { get; }
+        public IFilesRepository FilesRepository { get; }
         public IDialogService DialogService { get; }
         private DispatcherTimer _timerForStats;
+        private readonly ICalibrateService _calibrateService;
+
         public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository,
-            IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,
-            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository,
+            IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,ICalibrateService  calibrateService,
+            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository, IFilesRepository filesRepository,
             IDialogService dialogService) : base(regionManager)
         {
             RegionManager = regionManager;
             FooterRepository = footerRepository;
             ApplicationCommands = applicationCommands;
             BaslerRepository = baslerRepository;
+            _calibrateService = calibrateService;
             XmlService = xmlService;
             BenchmarkRepository = benchmarkRepository;
             DefectRepository = defectRepository;
+            FilesRepository = filesRepository;
             DialogService = dialogService;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
 
             _timerForStats = new() { Interval = TimeSpan.FromSeconds(1) };
             _timerForStats.Tick += Timer_Tick;
             _timerForStats.Start();
-
+            filesRepository.FilesRecordingTime = new float[3];
+            filesRepository.FilesRawCount = new int[3];
             //CamerasStatisticsData = new();
             //for (int i = 0; i < _baslerRepository.BaslerCamerasCollection.Count; i++)
             //{
@@ -106,25 +113,11 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.LeftBorder;
             BaslerRepository.BaslerCamerasCollection[0].RightBorder = BaslerRepository.RightBorder;
-            //Сохраняем границы из камер в материал
-            for (int i = 0; i < BaslerRepository.MaterialModelCollection[0].CameraDeltaList.Count; i++)
-            {
-                if (BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].CameraId == BaslerRepository.BaslerCamerasCollection[i].ID)
-                {
-                    BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].DownThreshhold = BaslerRepository.BaslerCamerasCollection[i].DownThreshold;
-                    BaslerRepository.MaterialModelCollection[0].CameraDeltaList[i].UpThreshhold = BaslerRepository.BaslerCamerasCollection[i].UpThreshold;
-                }
-
-            }
+            _calibrateService.AddCalibrateSettingsToMaterial(BaslerRepository.BaslerCamerasCollection,BaslerRepository.CurrentMaterial);
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);
-            FooterRepository.Text = $"Калибровочные данные сохранены в  { BaslerRepository.MaterialModelCollection[0].MaterialName}";
-            //}
-            //else
-            //{
-            //    FooterRepository.Text = "Проведите инициализацию перед калибровкой и сохранитесь";
-            //}
+            FooterRepository.Text = $"Калибровочные данные сохранены в  { BaslerRepository.CurrentMaterial.MaterialName}";
         }
 
         void ExecuteAddBrightnessCommand()

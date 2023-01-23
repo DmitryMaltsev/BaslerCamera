@@ -8,7 +8,7 @@ namespace Kogerent.Services.Interfaces
 {
     public interface ICalibrateService
     {
-        void AddCalibrateSettingsToMaterial(ObservableCollection<BaslerCameraModel> baslerCameraCollection, BaslerCameraModel currentCamera, ObservableCollection<MaterialModel> materialModelCollection);
+        void AddCalibrateSettingsToMaterial(ObservableCollection<BaslerCameraModel> baslerCameraCollection, MaterialModel currentMaterial);
         (double[], int[]) Calibrate(byte[] data);
         (int, double) CalibrateExposureTimeRaw(byte[] data, int currentExposure);
         double[] CalibrateMultiRaw(byte[] data);

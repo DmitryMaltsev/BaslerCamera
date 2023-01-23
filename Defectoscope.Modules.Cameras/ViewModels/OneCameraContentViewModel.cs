@@ -356,12 +356,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         }
                     }
                     break;
-                case ImageGrabbedEnumModes.FindBounds:
-                    {
-                        FooterRepository.Text = "Смотрим индексы";
-                        FindBoundsIndexes(e);
-                    }
-                    break;
                 case ImageGrabbedEnumModes.CreateFilterXml:
                     {
                         try
@@ -403,6 +397,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             FooterRepository.Text = msg;
                             ExecuteStopCamera();
                         }
+                    }
+                    break;
+                case ImageGrabbedEnumModes.FindBounds:
+                    {
+                        FooterRepository.Text = "Смотрим индексы";
+                        FindBoundsIndexes(e);
                     }
                     break;
                 case ImageGrabbedEnumModes.InActive:
@@ -521,14 +521,12 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                 // XmlService.Write(path, calibratedPointsList);
                                 CurrentCamera.Deltas = CalibrateService.CalibrateRaw(calibratedPointsList.ToArray());
                                 CurrentCamera.MultipleDeltas = CalibrateService.CalibrateMultiRaw(calibratedPointsList.ToArray());
-                                
-                                CalibrateService.AddCalibrateSettingsToMaterial(BaslerRepository.BaslerCamerasCollection, CurrentCamera,
-                                                                                             BaslerRepository.MaterialModelCollection);
                                 _concurentVideoBuffer.Clear();
                                 imageGrabbedEnumModes = ImageGrabbedEnumModes.RecievePoints;
                                 _strobe = 0;
                                 calibrationStopWatch.Stop();
-                            }
+                             //   calibrationStopWatch.Reset();
+                               }
                         }
                         break;
                     case ImageGrabbedEnumModes.FindExpositionLevel:
