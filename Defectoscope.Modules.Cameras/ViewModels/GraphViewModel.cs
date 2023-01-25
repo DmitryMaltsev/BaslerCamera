@@ -15,9 +15,9 @@ using System.Windows.Threading;
 
 namespace Defectoscope.Modules.Cameras.ViewModels
 {
-    public class GraphViewModel : BindableBase,IDisposable
+    public class GraphViewModel : BindableBase, IDisposable
     {
-        
+
         private int _graphPointsCounter;
         public int GraphPointsCounter
         {
@@ -102,8 +102,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             if (PlotModel.PlotView != null)
             {
                 List<DataPoint> points = new List<DataPoint>();
-                if (CurrentCamera.GraphPointsQueue.Count > 0 && CurrentCamera.GraphPointsQueue.TryDequeue(out points))
+                if (CurrentCamera.GraphPoints.Count > 0)// && CurrentCamera.GraphPointsQueue.TryDequeue(out points))
                 {
+                    points = CurrentCamera.GraphPoints;
                     _counter += 1;
                     (PlotModel.Series[0] as LineSeries).Points.Clear();
                     (PlotModel.Series[1] as LineSeries).Points.Clear();
@@ -125,6 +126,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         //  CurrentCamera.GraphPointsQueue.Clear();
                     }
                     //    CurrentCamera.GraphPointsQueue.Clear();
+                    CurrentCamera.GraphPoints.Clear();
                     PlotModel.InvalidatePlot(true);
                 }
             }

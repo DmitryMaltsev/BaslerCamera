@@ -62,7 +62,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         private readonly ICalibrateService _calibrateService;
 
         public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository,
-            IApplicationCommands applicationCommands, IBaslerRepository baslerRepository,ICalibrateService  calibrateService,
+            IApplicationCommands applicationCommands, IBaslerRepository baslerRepository, ICalibrateService calibrateService,
             IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository, IFilesRepository filesRepository,
             IDialogService dialogService) : base(regionManager)
         {
@@ -81,8 +81,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             _timerForStats = new() { Interval = TimeSpan.FromSeconds(1) };
             _timerForStats.Tick += Timer_Tick;
             _timerForStats.Start();
-            filesRepository.FilesRecordingTime = new float[3];
-            filesRepository.FilesRawCount = new int[3];
             //CamerasStatisticsData = new();
             //for (int i = 0; i < _baslerRepository.BaslerCamerasCollection.Count; i++)
             //{
@@ -104,6 +102,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 BaslerRepository.BaslerCamerasCollection[i].CameraStatisticsData.TotalBufferCount = BaslerRepository.BaslerCamerasCollection[i].GetTotalBufferCount();
                 BaslerRepository.BaslerCamerasCollection[i].CameraStatisticsData.FailedBufferCount = BaslerRepository.BaslerCamerasCollection[i].GetFailedBufferCount();
             }
+
+          
         }
 
         #region Execute methods delegates
@@ -113,7 +113,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.LeftBorder;
             BaslerRepository.BaslerCamerasCollection[0].RightBorder = BaslerRepository.RightBorder;
-            _calibrateService.AddCalibrateSettingsToMaterial(BaslerRepository.BaslerCamerasCollection,BaslerRepository.CurrentMaterial);
+            _calibrateService.AddCalibrateSettingsToMaterial(BaslerRepository.BaslerCamerasCollection, BaslerRepository.CurrentMaterial);
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             XmlService.Write(materialPath, BaslerRepository.MaterialModelCollection);

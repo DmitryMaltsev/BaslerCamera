@@ -40,7 +40,7 @@ namespace Kogerent.Core
         CompositeCommand StartOneSensor { get; }
         CompositeCommand StartAllSensors { get; }
         CompositeCommand Calibrate { get; }
-        CompositeCommand CheckNoCalibrateAll { get; }
+        CompositeCommand StartRecordRawData { get; }
         CompositeCommand CheckFilterAll { get; }
         CompositeCommand CheckCamerasOverLay { get; }
         CompositeCommand AddNewMaterial { get; }
@@ -48,5 +48,6 @@ namespace Kogerent.Core
         CompositeCommand AutoExposition { get; }
         CompositeCommand FindBoundsIndexes { get; }
         CompositeCommand ShowGraphs { get; }
+        CompositeCommand StopRecordRawData { get; }
     }
 }

@@ -66,7 +66,7 @@
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="0" Content="Накл. камер"  Command="{Binding  ApplicationCommands.CheckCamerasOverLay}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="1" Content="Сохранить"  Command="{Binding SaveCamerasSettings}"/>
-                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="2" Content="SaveRawPoints" Command="{Binding ApplicationCommands.CheckNoCalibrateAll}"  
+                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="2" Content="SaveRawPoints" Command="{Binding ApplicationCommands.StartRecordRawData}"  
                                     IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                             <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="2" Content="XmlFilter"  Command="{Binding ApplicationCommands.CheckFilterAll}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
@@ -403,8 +403,11 @@
                                 <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
 
-                            <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="0" Content="SaveRawPoints" Command="{Binding ApplicationCommands.CheckNoCalibrateAll}"  
-                                    IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
+                            <Button Width="110" Margin="2" Grid.Column="0" Grid.Row="0" Content="Начать запись"  Command="{Binding ApplicationCommands.StartRecordRawData}"  
+                                    IsEnabled="{Binding FilesRepository.IsRecordStopped}"/>
+                            <Button Width="80" Margin="2" Grid.Column="1" Grid.Row="0" Content="Остановить запись" Command="{Binding ApplicationCommands.StopRecordRawData}"  
+                                   IsEnabled="{Binding FilesRepository.IsRecordingRawData}"/>
+                            
                             <Button Width="80" Margin="2" Grid.Column="0" Grid.Row="2" Content="XmlFilter"  Command="{Binding ApplicationCommands.CheckFilterAll}"
                                      IsEnabled="{Binding BaslerRepository.AllCamerasInitialized}"/>
                         </Grid>
@@ -414,21 +417,62 @@
                     <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
                     <!--#endregion-->
 
-                    <!--#region CheckLeftStrobesCount -->
+                    <!--#Record left camera -->
                     <DockPanel LastChildFill="False">
                         <Grid DockPanel.Dock="Top">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50" />
-                                <RowDefinition Height="50" />
+                                <RowDefinition Height="10" />
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Row="0"    Margin="1" Text="{Binding    FilesRepository.FilesRawCount[0], StringFormat = Время записи  {0} }" 
-                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
-                            <TextBlock Grid.Row="1"   Margin="1" Text="{Binding  FilesRepository.FilesRawCount[0], StringFormat = Записанных строк {0} }" 
-                                        VerticalAlignment="Center"  HorizontalAlignment="Center" FontSize="14" Foreground="{StaticResource ControlForegroundWhite}"/>
+                            <TextBlock Grid.Row="0" Width="220"    Margin="1" Text="{Binding  FilesRepository.FilesRecordingTime[0],StringFormat=Время записи сырых точек: {0:N2} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource ControlForegroundWhite}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Row="2"  Width="220"  Margin="1" Text="{Binding  FilesRepository.FilesRawCount[0], StringFormat = Записанных строк: {0} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource ControlForegroundWhite}" TextWrapping="Wrap"/>
                         </Grid>
                         <TextBlock Text="Запись левой камеры" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
+                    </DockPanel>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <!--#endregion-->
+
+                    <!--#Record center camera -->
+                    <DockPanel LastChildFill="False">
+                        <Grid DockPanel.Dock="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Width="220"    Margin="1" Text="{Binding  FilesRepository.FilesRecordingTime[1],StringFormat=Время записи сырых точек: {0:N2} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource ControlForegroundWhite}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Row="2"  Width="220"  Margin="1" Text="{Binding  FilesRepository.FilesRawCount[1], StringFormat = Записанных строк: {0} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource ControlForegroundWhite}" TextWrapping="Wrap"/>
+                        </Grid>
+                        <TextBlock Text="Запись центральной камеры" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
+                    </DockPanel>
+                    <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
+                    <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>
+                    <!--#endregion-->
+
+
+                    <!--#Record right camera -->
+                    <DockPanel LastChildFill="False">
+                        <Grid DockPanel.Dock="Top">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="10" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Width="220"    Margin="1" Text="{Binding  FilesRepository.FilesRecordingTime[2],StringFormat=Время записи сырых точек: {0:N2} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource ControlForegroundWhite}" TextWrapping="Wrap"/>
+                            <TextBlock Grid.Row="2"  Width="220"  Margin="1" Text="{Binding  FilesRepository.FilesRawCount[2], StringFormat = Записанных строк: {0} }" 
+                                        VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource ControlForegroundWhite}" TextWrapping="Wrap"/>
+                        </Grid>
+                        <TextBlock Text="Запись правой камеры" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>
                     </DockPanel>
                     <Rectangle Width="1" Height="180" Margin="5,0,1,0" Fill="{StaticResource ControlForeground}"/>
                     <Rectangle Width="1" Height="180" Margin="1,0,5,0" Fill="{StaticResource ControlForeground}"/>

@@ -149,32 +149,18 @@ namespace Kogerent.Services.Implementation
             return calibratedPointsList;
         }
 
-        public List<byte> CreateAverageElementsForCalibration(ConcurrentQueue<BufferData> _concurentBuffer, int countArraysInSection, int width)
+        public List<byte> CreateAverageElementsForCalibration(byte[,] _arrayOfRawPoints, int height, int width)
         {
-            int bufCount = _concurentBuffer.Count;
-            //Массив, в который получаем все элементы с concurrent коллекции, когда накопили достаточно значений
-            byte[,] rawPointsBuffer = new byte[bufCount * countArraysInSection, width];
-            //Массив для суммирования всех значение для дальнейшего усреднения
-            double[] pointsSumm = new double[width];
+
             //Результирующая коллекция для сохранения в Xml файл и использования для нахождения дефектов
             List<byte> calibratedPointsList = new();
-            int _cnt = 0;
-            for (int i = 0; i < bufCount; i++)
-            {
-                if (_concurentBuffer.TryDequeue(out BufferData etalonPointsBuffer) && etalonPointsBuffer != default)
-                {
-                    Buffer.BlockCopy(etalonPointsBuffer.Data, 0, rawPointsBuffer, _cnt * width, etalonPointsBuffer.Data.Length);
-                    _cnt += countArraysInSection;
-                    etalonPointsBuffer.Dispose();
-                }
-            }
-
-            for (int xpointsNum = 0; xpointsNum < rawPointsBuffer.GetLength(1); xpointsNum++)
+    
+            for (int xpointsNum = 0; xpointsNum < width; xpointsNum++)
             {
                 List<byte> bufferList = new();
-                for (int yPointsNum = 0; yPointsNum < rawPointsBuffer.GetLength(0); yPointsNum++)
+                for (int yPointsNum = 0; yPointsNum < height; yPointsNum++)
                 {
-                    bufferList.Add(rawPointsBuffer[yPointsNum, xpointsNum]);
+                    bufferList.Add(_arrayOfRawPoints[yPointsNum, xpointsNum]);
                 }
                 bufferList.Sort();
                 calibratedPointsList.Add(bufferList[bufferList.Count / 2]);

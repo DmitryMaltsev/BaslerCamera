@@ -164,7 +164,9 @@ namespace Kogerent.Core
 
         public CompositeCommand Calibrate { get; } = new();
 
-        public CompositeCommand CheckNoCalibrateAll { get; } = new();
+        public CompositeCommand StartRecordRawData { get; } = new();
+
+        public CompositeCommand StopRecordRawData { get; } = new();
 
         public CompositeCommand CheckFilterAll { get; } = new();
 

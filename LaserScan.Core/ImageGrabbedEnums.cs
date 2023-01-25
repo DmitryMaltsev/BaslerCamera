@@ -11,7 +11,7 @@ namespace Kogerent.Core
         RecievePoints,
         Calibrate,
         CreateEtalonPoints,
-        CreateXmlRaw,
+        RecordRawData,
         FindBounds,
         CreateFilterXml,
         FindExpositionLevel,

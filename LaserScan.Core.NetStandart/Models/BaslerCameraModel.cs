@@ -57,7 +57,15 @@ namespace LaserScan.Core.NetStandart.Models
             set { SetProperty(ref id, value); }
         }
 
+        private int _index;
+        public int Index
+        {
+            get { return _index; }
+            set { SetProperty(ref _index, value); }
+        }
+
         private bool initialized = false; // инициализация
+        [XmlIgnore]
         public bool Initialized
         {
             get { return initialized; }

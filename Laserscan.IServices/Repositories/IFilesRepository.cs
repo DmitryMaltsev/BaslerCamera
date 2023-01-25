@@ -1,8 +1,13 @@
-﻿namespace Kogerent.Services.Interfaces
+﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
+
+namespace Kogerent.Services.Interfaces
 {
     public interface IFilesRepository
     {
-        int[] FilesRawCount { get; set; }
-        float[] FilesRecordingTime { get; set; }
+       ObservableCollection<int> FilesRawCount { get; set; }
+        ObservableCollection<double> FilesRecordingTime { get; set; }
+        bool IsRecordingRawData { get; set; }
+        bool IsRecordStopped { get; set; }
     }
 }

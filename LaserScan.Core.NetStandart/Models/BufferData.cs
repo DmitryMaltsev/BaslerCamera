@@ -7,7 +7,6 @@ namespace LaserScan.Core.NetStandart.Models
     public class BufferData:IDisposable
     {
         private bool disposedValue;
-
         public byte[] Data { get; set; }
         public int Height { get; set; }
         public int Width { get; set; }
