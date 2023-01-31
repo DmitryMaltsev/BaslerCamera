@@ -57,14 +57,15 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         public IBenchmarkRepository BenchmarkRepository { get; }
         public IDefectRepository DefectRepository { get; }
         public IFilesRepository FilesRepository { get; }
+        public INonControlZonesRepository NonControlZonesRepository { get; }
         public IDialogService DialogService { get; }
         private DispatcherTimer _timerForStats;
         private readonly ICalibrateService _calibrateService;
 
         public CamerasRibbonViewModel(IRegionManager regionManager, IFooterRepository footerRepository,
             IApplicationCommands applicationCommands, IBaslerRepository baslerRepository, ICalibrateService calibrateService,
-            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository, IFilesRepository filesRepository,
-            IDialogService dialogService) : base(regionManager)
+            IXmlService xmlService, IBenchmarkRepository benchmarkRepository, IDefectRepository defectRepository, IFilesRepository filesRepository, 
+            INonControlZonesRepository nonControlZonesRepository, IDialogService dialogService) : base(regionManager)
         {
             RegionManager = regionManager;
             FooterRepository = footerRepository;
@@ -75,6 +76,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             BenchmarkRepository = benchmarkRepository;
             DefectRepository = defectRepository;
             FilesRepository = filesRepository;
+            NonControlZonesRepository = nonControlZonesRepository;
             DialogService = dialogService;
             ApplicationCommands.Destroy.RegisterCommand(DestroyCommand);
 
@@ -111,8 +113,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
         {
 
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
-            BaslerRepository.BaslerCamerasCollection[0].LeftBorder = BaslerRepository.LeftBorder;
-            BaslerRepository.BaslerCamerasCollection[0].RightBorder = BaslerRepository.RightBorder;
+            BaslerRepository.BaslerCamerasCollection[0].LeftBorder = NonControlZonesRepository.LeftBorder;
+            BaslerRepository.BaslerCamerasCollection[0].RightBorder = NonControlZonesRepository.RightBorder;
             _calibrateService.AddCalibrateSettingsToMaterial(BaslerRepository.BaslerCamerasCollection, BaslerRepository.CurrentMaterial);
             XmlService.Write(path, BaslerRepository.BaslerCamerasCollection);
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");

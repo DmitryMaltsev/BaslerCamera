@@ -500,6 +500,7 @@ namespace Kogerent.Services.Implementation
                 //float bufferMax = maxXs.Find(p => p <= defect.X);
                 if (defect != null && (maxObloysXs[0] < defect.X) && (minObloysXs[1] > defect.X))
                 {
+                    #region comments
                     //bool defectNotInZone = true;
                     //for (int i = 0; i < minZonesXs.Count; i++)
                     //{
@@ -519,12 +520,12 @@ namespace Kogerent.Services.Implementation
                     //if (BaslerRepository.BaslerCamerasCollection[1].RightBorder < defect.X)
                     //{
                     //    defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
-                    //}
+                    //} 
+                    #endregion
 
                     defects.Add(defect);
-                    Size size = new(rectangle.Width, rectangle.Height);
-                    // Rectangle rectF = new Rectangle(rectangle.Location, size);
-                    CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 20);
+                    CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 2, LineType.FourConnected);
+                    //CvInvoke.Polylines(tempBmp, c.Contour, true, currentColor, 20);
                     //  }
                     // tempBmp.Draw(rectangle, rectColor, 20);
                 }
@@ -541,7 +542,7 @@ namespace Kogerent.Services.Implementation
         }
         #endregion
 
-        public void DrawDefects(Image<Bgr, byte> tempBmp, string name)
+        public void SaveDefectsPictures(Image<Bgr, byte> tempBmp, string name)
         {
             string currentDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Images", DateTime.Now.ToString("dd.MM.yyyy"));
             if (Directory.Exists(currentDirectory))
@@ -560,36 +561,20 @@ namespace Kogerent.Services.Implementation
         }
 
 
-        public void DrawBoundsWhereDefectsCanDefined(int leftBorderStart, int rightBorderStart,
+        public void DrawBoundsWhereDefectsCanDefined(int leftBorder, int rightBorder,
                                                                             Image<Bgr, byte> tempBmp, string cameraId)
         {
             MCvScalar currentColor = new MCvScalar(0, 215, 255);
-            if (leftBorderStart > 6144 && cameraId == "Центральная камера")
+            if (cameraId == "Левая камера")
             {
-                leftBorderStart -= 6144;
-                Point p1 = new() { X = leftBorderStart, Y = 0 }; Point p2 = new() { X = leftBorderStart, Y = 500 };
-                CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.Filled, 0);
-                //   float bound = baslerRepository.BaslerCamerasCollection[1].WidthDescrete * leftBound;
-            }
-            else
-                if (leftBorderStart < 6144 && cameraId == "Левая камера")
-            {
-                Point p1 = new() { X = leftBorderStart, Y = 0 }; Point p2 = new() { X = leftBorderStart, Y = 500 };
+                Point p1 = new() { X = leftBorder, Y = 0 }; Point p2 = new() { X = leftBorder, Y = 500 };
                 CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.EightConnected, 0);
             }
-            if (rightBorderStart > 6144 * 2 && cameraId == "Правая камера")
+            if (cameraId == "Правая камера")
             {
-                rightBorderStart -= 6144 * 2;
-                Point p1 = new() { X = rightBorderStart, Y = 0 }; Point p2 = new() { X = rightBorderStart, Y = 500 };
+                rightBorder -= 2 * 6144;
+                Point p1 = new() { X = rightBorder, Y = 0 }; Point p2 = new() { X = rightBorder, Y = 500 };
                 CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.Filled, 0);
-                //   float bound = baslerRepository.BaslerCamerasCollection[1].WidthDescrete * leftBound;
-            }
-            else
-                if (rightBorderStart < 6144 * 2 && rightBorderStart > (6144 + 6144 / 2) && cameraId == "Центральная камера")
-            {
-                rightBorderStart -= 6144;
-                Point p1 = new() { X = rightBorderStart, Y = 0 }; Point p2 = new() { X = rightBorderStart, Y = 500 };
-                CvInvoke.Line(tempBmp, p1, p2, currentColor, 50, LineType.EightConnected, 0);
             }
         }
     }

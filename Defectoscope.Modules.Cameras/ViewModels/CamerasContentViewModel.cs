@@ -132,8 +132,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-            BaslerRepository.LeftBorder = BaslerRepository.BaslerCamerasCollection[0].LeftBorder;
-            BaslerRepository.RightBorder = BaslerRepository.BaslerCamerasCollection[0].RightBorder;
+            NonControlZonesRepository.SetNonControlledBorders(BaslerRepository.BaslerCamerasCollection[0].LeftBorder,
+                 BaslerRepository.BaslerCamerasCollection[0].RightBorder);
+
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             // BaslerRepository.MaterialModelCollection = CalibrateService.CreateDefaultMaterialCollection();
             BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, new List<MaterialModel>()));

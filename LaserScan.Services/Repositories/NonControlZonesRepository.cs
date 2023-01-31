@@ -24,6 +24,82 @@ namespace Kogerent.Services.Implementation
             set { SetProperty(ref _obloys, value); }
         }
 
+        private float _leftBorder;
+        public float LeftBorder
+        {
+            get { return _leftBorder; }
+            set
+            {
+                SetProperty(ref _leftBorder, value);
+            }
+        }
+
+        private float _leftBorderMin = 0;
+        public float LeftBorderMin
+        {
+            get { return _leftBorderMin; }
+            set { SetProperty(ref _leftBorderMin, value); }
+        }
+
+
+        private float _leftBorderMax = 1200;
+        public float LeftBorderMax
+        {
+            get { return _leftBorderMax; }
+            set { SetProperty(ref _leftBorderMax, value); }
+        }
+
+
+        private float _rightBorder;
+        public float RightBorder
+        {
+            get { return _rightBorder; }
+            set
+            {
+                SetProperty(ref _rightBorder, value);
+            }
+        }
+
+        private float _rightBorderMin = 2000;
+        public float RightBorderMin
+        {
+            get { return _rightBorderMin; }
+            set { SetProperty(ref _rightBorderMin, value); }
+        }
+
+        private float _rightBorderMax = 3808;
+        public float RightBorderMax
+        {
+            get { return _rightBorderMax; }
+            set { SetProperty(ref _rightBorderMax, value); }
+        }
+
+
+
+        private float _fullCamerasWidth = 3808;
+        public float FullCamerasWidth
+        {
+            get { return _fullCamerasWidth; }
+            set
+            {
+                SetProperty(ref _fullCamerasWidth, value);
+            }
+        }
+
+        public void SetNonControlledBorders(float leftBorder, float rightBorder)
+        {
+            LeftBorder = leftBorder;
+            LeftBorderMin = 0;
+            LeftBorderMax = 6144;
+            RightBorder = rightBorder;
+           
+            RightBorderMin = LeftBorderMax + 6144;
+            RightBorderMax = RightBorderMin + 6144;
+            if (RightBorder < RightBorderMin)
+            {
+                RightBorder = RightBorderMin;
+            }
+        }
 
         public NonControlZonesRepository()
         {
@@ -50,7 +126,7 @@ namespace Kogerent.Services.Implementation
                 MinimumY = 0,
                 MaximumY = 300,
                 MinimumX = 0,
-                MaximumX = BaslerRepository.LeftBorder
+                MaximumX = LeftBorder
             });
 
             //float rightCameraMinimumX;
@@ -74,8 +150,8 @@ namespace Kogerent.Services.Implementation
                 Name = $"Облой п.",
                 MinimumY = 0,
                 MaximumY = 300,
-                MinimumX = BaslerRepository.RightBorder,
-                MaximumX = BaslerRepository.FullCamerasWidth
+                MinimumX = RightBorder,
+                MaximumX = FullCamerasWidth
             });
 
             // Zones.Clear();

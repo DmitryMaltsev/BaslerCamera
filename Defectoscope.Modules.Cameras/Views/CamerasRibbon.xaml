@@ -105,12 +105,19 @@
                             <TextBlock Width="110" Margin="1" Grid.Column="1" Grid.Row="2" Text="Высота дефекта"/>
                             <TextBox Width="110" Margin="1" Grid.Column="1" Grid.Row="3" Text="{Binding BaslerRepository.CurrentCamera.HeightThreshold}"/>
                             <!--#region Левая граница полотна -->
+                           
                             <TextBlock  Margin="1"  Grid.Column="0" Grid.Row="4"  Text="Лев гр полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBox Width="110"  Margin="1" Grid.Column="0" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.LeftBorder}" />
+                            <!--<TextBox Width="110"  Margin="1" Grid.Column="0" Grid.Row="5" Height="28" Text="{Binding NonControlZonesRepository.LeftBorder}" />-->
+                            <Slider  Grid.Column="0" Grid.Row="5" Minimum="{Binding NonControlZonesRepository.LeftBorderMin}"
+                                     Value="{Binding NonControlZonesRepository.LeftBorder}"
+                                    Maximum="{Binding NonControlZonesRepository.LeftBorderMax}"/>
                             <!--#endregion-->
                             <!--#region Правая граница полотна -->
                             <TextBlock  Margin="1"  Grid.Column="1" Grid.Row="4"  Text="Прав гр полотна" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                            <TextBox Width="110"  Margin="1" Grid.Column="1" Grid.Row="5" Height="28" Text="{Binding BaslerRepository.RightBorder}"/>
+                            <!--<TextBox Width="110"  Margin="1" Grid.Column="1" Grid.Row="5" Height="28" Text="{Binding NonControlZonesRepository.RightBorder}"/>-->
+                            <Slider  Grid.Column="1" Grid.Row="5"  Minimum="{Binding NonControlZonesRepository.RightBorderMin}"
+                                     Value="{Binding NonControlZonesRepository.RightBorder}"
+                                    Maximum="{Binding NonControlZonesRepository.RightBorderMax}"/>
                             <!--#endregion-->
                         </Grid>
                         <TextBlock Text="Пороги" DockPanel.Dock="Bottom" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource ControlForegroundWhite}"/>

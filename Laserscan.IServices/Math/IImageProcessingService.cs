@@ -16,7 +16,7 @@ namespace Kogerent.Services.Interfaces
         (Bitmap, IOrderedEnumerable<DefectProperties>) AnalyzeDefectsAsync(Image<Gray, byte> imgUp, Image<Gray, byte> imgDn, float widthThreshold, float heightThreshold, float widthDiscrete, float heightDiscrete, int strobe);
         BitmapImage BitmapToImageSource(Bitmap bitmap);
         void DrawBoundsWhereDefectsCanDefined(int leftBorderStart, int rightBorderStart, Image<Bgr, byte> tempBmp, string cameraId);
-        void DrawDefects(Image<Bgr, byte> tempBmp, string name);
+        void SaveDefectsPictures(Image<Bgr, byte> tempBmp, string name);
         Image<Gray, byte> FillImageDnThreshold(float dn, List<List<PointF>> sourceList, int width, int height);
         public  Image<Gray, byte> FillImageUpThreshold(float up, List<List<PointF>> sourceList, int width, int height);
         Image<Gray, byte> FillImageUpThreshold(float up, List<List<PointF>> sourceList, int width, int height, INonControlZonesRepository zones);

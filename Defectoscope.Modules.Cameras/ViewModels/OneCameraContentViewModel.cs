@@ -621,23 +621,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
                             if (_currentVisualAnalizeIsActive)
                             {
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
-                                                  (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
+                                //Боковые линии неконтроля на левой и правой камерах
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)NonControlZonesRepository.LeftBorder,
+                                                  (int)NonControlZonesRepository.RightBorder, img2, CurrentCamera.ID);
                                 _resImage = img2; //img2.Clone();
                             }
                             else
                             {
 
                                 _resImage = img.Convert<Bgr, byte>();
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
-                                                (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), _resImage, CurrentCamera.ID);
+                                //Боковые линии неконтроля на левой и правой камерах
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)NonControlZonesRepository.LeftBorder,
+                                                (int)NonControlZonesRepository.RightBorder, _resImage, CurrentCamera.ID);
                             }
                             if (defects.Any())
                             {
                                 _needToDrawDefects = true;
                                 if (DefectRepository.CreateImages)
                                 {
-                                    ImageProcessing.DrawDefects(img2, CurrentCamera.ID);
+                                    ImageProcessing.SaveDefectsPictures(img2, CurrentCamera.ID);
                                 }
                             }
 
