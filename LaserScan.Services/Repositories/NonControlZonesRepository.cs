@@ -34,7 +34,7 @@ namespace Kogerent.Services.Implementation
             }
         }
 
-        private float _leftBorderMin = 0;
+        private float _leftBorderMin;
         public float LeftBorderMin
         {
             get { return _leftBorderMin; }
@@ -42,7 +42,7 @@ namespace Kogerent.Services.Implementation
         }
 
 
-        private float _leftBorderMax = 1200;
+        private float _leftBorderMax;
         public float LeftBorderMax
         {
             get { return _leftBorderMax; }
@@ -60,7 +60,7 @@ namespace Kogerent.Services.Implementation
             }
         }
 
-        private float _rightBorderMin = 2000;
+        private float _rightBorderMin;
         public float RightBorderMin
         {
             get { return _rightBorderMin; }
@@ -92,7 +92,6 @@ namespace Kogerent.Services.Implementation
             LeftBorderMin = 0;
             LeftBorderMax = 6144;
             RightBorder = rightBorder;
-           
             RightBorderMin = LeftBorderMax + 6144;
             RightBorderMax = RightBorderMin + 6144;
             if (RightBorder < RightBorderMin)

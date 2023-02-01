@@ -173,7 +173,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Camera2V.DataContext = Camera2VM;
             if (Camera2VM != null)
             {
-                shift += 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
+                shift += 6144;
                 Camera2VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[1];
                 Camera2VM.CurrentCamera.Index = 1;
                 IRegion currentRegion = RegionManager.Regions[RegionNames.Camera2Region];
@@ -187,7 +187,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Camera3V.DataContext = Camera3VM;
             if (Camera3V != null)
             {
-                shift += 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
+                shift += 6144;
                 Camera3VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[2];
                 Camera3VM.CurrentCamera.Index = 2;
                 IRegion currentRegion = RegionManager.Regions[RegionNames.Camera3Region];

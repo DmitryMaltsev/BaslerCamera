@@ -463,7 +463,7 @@ namespace Kogerent.Services.Implementation
         private List<DefectProperties> DrawDefectPropertiesEmgu(float widthThreshold, float heightThreshold,
                                                             float widthDiscrete, float heightDiscrete, int imgWidth,
                                                             int imgHeight, int strobe, List<ContourData> dnContours,
-                                                            Image<Bgr, byte> tempBmp, bool up, float Shift, VectorOfVectorOfPoint contours)
+                                                            Image<Bgr, byte> tempBmp, bool up, float shift, VectorOfVectorOfPoint contours)
         {
             List<DefectProperties> defects = new();
             Bgr rectColor = up ? _blueBgr : _redBgr;
@@ -484,10 +484,10 @@ namespace Kogerent.Services.Implementation
                 Point center = new((int)c.RotRect.Center.X, (int)c.RotRect.Center.Y);
                 Rectangle rectangle = c.Rectangle;
                 var imageCount = strobe / (uint)imgHeight;
-
+                double shiftedX = center.X + shift;
                 DefectProperties defect = new DefectProperties
                 {
-                    X = Math.Round(center.X * widthDiscrete + Shift, 1),
+                    X = Math.Round(center.X * widthDiscrete + shift, 1),
                     Y = Math.Round(((uint)center.Y + imageCount * (uint)imgHeight) * heightDiscrete, 1),
                     Ширина = Math.Round(rectangle.Width * widthDiscrete, 1),
                     Высота = Math.Round(rectangle.Height * heightDiscrete, 1),
@@ -498,7 +498,7 @@ namespace Kogerent.Services.Implementation
                 // int res = defects.RemoveAll(d => d.X >= min && d.X < max);
                 //float bufferMin = minXs.Find(p => p >= defect.X);
                 //float bufferMax = maxXs.Find(p => p <= defect.X);
-                if (defect != null && (maxObloysXs[0] < defect.X) && (minObloysXs[1] > defect.X))
+                if (defect != null && (Zones.LeftBorder < shiftedX) && (Zones.RightBorder > shiftedX))
                 {
                     #region comments
                     //bool defectNotInZone = true;
