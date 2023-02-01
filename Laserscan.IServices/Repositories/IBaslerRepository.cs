@@ -15,5 +15,6 @@ namespace Kogerent.Services.Interfaces
         MaterialModel CurrentMaterial { get; set; }
         bool AllDefectsFound { get; set; }
         double CalibrationTimer { get; set; }
+        bool GraphsIsActive { get; set; }
     }
 }

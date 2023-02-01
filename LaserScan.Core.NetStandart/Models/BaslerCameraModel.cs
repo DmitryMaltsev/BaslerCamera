@@ -27,8 +27,10 @@ namespace LaserScan.Core.NetStandart.Models
         public double[] MultipleDeltas { get; set; }
         public int StartPixelPoint { get; set; }
         public int AllCamerasWidth { get; set; }
-        [XmlIgnore]
-        public List<DataPoint> GraphPoints = new List<DataPoint>();
+
+        public List<DataPoint> GraphRawPoints = new List<DataPoint>();
+        public List<DataPoint> GraphCalibratedPoints = new List<DataPoint>();
+
         [XmlIgnore]
         public ConcurrentQueue<List<DataPoint>> GraphPointsQueue = new ConcurrentQueue<List<DataPoint>>();
 

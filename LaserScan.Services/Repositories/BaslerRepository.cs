@@ -75,6 +75,13 @@ namespace Kogerent.Services.Implementation
             }
         }
 
+        private bool _graphsIsActive = false;
+        public bool GraphsIsActive
+        {
+            get { return _graphsIsActive; }
+            set { SetProperty(ref _graphsIsActive, value); }
+        }
+
         private int _totalCount;
         public int TotalCount
         {

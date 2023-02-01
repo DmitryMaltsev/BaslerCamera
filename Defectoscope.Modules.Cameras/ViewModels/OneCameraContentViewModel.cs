@@ -423,15 +423,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             //GC.Collect();
                             if (_currentHeight == _height)
                             {
-                                if (CurrentCamera.GraphPoints.Count == 0)
-                                {
-                                    //   List .GraphPoints.Clear();
-                                    for (int k = 0; k < _width; k++)
-                                    {
-                                        CurrentCamera.GraphPoints.Add(new DataPoint(k, _currentCameraBaseArray[0, k, 0]));
-                                    }
-                                    CurrentCamera.GraphPointsQueue.Enqueue(CurrentCamera.GraphPoints);
-                                }
                                 CheckIfNeedOptions(_currentCameraBaseArray);
                                 // Buffer.BlockCopy(_tempImage.Data, 0, _currentCameraBaseArray, 0, _tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(_currentCameraBaseArray);
@@ -561,6 +552,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = $"Калибровочные данные созданы, но будут сохранены ";
             }
         }
+
+        private void AddPointsToGraphIfActive(byte[,,] rawPoints, byte[,,] calibratedPoints)
+        {
+            if (BaslerRepository.GraphsIsActive)
+            {
+                if (CurrentCamera.GraphRawPoints.Count == 0)
+                {
+                    //   List .GraphPoints.Clear();
+                    for (int k = 0; k < _width; k++)
+                    {
+                        CurrentCamera.GraphRawPoints.Add(new DataPoint(k, rawPoints[0, k, 0]));
+                        if (!BenchmarkRepository.RawImage)
+                        {
+                            CurrentCamera.GraphCalibratedPoints.Add(new DataPoint(k, calibratedPoints[0, k, 0]));
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         private void ProcessImageAction()
@@ -599,8 +609,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     }
                                 }
                             }
-
                         }
+                        //Активизируется при открытии окна с графиками.
+                        AddPointsToGraphIfActive(dataBuffer, img.Data);
+
                         imgProcessingStopWatch.Stop();
 
                         #region Analize defects
