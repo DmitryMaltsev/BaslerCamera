@@ -101,10 +101,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
             if (PlotModel.PlotView != null)
             {
-                List<DataPoint> points = new List<DataPoint>();
-                if (CurrentCamera.GraphPoints.Count > 0)// && CurrentCamera.GraphPointsQueue.TryDequeue(out points))
+
+                if (CurrentCamera.GraphRawPoints.Count > 0)// && CurrentCamera.GraphPointsQueue.TryDequeue(out points))
                 {
-                    points = CurrentCamera.GraphPoints;
                     _counter += 1;
                     (PlotModel.Series[0] as LineSeries).Points.Clear();
                     (PlotModel.Series[1] as LineSeries).Points.Clear();
@@ -114,8 +113,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                     (PlotModel.Series[3] as LineSeries).Points.Clear();
                     //Нижняя граница
                     (PlotModel.Series[4] as LineSeries).Points.Clear();
-                    (PlotModel.Series[0] as LineSeries).Points.AddRange(points);
-                    for (int k = 0; k < points.Count; k++)
+
+                    (PlotModel.Series[0] as LineSeries).Points.AddRange(CurrentCamera.GraphRawPoints);
+                    if (CurrentCamera.GraphCalibratedPoints.Count > 0)
+                    {
+                        (PlotModel.Series[1] as LineSeries).Points.AddRange(CurrentCamera.GraphCalibratedPoints);
+                    }
+
+                    for (int k = 0; k < CurrentCamera.GraphRawPoints.Count; k++)
                     {
                         //     DataPoint multiPoint = new DataPoint(k, UsingMultiCalibrationDeltas(points[k].Y, k));
                         //     (PlotModel.Series[1] as LineSeries).Points.Add(multiPoint);
@@ -126,7 +131,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                         //  CurrentCamera.GraphPointsQueue.Clear();
                     }
                     //    CurrentCamera.GraphPointsQueue.Clear();
-                    CurrentCamera.GraphPoints.Clear();
+                    CurrentCamera.GraphRawPoints.Clear();
+                    CurrentCamera.GraphCalibratedPoints.Clear();
                     PlotModel.InvalidatePlot(true);
                 }
             }
@@ -139,46 +145,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             {
                 return;
             }
-        }
-
-        /// <summary>
-        /// Калибровка умножением
-        /// </summary>
-        /// <param name="currentByte"></param>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        private double UsingMultiCalibrationDeltas(double currentValue, int i)
-        {
-            if ((currentValue * CurrentCamera.MultipleDeltas[i]) >= 255)
-            {
-                currentValue = 255;
-            }
-            else
-                currentValue = (currentValue * CurrentCamera.MultipleDeltas[i]);
-            return currentValue;
-        }
-        /// <summary>
-        /// Калибровка сложением
-        /// </summary>
-        /// <param name="currentByte"></param>
-        /// <param name="i"></param>
-        /// <returns></returns>
-        private double UsingCalibrationDeltas(double currentByte, int i)
-        {
-            if ((currentByte + CurrentCamera.Deltas[i]) >= 255)
-            {
-                currentByte = 255;
-            }
-            else
-                if (currentByte + CurrentCamera.Deltas[i] <= 0)
-            {
-                currentByte = 0;
-            }
-            else
-            {
-                currentByte = (byte)((sbyte)currentByte + CurrentCamera.Deltas[i]);
-            }
-            return currentByte;
         }
 
         public void Dispose()

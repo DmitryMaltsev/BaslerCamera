@@ -92,14 +92,14 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
         public void OnDialogClosed()
         {
-
+            _baslerRepository.GraphsIsActive = false;
         }
 
 
 
         public void OnDialogOpened(IDialogParameters parameters)
         {
-
+            _baslerRepository.GraphsIsActive = true;
 
         }
 

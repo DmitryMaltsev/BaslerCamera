@@ -423,15 +423,6 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             //GC.Collect();
                             if (_currentHeight == _height)
                             {
-                                if (CurrentCamera.GraphPoints.Count == 0)
-                                {
-                                    //   List .GraphPoints.Clear();
-                                    for (int k = 0; k < _width; k++)
-                                    {
-                                        CurrentCamera.GraphPoints.Add(new DataPoint(k, _currentCameraBaseArray[0, k, 0]));
-                                    }
-                                    CurrentCamera.GraphPointsQueue.Enqueue(CurrentCamera.GraphPoints);
-                                }
                                 CheckIfNeedOptions(_currentCameraBaseArray);
                                 // Buffer.BlockCopy(_tempImage.Data, 0, _currentCameraBaseArray, 0, _tempImage.Data.Length);
                                 _imageDataBuffer.Enqueue(_currentCameraBaseArray);
@@ -561,6 +552,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                 FooterRepository.Text = $"Калибровочные данные созданы, но будут сохранены ";
             }
         }
+
+        private void AddPointsToGraphIfActive(byte[,,] rawPoints, byte[,,] calibratedPoints)
+        {
+            if (BaslerRepository.GraphsIsActive)
+            {
+                if (CurrentCamera.GraphRawPoints.Count == 0)
+                {
+                    //   List .GraphPoints.Clear();
+                    for (int k = 0; k < _width; k++)
+                    {
+                        CurrentCamera.GraphRawPoints.Add(new DataPoint(k, rawPoints[0, k, 0]));
+                        if (!BenchmarkRepository.RawImage)
+                        {
+                            CurrentCamera.GraphCalibratedPoints.Add(new DataPoint(k, calibratedPoints[0, k, 0]));
+                        }
+                    }
+                }
+            }
+        }
         #endregion
 
         private void ProcessImageAction()
@@ -599,8 +609,10 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                                     }
                                 }
                             }
-
                         }
+                        //Активизируется при открытии окна с графиками.
+                        AddPointsToGraphIfActive(dataBuffer, img.Data);
+
                         imgProcessingStopWatch.Stop();
 
                         #region Analize defects
@@ -621,23 +633,25 @@ namespace Defectoscope.Modules.Cameras.ViewModels
 
                             if (_currentVisualAnalizeIsActive)
                             {
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
-                                                  (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), img2, CurrentCamera.ID);
+                                //Боковые линии неконтроля на левой и правой камерах
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)NonControlZonesRepository.LeftBorder,
+                                                  (int)NonControlZonesRepository.RightBorder, img2, CurrentCamera.ID);
                                 _resImage = img2; //img2.Clone();
                             }
                             else
                             {
 
                                 _resImage = img.Convert<Bgr, byte>();
-                             //   ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
-                             //                   (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), _resImage, CurrentCamera.ID);
+                                //Боковые линии неконтроля на левой и правой камерах
+                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)NonControlZonesRepository.LeftBorder,
+                                                (int)NonControlZonesRepository.RightBorder, _resImage, CurrentCamera.ID);
                             }
                             if (defects.Any())
                             {
                                 _needToDrawDefects = true;
                                 if (DefectRepository.CreateImages)
                                 {
-                                    ImageProcessing.DrawDefects(img2, CurrentCamera.ID);
+                                    ImageProcessing.SaveDefectsPictures(img2, CurrentCamera.ID);
                                 }
                             }
 

@@ -132,8 +132,9 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             string path = Path.Combine(SettingsDir, "BaslerSettings.xml");
             List<BaslerCameraModel> cameras = new List<BaslerCameraModel>();
             BaslerRepository.BaslerCamerasCollection = new(XmlService.Read(path, cameras));
-            BaslerRepository.LeftBorder = BaslerRepository.BaslerCamerasCollection[0].LeftBorder;
-            BaslerRepository.RightBorder = BaslerRepository.BaslerCamerasCollection[0].RightBorder;
+            NonControlZonesRepository.SetNonControlledBorders(BaslerRepository.BaslerCamerasCollection[0].LeftBorder,
+                 BaslerRepository.BaslerCamerasCollection[0].RightBorder);
+
             string materialPath = Path.Combine(SettingsDir, "MaterialSettings.xml");
             // BaslerRepository.MaterialModelCollection = CalibrateService.CreateDefaultMaterialCollection();
             BaslerRepository.MaterialModelCollection = new(XmlService.Read(materialPath, new List<MaterialModel>()));
@@ -172,7 +173,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Camera2V.DataContext = Camera2VM;
             if (Camera2VM != null)
             {
-                shift += 6144 * BaslerRepository.BaslerCamerasCollection[0].WidthDescrete;
+                shift += 6144;
                 Camera2VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[1];
                 Camera2VM.CurrentCamera.Index = 1;
                 IRegion currentRegion = RegionManager.Regions[RegionNames.Camera2Region];
@@ -186,7 +187,7 @@ namespace Defectoscope.Modules.Cameras.ViewModels
             Camera3V.DataContext = Camera3VM;
             if (Camera3V != null)
             {
-                shift += 6144 * BaslerRepository.BaslerCamerasCollection[1].WidthDescrete;
+                shift += 6144;
                 Camera3VM.CurrentCamera = BaslerRepository.BaslerCamerasCollection[2];
                 Camera3VM.CurrentCamera.Index = 2;
                 IRegion currentRegion = RegionManager.Regions[RegionNames.Camera3Region];

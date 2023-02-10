@@ -11,12 +11,10 @@ namespace Kogerent.Services.Interfaces
         BaslerCameraModel CurrentCamera { get; set; }
         bool AllCamerasInitialized { get; set; }
         int TotalCount { get; set; }
-        float FullCamerasWidth { get; set; }
         ObservableCollection<MaterialModel> MaterialModelCollection { get; set; }
         MaterialModel CurrentMaterial { get; set; }
         bool AllDefectsFound { get; set; }
-        float LeftBorder { get; set; }
-        float RightBorder { get; set; }
         double CalibrationTimer { get; set; }
+        bool GraphsIsActive { get; set; }
     }
 }

@@ -75,47 +75,18 @@ namespace Kogerent.Services.Implementation
             }
         }
 
+        private bool _graphsIsActive = false;
+        public bool GraphsIsActive
+        {
+            get { return _graphsIsActive; }
+            set { SetProperty(ref _graphsIsActive, value); }
+        }
+
         private int _totalCount;
         public int TotalCount
         {
             get { return _totalCount; }
             set { SetProperty(ref _totalCount, value); }
-        }
-
-        private float _leftBorder;
-        public float LeftBorder
-        {
-            get { return _leftBorder; }
-            set
-            {
-                SetProperty(ref _leftBorder, value);
-                NonControlZonesRepository.AddZones(this);
-            }
-        }
-
-        private float _rightBorder;
-        public float RightBorder
-        {
-            get { return _rightBorder; }
-            set
-            {
-                SetProperty(ref _rightBorder, value);
-                NonControlZonesRepository.AddZones(this);
-            }
-        }
-
-        private float _fullCamerasWidth = 3808;
-        public float FullCamerasWidth
-        {
-            get { return _fullCamerasWidth; }
-            set
-            {
-                SetProperty(ref _fullCamerasWidth, value);
-                if (NonControlZonesRepository.Obloys.Count > 1)
-                {
-                    NonControlZonesRepository.AddZones(this);
-                }
-            }
         }
 
         private bool _allDefectsFound;
