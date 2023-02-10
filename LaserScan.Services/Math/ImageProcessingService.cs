@@ -1,4 +1,11 @@
-﻿using System;
+﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
+using Emgu.CV.Structure;
+using Emgu.CV.Util;
+using Kogerent.Core;
+using Kogerent.Logger;
+using Kogerent.Services.Interfaces;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,18 +13,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-
-using Emgu.CV;
-using Emgu.CV.CvEnum;
-using Emgu.CV.Structure;
-using Emgu.CV.Util;
-
-using Kogerent.Core;
-using Kogerent.Logger;
-using Kogerent.Services.Interfaces;
 
 namespace Kogerent.Services.Implementation
 {
@@ -404,6 +400,8 @@ namespace Kogerent.Services.Implementation
         }
         #endregion
 
+
+
         #region Private Methods
         private List<DefectProperties> DrawDefectProperties(float widthThreshold, float heightThreshold,
                                                             float widthDiscrete, float heightDiscrete, int imgWidth,
@@ -457,9 +455,6 @@ namespace Kogerent.Services.Implementation
             return defects;
         }
 
-
-
-
         private List<DefectProperties> DrawDefectPropertiesEmgu(float widthThreshold, float heightThreshold,
                                                             float widthDiscrete, float heightDiscrete, int imgWidth,
                                                             int imgHeight, int strobe, List<ContourData> dnContours,
@@ -500,6 +495,7 @@ namespace Kogerent.Services.Implementation
                 //float bufferMax = maxXs.Find(p => p <= defect.X);
                 if (defect != null && (maxObloysXs[0] < defect.X) && (minObloysXs[1] > defect.X))
                 {
+                    #region Комментарии
                     //bool defectNotInZone = true;
                     //for (int i = 0; i < minZonesXs.Count; i++)
                     //{
@@ -521,6 +517,7 @@ namespace Kogerent.Services.Implementation
                     //    defect.X -= BaslerRepository.BaslerCamerasCollection[1].LeftBoundWidth + BaslerRepository.BaslerCamerasCollection[1].RightBoundWidth;
                     //}
 
+                    #endregion
                     defects.Add(defect);
                     Size size = new(rectangle.Width, rectangle.Height);
                     // Rectangle rectF = new Rectangle(rectangle.Location, size);

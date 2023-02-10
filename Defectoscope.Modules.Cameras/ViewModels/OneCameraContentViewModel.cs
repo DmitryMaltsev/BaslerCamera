@@ -629,8 +629,8 @@ namespace Defectoscope.Modules.Cameras.ViewModels
                             {
 
                                 _resImage = img.Convert<Bgr, byte>();
-                                ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
-                                                (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), _resImage, CurrentCamera.ID);
+                             //   ImageProcessing.DrawBoundsWhereDefectsCanDefined((int)(BaslerRepository.LeftBorder / CurrentCamera.WidthDescrete),
+                             //                   (int)(BaslerRepository.RightBorder / CurrentCamera.WidthDescrete), _resImage, CurrentCamera.ID);
                             }
                             if (defects.Any())
                             {
